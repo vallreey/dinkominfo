@@ -111,6 +111,8 @@ nbactions.xml
 nb-configuration.xml
 .nb-gradle/
 
+!public/adminLTE/dist
+
 # Sublime Text
 *.tmlanguage.cache
 *.tmPreferences.cache
