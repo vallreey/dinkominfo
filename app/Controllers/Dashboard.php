@@ -1,25 +1,26 @@
 <?php
 namespace App\Controllers;
 use App\Models\DashboardModel;
+use App\Models\UserModel;
 
 class Dashboard extends BaseController
 {
     public function __construct()
 	{
-        $this->session   = \Config\Services::session();
+        $this->session = \Config\Services::session();
         if (!isset($_SESSION['login_state'])) {
 			$message = 'Session Anda telah Habis';
 			echo "<SCRIPT>alert('$message');window.location='" . site_url('logon') . "';</SCRIPT>";
 		}
 
 		$this->dashboard = new DashboardModel();
+		$this->user = new UserModel();
+
+        helper(['permission']);
 	}
 
     public function index()
     {
-        // echo "<pre>";
-        // var_dump($_SESSION);
-        // exit();
         $header['title'] = 'Dashboard';
         
         echo view('partial/header', $header);
@@ -54,14 +55,21 @@ class Dashboard extends BaseController
             echo json_encode($dataById[0]);
     }
 
-    public function formInput($id)
+    public function add($id = null)
     {
-        $header['title'] = 'Update File';
+        // echo '<pre>';
+        // var_dump($_SESSION);exit();
+        $header['title'] = !is_null($id) ? 'Update File' : 'Tambah File';
 
-        $data['fileExist']   = $this->getDataById($id);
+        $data['file_id'] = $id;
+        if (!is_null($id)) {
+            $data['fileExist'] = $this->getDataById($id);
+        }
+
         $data['listPemilik'] = $this->dashboard->getOptionalList('pemilik');
         $data['listBidang']  = $this->dashboard->getOptionalList('bidang');
         $data['listKategori']= $this->dashboard->getOptionalList('kategori');
+        $data['allUsers']    = $this->user->allUsers();
 
         echo view('partial/header', $header);
         echo view('partial/top_menu');
@@ -88,7 +96,7 @@ class Dashboard extends BaseController
             foreach ($files as $key => $val) {
                 $data[] = array(
                     'id'        => $val->id,
-                    'detail'   => '<div class="btn-group" role="group"><button type="button" class="btn btn-default btn-sm btn-detail" id="'.$val->id.'"><i class="fas fa-folder"></i></button><a href="formInput/'.$val->id.'" class="btn btn-default btn-sm"><i class="fas fa-pencil-alt"></i></a><button type="button" class="btn btn-default btn-sm btn-delete" data-toogle="modal" data-target="#confirmDelete" data-record-id="'.$val->id.'"><i class="fas fa-trash"></i></button></div>',
+                    'detail'   => '<div class="btn-group" role="group"><button type="button" class="btn btn-default btn-sm btn-detail" id="'.$val->id.'"><i class="fas fa-folder"></i></button><a href="add/'.$val->id.'" class="btn btn-default btn-sm"><i class="fas fa-pencil-alt"></i></a><button type="button" class="btn btn-default btn-sm btn-delete" data-toogle="modal" data-target="#confirmDelete" data-record-id="'.$val->id.'"><i class="fas fa-trash"></i></button></div>',
                     'nama_file' => $val->realname,
                     'deskripsi' => $val->description,
                     'hak_akses' => '-',

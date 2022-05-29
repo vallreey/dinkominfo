@@ -26,4 +26,13 @@ class UserModel extends Model
 
         return $query->getResult();
     }
+
+    public function allUsers()
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('odm_user');
+        $query = $builder->orderBy('last_name', 'asc')->get();
+
+        return $query->getResult();
+    }
 }   

@@ -10,7 +10,7 @@ class Account extends BaseController
 	{
         $this->session = \Config\Services::session();
 
-		helper(['user', 'url', 'form']);
+		helper(['user', 'permission', 'url', 'form']);
 	}
 
     public function logon()
@@ -56,4 +56,20 @@ class Account extends BaseController
         $this->session->destroy();
         return redirect()->to('logon'); 
 	}
+
+   
+    public function getAuthority($uid, $fid, $dept_id) {
+        if (isAdmin($uid) || isReviewer($uid))
+        return userRights('admin');
+        
+        if (isOwner($uid, $fid) && isLockedFile($fid))
+        return userRights('write');
+
+        $userPermission = getUserRights($uid, $fid);
+        $deptPermission = getDeptRights($fid, $dept_id);
+        if ($userPermission >= 0 && $userPermission <= 4)
+            return $userPermission;
+        else 
+            return $deptPermission;
+    }
 }

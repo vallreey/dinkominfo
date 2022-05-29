@@ -48,7 +48,7 @@
             <div class="icon">
               <i class="ion ion-stats-bars"></i>
             </div>
-            <a href="#" class="small-box-footer">Tambah Dokumen <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?=site_url('dashboard/add')?>" class="small-box-footer">Tambah Dokumen <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
