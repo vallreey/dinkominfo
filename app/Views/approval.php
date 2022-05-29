@@ -14,12 +14,12 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1><?=$title?></h1>
+          <!-- <h1><?=$title?></h1> -->
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="<?=site_url('dashboard/index')?>">Home</a></li>
-            <li class="breadcrumb-item active">Pencarian Dokumen</li>
+            <li class="breadcrumb-item active">Approval Dokumen</li>
           </ol>
         </div>
       </div>
@@ -30,36 +30,44 @@
   <section class="content">
     <div class="container-fluid">
       <!-- <form id="form-search"> -->
-        <div class="row center">
-          <div class="col-md-10 offset-md-1">
-            <div class="row">
-              <div class="col-4">
-                <div class="form-group">
-                  <label>Cari Berdasarkan:</label>
-                    <select class="select2" id="option_search" style="width: 100%;">
-                        <option value="all">All</option>
-                        <option value="pemilik">Pemilik (Nama Belakang, Nama Depan)</option>
-                        <option value="bidang">Bidang</option>
-                        <option value="kategori">Kategori</option>
-                        <option value="deskripsi">Deskripsi</option>
-                        <option value="nama_file">Nama File</option>
-                        <option value="comment">Comment</option>
-                        <option value="file_id">File #</option>
-                    </select>
+      <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title">Monthly Recap Report</h5>
+
+                
+              </div>
+              <!-- /.card-header -->
+              <!-- ./card-body -->
+              <div class="card-footer">
+                <div class="row">
+                  <div class="col-sm-6 col-12">
+                    <div class="description-block border-right">
+                      <span class="description-percentage text-success"><i class="fas fa-caret-up"></i> 17%</span>
+                      <h5 class="description-header">$35,210.43</h5>
+                      <span class="description-text">TOTAL REVENUE</span>
+                    </div>
+                    <!-- /.description-block -->
+                  </div>
+                  <!-- /.col -->
+                  <div class="col-sm-6 col-12">
+                    <div class="description-block">
+                      <span class="description-percentage text-warning"><i class="fas fa-caret-left"></i> 0%</span>
+                      <h5 class="description-header">$10,390.90</h5>
+                      <span class="description-text">TOTAL COST</span>
+                    </div>
+                    <!-- /.description-block -->
+                  </div>
+              
                 </div>
+                <!-- /.row -->
               </div>
-              <div class="col-6">
-                <div class="form-group" id="search-field">
-                  <label>Keyword:</label>
-                  <input type="text" class="form-control" placeholder="Keyword" disabled>
-                </div>
-              </div>
-              <div class="col-2">
-                <label>&nbsp;</label><br>
-                <button type="submit" class="btn btn-primary" id="btn_search">&nbsp;Cari&nbsp;</button>
-              </div>
+              <!-- /.card-footer -->
             </div>
+            <!-- /.card -->
           </div>
+          <!-- /.col -->
         </div>
       <!-- </form> -->
       <div class="row" style="padding-top:30px">
@@ -268,6 +276,7 @@
     fill_datatable();
 
     function fill_datatable(filterId = '', filterVal = '') {
+      var publishable = 1;
       var listDataTable = $('#example1').DataTable({
         'dom': 'Blfrtip',
         'responsive': true, 
@@ -277,13 +286,13 @@
         'serverSide': true,
         'searching': false, // Remove default Search Control
         'ajax': {
-          'url': '<?=site_url('dashboard/loadAjaxTables/search')?>',
+          'url': '<?=site_url('dashboard/loadAjaxTables/review')?>',
           'type': 'POST',
           'data': {filterParam: [
             {
               [filterId]:filterVal,
             }
-          ]}
+          ], publishable: publishable}
         },
         'columns': [
           { data: 'id' },
@@ -319,23 +328,6 @@
         toastr.error('Sukses! Dokumen berhasil terhapus.')
       }
     });
-
-    // $('#example1').on('click', '.btn-delete', function(e) {
-    //     var $modalDiv = $(e.delegateTarget);
-    //     var id = $(this).data('recordId');
-    //     // $.ajax({url: '/api/record/' + id, type: 'DELETE'})
-    //     // $.post('/api/record/' + id).then()
-    //     $modalDiv.addClass('loading');
-    //     setTimeout(function() {
-    //         $modalDiv.modal('hide').removeClass('loading');
-    //     }, 1000)
-    // });
-
-    // $('#confirmDelete').on('show.bs.modal', function(e) {
-    //     var data = $(e.relatedTarget).data();
-    //     $('.title', this).text(data.recordTitle);
-    //     $('.btn-ok', this).data('recordId', data.recordId);
-    // });
 
     $('#example1').on('click', '.btn-detail', function(){
       const id = $(this).attr('id');

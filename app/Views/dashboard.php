@@ -78,7 +78,7 @@
             <div class="icon">
               <i class="ion ion-pie-graph"></i>
             </div>
-            <a href="#" class="small-box-footer">Approval Dokumen <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?=site_url('dashboard/approval')?>" class="small-box-footer">Approval Dokumen <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->

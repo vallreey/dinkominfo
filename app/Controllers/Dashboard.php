@@ -78,15 +78,23 @@ class Dashboard extends BaseController
         echo view('partial/footer');
     }
 
-    public function searchAjaxTables()
+    public function loadAjaxTables($action)
     {   
+        switch ($action) {
+            case 'search': $publishable = 1; break;
+            case 'review': $publishable = 0; break;
+            case 'reject': $publishable = 2; break;
+            case 'delete': $publishable = -1; break;
+            default:break;
+        }
+        
         $wheres['start']            = $_POST['start'];
         $wheres['rowperpage']       = $_POST['length']; // Rows display per page
         $wheres['columnIndex']      = $_POST['order'][0]['column']; // Column index
         $wheres['columnName']       = $_POST['columns'][$wheres['columnIndex']]['data']; // Column name
         $wheres['columnSortOrder']  = $_POST['order'][0]['dir']; // asc or desc
         $wheres['searchValue']      = isset($_POST['filterParam']) ? $_POST['filterParam'][0] : '';
-        $wheres['publishable']      = $wheresRecordTotal['publishable'] = 1;
+        $wheres['publishable']      = $wheresRecordTotal['publishable'] = $publishable;
         
         $files = $this->dashboard->getData($wheres, true);
         
@@ -161,4 +169,16 @@ class Dashboard extends BaseController
         }
         return $html;
     } 
+
+    public function approval()
+    {
+        $header['title'] = 'Approval Dokumen';
+        $data = array();
+
+        echo view('partial/header', $header);
+        echo view('partial/top_menu');
+        echo view('partial/side_menu');
+        echo view('approval', $data);
+        echo view('partial/footer');
+    }
 }
