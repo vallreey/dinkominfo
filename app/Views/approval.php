@@ -32,11 +32,9 @@
       <!-- <form id="form-search"> -->
       <div class="row">
           <div class="col-md-12">
-            <div class="card">
+            <div class="card card-primary">
               <div class="card-header">
-                <h5 class="card-title">Monthly Recap Report</h5>
-
-                
+                <h3 class="card-title"><?=$title?></h3>
               </div>
               <!-- /.card-header -->
               <!-- ./card-body -->
@@ -44,18 +42,16 @@
                 <div class="row">
                   <div class="col-sm-6 col-12">
                     <div class="description-block border-right">
-                      <span class="description-percentage text-success"><i class="fas fa-caret-up"></i> 17%</span>
-                      <h5 class="description-header">$35,210.43</h5>
-                      <span class="description-text">TOTAL REVENUE</span>
+                      <h2><span class="description-percentage text-success"><i class="fas fa-caret-up">&nbsp;<span id="sumReviewed"></span></i></span></h2>
+                      <span class="description-text"><a href="#">DOCUMENTS WAITING TO BE REVIEWED</a></span>
                     </div>
                     <!-- /.description-block -->
                   </div>
                   <!-- /.col -->
                   <div class="col-sm-6 col-12">
                     <div class="description-block">
-                      <span class="description-percentage text-warning"><i class="fas fa-caret-left"></i> 0%</span>
-                      <h5 class="description-header">$10,390.90</h5>
-                      <span class="description-text">TOTAL COST</span>
+                      <h2><span class="description-percentage text-danger"><i class="fas fa-caret-down">&nbsp;<span id="sumRejected">10</span></i></span></h2>
+                      <span class="description-text"><a href="#">DOCUMENTS REJECTED</a></span>
                     </div>
                     <!-- /.description-block -->
                   </div>
@@ -306,7 +302,11 @@
           { data: 'bidang' },
           { data: 'ukuran' },
           { data: 'status' },
-        ]
+        ],
+        'drawCallback': function (settings) { 
+          var response = settings.json;
+          $('#sumReviewed').html(response.recordsTotal);
+        },
       });
 
       // listDataTable.buttons().container().prependTo('#button_pdf');
