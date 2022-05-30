@@ -195,7 +195,15 @@
               <div class="card-footer">
                 <button type="submit" class="btn btn-info">Save</button>
                 <button type="reset" class="btn btn-warning">Reset</button>
-                <a href="<?=!is_null($file_id) ? site_url('dashboard/search') : site_url('dashboard')?>" class="btn btn-default float-right">Cancel</a>
+                <?php 
+                  switch ($status) {
+                    case 'onreview': $cancelUrl = 'dashboard/approval/onreview'; break;
+                    case 'rejected': $cancelUrl = 'dashboard/approval/rejected'; break;
+                    case 'approved': $cancelUrl = 'dashboard/search'; break;
+                    default: $cancelUrl = 'dashboard'; break;
+                  }
+                ?>
+                <a href="<?=site_url($cancelUrl)?>" class="btn btn-default float-right">Cancel</a>
               </div>
               <!-- /.card-footer -->
             </form>

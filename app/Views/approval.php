@@ -306,5 +306,28 @@
       $('input:checkbox').not(this).prop('checked', this.checked);
     });
 
+    $('#example1').on('click', '.btn-detail', function(){
+      var status = $('#hidStatus').val();
+      const id = $(this).attr('id');
+      $.ajax({
+        url: "<?=site_url('dashboard/getDataById/')?>" + status,
+        type: "GET",
+        data:{id: id},
+        success: function(response) {
+          const obj = JSON.parse(response);
+          $('#pKategori').html(obj.cat_name);
+          $('#pUkuran').html("-");
+          $('#pCreated').html(obj.created);
+          $('#pPemilik').html(obj.last_name + ', ' + obj.first_name);
+          $('#pDeskripsi').html(obj.description);
+          $('#pComment').html(obj.comment);
+          $('#pRevision').html(obj.revision);
+          $('#pFileName').html(obj.realname);
+          $('#detailModal').modal('show');
+        }
+      });
+    });
+    return false;
+
   });
 </script>

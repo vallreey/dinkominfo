@@ -57,10 +57,8 @@ class Dashboard extends BaseController
             echo json_encode($dataById[0]);
     }
 
-    public function update($status, $id = null)
+    public function update($status = null, $id = null)
     {
-        // echo '<pre>';
-        // var_dump($_SESSION);exit();
         $header['title'] = !is_null($id) ? 'Update File' : 'Tambah File';
 
         $data['file_id'] = $id;
@@ -68,6 +66,7 @@ class Dashboard extends BaseController
             $data['fileExist'] = $this->getDataById($status, $id);
         }
 
+        $data['status']      = $status;
         $data['listPemilik'] = $this->dashboard->getOptionalList('pemilik');
         $data['listBidang']  = $this->dashboard->getOptionalList('bidang');
         $data['listKategori']= $this->dashboard->getOptionalList('kategori');
