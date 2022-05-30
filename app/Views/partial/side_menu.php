@@ -13,7 +13,7 @@
       <img src="<?=base_url('adminLTE/dist/img/user2-160x160.jpg')?>" class="img-circle elevation-2" alt="User Image">
       </div>
       <div class="info">
-        <a href="#" class="d-block"><?=$_SESSION['last_name'].', '.$_SESSION['first_name']?></a>
+        <a href="#" class="d-block"><?=strtoupper($_SESSION['username'])?></a>
       </div>
     </div>
 
