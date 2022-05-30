@@ -30,11 +30,12 @@
   <section class="content">
     <div class="container-fluid">
       <!-- <form id="form-search"> -->
-      <div class="row">
+      <!-- <div class="row"> -->
           <div class="col-md-12">
             <div class="card card-primary">
               <div class="card-header">
                 <h3 class="card-title"><?=$title?></h3>
+                <input id="hidStatus" type="hidden" value="<?=$status?>"/>
               </div>
               <!-- /.card-header -->
               <!-- ./card-body -->
@@ -42,16 +43,16 @@
                 <div class="row">
                   <div class="col-sm-6 col-12">
                     <div class="description-block border-right">
-                      <h2><span class="description-percentage text-success"><i class="fas fa-caret-up">&nbsp;<span id="sumReviewed"></span></i></span></h2>
-                      <span class="description-text"><a href="#">DOCUMENTS WAITING TO BE REVIEWED</a></span>
+                      <h2><span class="description-percentage text-success"><i class="fas fa-caret-up">&nbsp;<span id="totReviewed"></span></i></span></h2>
+                      <span class="description-text"><a href="<?=site_url('dashboard/approval/review')?>">DOCUMENTS WAITING TO BE REVIEWED</a></span>
                     </div>
                     <!-- /.description-block -->
                   </div>
                   <!-- /.col -->
                   <div class="col-sm-6 col-12">
                     <div class="description-block">
-                      <h2><span class="description-percentage text-danger"><i class="fas fa-caret-down">&nbsp;<span id="sumRejected">10</span></i></span></h2>
-                      <span class="description-text"><a href="#">DOCUMENTS REJECTED</a></span>
+                      <h2><span class="description-percentage text-danger"><i class="fas fa-caret-down">&nbsp;<span id="totRejected"></span></i></span></h2>
+                      <span class="description-text"><a href="<?=site_url('dashboard/approval/reject')?>">DOCUMENTS REJECTED</a></span>
                     </div>
                     <!-- /.description-block -->
                   </div>
@@ -272,6 +273,7 @@
     fill_datatable();
 
     function fill_datatable(filterId = '', filterVal = '') {
+      var status = $('#hidStatus').val();
       var publishable = 1;
       var listDataTable = $('#example1').DataTable({
         'dom': 'Blfrtip',
@@ -282,7 +284,7 @@
         'serverSide': true,
         'searching': false, // Remove default Search Control
         'ajax': {
-          'url': '<?=site_url('dashboard/loadAjaxTables/review')?>',
+          'url': '<?=site_url('dashboard/loadAjaxTables/')?>' + status,
           'type': 'POST',
           'data': {filterParam: [
             {
@@ -305,7 +307,8 @@
         ],
         'drawCallback': function (settings) { 
           var response = settings.json;
-          $('#sumReviewed').html(response.recordsTotal);
+          $('#totReviewed').html(response.totReviewed);
+          $('#totRejected').html(response.totRejected);
         },
       });
 

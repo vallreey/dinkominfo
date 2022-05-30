@@ -28,7 +28,7 @@
 
   <section class="content">
     <div class="container-fluid">
-      <div class="row">
+      <!-- <div class="row"> -->
         <!-- left column -->
         <div class="col-md-12">
           <!-- jquery validation -->

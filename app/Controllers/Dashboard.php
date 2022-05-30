@@ -78,16 +78,16 @@ class Dashboard extends BaseController
         echo view('partial/footer');
     }
 
-    public function loadAjaxTables($action)
+    public function loadAjaxTables($status)
     {   
-        switch ($action) {
+        switch ($status) {
             case 'search': $publishable = 1; break;
             case 'review': $publishable = 0; break;
-            case 'reject': $publishable = 2; break;
-            case 'delete': $publishable = -1; break;
+            case 'reject': $publishable = -1; break;
+            case 'delete': $publishable = 2; break;
             default:break;
         }
-        
+
         $wheres['start']            = $_POST['start'];
         $wheres['rowperpage']       = $_POST['length']; // Rows display per page
         $wheres['columnIndex']      = $_POST['order'][0]['column']; // Column index
@@ -124,6 +124,15 @@ class Dashboard extends BaseController
                         'recordsFiltered'=> $this->dashboard->getData($wheres),
                         'data'          => $data
                     );
+
+        if ($status == 'review' || $status == 'reject') {
+            // total need to be reviewed
+            $wheresReviewed['publishable'] = 0;
+            $dataset['totReviewed'] = $this->dashboard->getData($wheresReviewed);
+            // total rejected
+            $wheresRejected['publishable'] = -1;
+            $dataset['totRejected'] = $this->dashboard->getData($wheresRejected);
+        }
 
         echo json_encode($dataset);
     }
@@ -170,10 +179,11 @@ class Dashboard extends BaseController
         return $html;
     } 
 
-    public function approval()
+    public function approval($status)
     {
         $header['title'] = 'Approval Dokumen';
-        $data = array();
+        
+        $data['status'] = $status;
 
         echo view('partial/header', $header);
         echo view('partial/top_menu');

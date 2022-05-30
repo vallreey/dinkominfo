@@ -29,18 +29,23 @@
   <!-- Main content -->
   <section class="content">
     <div class="container-fluid">
-      <!-- <form id="form-search"> -->
-        <div class="row">
-          <div class="col-md-12">
-            <div class="card">
-              <div class="card-header">
-                <h5>CARI DOKUMEN</h5>
-              </div>
-              <div class="card-body">
-                <div class="col-4">
-                  <div class="form-group">
-                    <label>Cari Berdasarkan:</label>
-                      <select class="select2" id="option_search" style="width: 100%;">
+      <!-- <div class="row"> -->
+        <!-- left column -->
+        <div class="col-md-12">
+          <!-- jquery validation -->
+          <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title"><?=$title?></h3>
+            </div>
+            
+            <div class="card-body">
+              <div class="row center">
+                <div class="col-md-10 offset-md-1">
+                  <div class="row">
+                    <div class="col-4">
+                      <div class="form-group">
+                        <label>Cari Berdasarkan:</label>
+                        <select class="select2" id="option_search" style="width: 100%;">
                           <option value="all">All</option>
                           <option value="pemilik">Pemilik (Nama Belakang, Nama Depan)</option>
                           <option value="bidang">Bidang</option>
@@ -49,55 +54,25 @@
                           <option value="nama_file">Nama File</option>
                           <option value="comment">Comment</option>
                           <option value="file_id">File #</option>
-                      </select>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="form-group" id="search-field">
+                        <label>Keyword:</label>
+                        <input type="text" class="form-control" placeholder="Keyword" disabled>
+                      </div>
+                    </div>
+                    <div class="col-2">
+                      <label>&nbsp;</label><br>
+                      <button type="submit" class="btn btn-primary" id="btn_search">&nbsp;Cari&nbsp;</button>
+                    </div>
                   </div>
-                </div>
-                <div class="col-6">
-                  <div class="form-group" id="search-field">
-                    <label>Keyword:</label>
-                    <input type="text" class="form-control" placeholder="Keyword" disabled>
-                  </div>
-                </div>
-                <div class="col-2">
-                  <label>&nbsp;</label><br>
-                  <button type="submit" class="btn btn-primary" id="btn_search">&nbsp;Cari&nbsp;</button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="row center">
-          <div class="col-md-10 offset-md-1">
-            <div class="row">
-              <div class="col-4">
-                <div class="form-group">
-                  <label>Cari Berdasarkan:</label>
-                    <select class="select2" id="option_search" style="width: 100%;">
-                        <option value="all">All</option>
-                        <option value="pemilik">Pemilik (Nama Belakang, Nama Depan)</option>
-                        <option value="bidang">Bidang</option>
-                        <option value="kategori">Kategori</option>
-                        <option value="deskripsi">Deskripsi</option>
-                        <option value="nama_file">Nama File</option>
-                        <option value="comment">Comment</option>
-                        <option value="file_id">File #</option>
-                    </select>
-                </div>
-              </div>
-              <div class="col-6">
-                <div class="form-group" id="search-field">
-                  <label>Keyword:</label>
-                  <input type="text" class="form-control" placeholder="Keyword" disabled>
-                </div>
-              </div>
-              <div class="col-2">
-                <label>&nbsp;</label><br>
-                <button type="submit" class="btn btn-primary" id="btn_search">&nbsp;Cari&nbsp;</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      <!-- </form> -->
+
       <div class="row" style="padding-top:30px">
         <div class="col-12">
     
