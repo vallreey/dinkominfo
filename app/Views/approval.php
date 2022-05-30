@@ -44,7 +44,7 @@
                   <div class="col-sm-6 col-12">
                     <div class="description-block border-right">
                       <h2><span class="description-percentage text-success"><i class="fas fa-caret-up">&nbsp;<span id="totReviewed"></span></i></span></h2>
-                      <span class="description-text"><a href="<?=site_url('dashboard/approval/review')?>">DOCUMENTS WAITING TO BE REVIEWED</a></span>
+                      <span class="description-text"><a href="<?=site_url('dashboard/approval/onreview')?>">DOCUMENTS WAITING TO BE REVIEWED</a></span>
                     </div>
                     <!-- /.description-block -->
                   </div>
@@ -52,7 +52,7 @@
                   <div class="col-sm-6 col-12">
                     <div class="description-block">
                       <h2><span class="description-percentage text-danger"><i class="fas fa-caret-down">&nbsp;<span id="totRejected"></span></i></span></h2>
-                      <span class="description-text"><a href="<?=site_url('dashboard/approval/reject')?>">DOCUMENTS REJECTED</a></span>
+                      <span class="description-text"><a href="<?=site_url('dashboard/approval/rejected')?>">DOCUMENTS REJECTED</a></span>
                     </div>
                     <!-- /.description-block -->
                   </div>
@@ -77,6 +77,7 @@
                 <thead>
                   <tr>
                     <th>ID</th>
+                    <th><input type="checkbox" id="checkall"></th>
                     <th>Action</th>
                     <th>Nama File</th>
                     <th>Deskripsi</th>
@@ -92,6 +93,7 @@
                 <tfoot>
                   <tr>
                     <th>ID</th>
+                    <th></th>
                     <th>Action</th>
                     <th>Nama File</th>
                     <th>Deskripsi</th>
@@ -245,8 +247,6 @@
 
 <!-- jQuery -->
 <script src="<?=base_url('adminLTE/plugins/jquery/jquery.min.js')?>"></script>
-<!-- Select2 -->
-<script src="<?=base_url('adminLTE/plugins/select2/js/select2.full.min.js')?>"></script>
 <!-- SweetAlert2 -->
 <script src="<?=base_url('adminLTE/plugins/sweetalert2/sweetalert2.min.js')?>"></script>
 <!-- Toastr -->
@@ -254,22 +254,6 @@
 
 <script>
   $(function () {
-    $('.select2').select2();
-    
-    $('#option_search').on("select2:select", function(e) { 
-      var data = e.params.data;
-      var idSelected = data.id;
-      $.ajax({
-        url: "<?=site_url('dashboard/searchField/')?>",
-        type: "POST",
-        data: "id="+idSelected,
-        success: function(html){
-          $("#search-field").empty().append(html);
-          $('.select2').select2();
-        }
-      });
-    });
-
     fill_datatable();
 
     function fill_datatable(filterId = '', filterVal = '') {
@@ -294,10 +278,11 @@
         },
         'columns': [
           { data: 'id' },
+          { data: 'check', orderable: false},
           { data: 'detail', orderable: false},
           { data: 'nama_file' },
           { data: 'deskripsi' },
-          { data: 'hak_akses', orderable: false },
+          { data: 'hak_akses', orderable: false},
           { data: 'created' },
           { data: 'changed' },
           { data: 'pemilik' },
@@ -311,47 +296,15 @@
           $('#totRejected').html(response.totRejected);
         },
       });
-
-      // listDataTable.buttons().container().prependTo('#button_pdf');
     }
 
-    $('#btn_search').click(function(){
-      var filterId  = $('.filter').attr('id');
-      var filterVal = $('#'+filterId).val();
-      // console.log(filterId, filterVal);return false;
-      $('#example1').DataTable().destroy();
-      fill_datatable(filterId, filterVal);
-      // listDataTable.draw();
+    // $('.dataTables_filter input').off().on('keyup', function() {
+    //   $('#example1').DataTable().search(this.value.trim(), false, false).draw();
+    // }); 
+
+    $('#checkall').click(function () {
+      $('input:checkbox').not(this).prop('checked', this.checked);
     });
 
-    $('#example1').on('click', '.btn-delete', function(){
-      var confirmation = confirm("Anda yakin menghapus dokumen ini?");
-
-      if (confirmation) {
-        toastr.error('Sukses! Dokumen berhasil terhapus.')
-      }
-    });
-
-    $('#example1').on('click', '.btn-detail', function(){
-      const id = $(this).attr('id');
-      $.ajax({
-        url: "<?=site_url('dashboard/getDataById')?>",
-        type: "GET",
-        data:{id: id},
-        success: function(response) {
-          const obj = JSON.parse(response);
-          $('#pKategori').html(obj.cat_name);
-          $('#pUkuran').html("-");
-          $('#pCreated').html(obj.created);
-          $('#pPemilik').html(obj.last_name + ', ' + obj.first_name);
-          $('#pDeskripsi').html(obj.description);
-          $('#pComment').html(obj.comment);
-          $('#pRevision').html(obj.revision);
-          $('#pFileName').html(obj.realname);
-          $('#detailModal').modal('show');
-        }
-      });
-    });
-    return false;
   });
 </script>

@@ -36,6 +36,7 @@
           <div class="card card-primary">
             <div class="card-header">
               <h3 class="card-title"><?=$title?></h3>
+              <input id="hidStatus" type="hidden" value="<?=$status?>"/>
             </div>
             
             <div class="card-body">
@@ -279,6 +280,7 @@
     fill_datatable();
 
     function fill_datatable(filterId = '', filterVal = '') {
+      var status = $('#hidStatus').val();
       var listDataTable = $('#example1').DataTable({
         'dom': 'Blfrtip',
         'responsive': true, 
@@ -288,7 +290,7 @@
         'serverSide': true,
         'searching': false, // Remove default Search Control
         'ajax': {
-          'url': '<?=site_url('dashboard/loadAjaxTables/search')?>',
+          'url': '<?=site_url('dashboard/loadAjaxTables/')?>' + status,
           'type': 'POST',
           'data': {filterParam: [
             {
@@ -349,9 +351,10 @@
     // });
 
     $('#example1').on('click', '.btn-detail', function(){
+      var status = $('#hidStatus').val();
       const id = $(this).attr('id');
       $.ajax({
-        url: "<?=site_url('dashboard/getDataById')?>",
+        url: "<?=site_url('dashboard/getDataById/')?>" + status,
         type: "GET",
         data:{id: id},
         success: function(response) {

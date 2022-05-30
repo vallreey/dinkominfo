@@ -87,4 +87,17 @@ if (!function_exists('userRights')) {
     }
 }
 
+if (!function_exists('publishableByStatus')) {
+    function publishableByStatus($status) {
+        switch ($status) {
+            case 'approved': $publishable = 1; break;
+            case 'onreview': $publishable = 0; break;
+            case 'rejected': $publishable = -1; break;
+            case 'deleted': $publishable = 2; break;
+            default: $publishable = ''; break;
+        }
+        return $publishable;
+    }
+}
+
 ?>

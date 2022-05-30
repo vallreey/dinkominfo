@@ -33,7 +33,8 @@ class Dashboard extends BaseController
     public function search()
     {
         $header['title'] = 'Pencarian Dokumen';
-        $data = array();
+        
+        $data['status'] = 'approved';
 
         echo view('partial/header', $header);
         echo view('partial/top_menu');
@@ -42,11 +43,12 @@ class Dashboard extends BaseController
         echo view('partial/footer');
     }
 
-    public function getDataById($id = null)
+    public function getDataById($status, $id = null)
     {
         $dataId = isset($id) && !is_null($id) ? $id : $_GET['id'];
         $wheres['searchValue']['id'] = $dataId;
-        $wheres['publishable'] = 1;
+        $wheres['publishable'] = publishableByStatus($status);
+
         $dataById = $this->dashboard->getData($wheres, true);
         
         if (!is_null($id))
@@ -55,7 +57,7 @@ class Dashboard extends BaseController
             echo json_encode($dataById[0]);
     }
 
-    public function add($id = null)
+    public function update($status, $id = null)
     {
         // echo '<pre>';
         // var_dump($_SESSION);exit();
@@ -63,7 +65,7 @@ class Dashboard extends BaseController
 
         $data['file_id'] = $id;
         if (!is_null($id)) {
-            $data['fileExist'] = $this->getDataById($id);
+            $data['fileExist'] = $this->getDataById($status, $id);
         }
 
         $data['listPemilik'] = $this->dashboard->getOptionalList('pemilik');
@@ -80,13 +82,7 @@ class Dashboard extends BaseController
 
     public function loadAjaxTables($status)
     {   
-        switch ($status) {
-            case 'search': $publishable = 1; break;
-            case 'review': $publishable = 0; break;
-            case 'reject': $publishable = -1; break;
-            case 'delete': $publishable = 2; break;
-            default:break;
-        }
+        $publishable = publishableByStatus($status);
 
         $wheres['start']            = $_POST['start'];
         $wheres['rowperpage']       = $_POST['length']; // Rows display per page
@@ -104,7 +100,8 @@ class Dashboard extends BaseController
             foreach ($files as $key => $val) {
                 $data[] = array(
                     'id'        => $val->id,
-                    'detail'   => '<div class="btn-group" role="group"><button type="button" class="btn btn-default btn-sm btn-detail" id="'.$val->id.'"><i class="fas fa-folder"></i></button><a href="add/'.$val->id.'" class="btn btn-default btn-sm"><i class="fas fa-pencil-alt"></i></a><button type="button" class="btn btn-default btn-sm btn-delete" data-toogle="modal" data-target="#confirmDelete" data-record-id="'.$val->id.'"><i class="fas fa-trash"></i></button></div>',
+                    'check'     => $status == 'onreview' || $status == 'rejected' ? '<input type="checkbox" value="'.$val->id.'" id="check'.$val->id.'">' : '',
+                    'detail'    => '<div class="btn-group" role="group"><button type="button" class="btn btn-default btn-sm btn-detail" id="'.$val->id.'"><i class="fas fa-folder"></i></button><a href="'.base_url('dashboard/update').'/'.$status.'/'.$val->id.'" class="btn btn-default btn-sm"><i class="fas fa-pencil-alt"></i></a><button type="button" class="btn btn-default btn-sm btn-delete" data-toogle="modal" data-target="#confirmDelete" data-record-id="'.$val->id.'"><i class="fas fa-trash"></i></button></div>',
                     'nama_file' => $val->realname,
                     'deskripsi' => $val->description,
                     'hak_akses' => '-',
@@ -125,12 +122,12 @@ class Dashboard extends BaseController
                         'data'          => $data
                     );
 
-        if ($status == 'review' || $status == 'reject') {
+        if ($status == 'onreview' || $status == 'rejected') {
             // total need to be reviewed
-            $wheresReviewed['publishable'] = 0;
+            $wheresReviewed['publishable'] = publishableByStatus('onreview');
             $dataset['totReviewed'] = $this->dashboard->getData($wheresReviewed);
             // total rejected
-            $wheresRejected['publishable'] = -1;
+            $wheresRejected['publishable'] = publishableByStatus('rejected');
             $dataset['totRejected'] = $this->dashboard->getData($wheresRejected);
         }
 
