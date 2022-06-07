@@ -1,3 +1,15 @@
+<style>
+  .with-background {
+    background: url('asset/background-primbon.png') no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    image-rendering: auto;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+  }
+</style>
 <!DOCTYPE html>
 <html lang="en">
 

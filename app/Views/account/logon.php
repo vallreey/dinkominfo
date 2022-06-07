@@ -2,6 +2,16 @@
   .col-6 {
     padding: 2em 0 2em 0;
   }
+  .with-background {
+    background: url('asset/background-primbon.png') no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    image-rendering: auto;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+  }
 </style>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +31,7 @@
   <link rel="stylesheet" href="<?=base_url('adminLTE/dist/css/adminlte.min.css')?>">
 </head>
 
-<body class="hold-transition login-page">
+<body class="hold-transition login-page with-background">
   <!-- /.login-logo -->
   <div class="card card-primary shadow-lg rounded">
     <div class="container" style="max-width:800px">
@@ -74,7 +84,7 @@
             </form>
           </div>
         </div>
-        <div class="col-6 rounded-right" style="background:#2B2BF7; color:#FFFFFF;">
+        <div class="col-6 rounded-right" style="background:#27156E; color:#FFFFFF;">
           <div class="card-body text-center">
             <p class="h4"><b>SELAMAT DATANG</b></p><br><br>Primbon adalah Pusat Informasi Data Dinas Komunikasi dan
             Informatika Kabupaten Banjarnegara
