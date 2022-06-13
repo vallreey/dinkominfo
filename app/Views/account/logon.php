@@ -3,7 +3,7 @@
     padding: 2em 0 2em 0;
   }
   .with-background {
-    background: url('asset/background-primbon.png') no-repeat center center fixed; 
+    background: url(<?=base_url('asset/background-primbon.png')?>) no-repeat center center fixed; 
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -33,19 +33,33 @@
 
 <body class="hold-transition login-page with-background">
   <!-- /.login-logo -->
-  <div class="card card-primary shadow-lg rounded">
+  <div class="card card-primary shadow-lg rounded" style="background-color:rgba(0,0,0,0)">
     <div class="container" style="max-width:800px">
       <div class="row">
-        <div class="col-6">
+        <div class="col-6" style="color: #27156E;">
           <div class="card-header text-center">
-            <img src="<?=base_url('asset/logo-primbon.png')?>" style="max-width: 30%"><br><br>
+            <img src="<?=base_url('asset/logo-primbon-resize.png')?>" style=""><br><br>
             <a href="#" class="h4"><b>PRIMBON DINKOMINFO</b></a>
+          </div>
+          <div class="card-body">
+            <p style="text-align: center;">Primbon adalah Pusat Informasi Data Dinas Komunikasi dan
+            Informatika Kabupaten Banjarnegara<br></p>
+          </div>
+          <div class="card-footer" style="border: none; background-color:rgba(0,0,0,0); text-align:center">
+          <a href="https://www.instagram.com/kabupatenbanjarnegara/"><img src="<?=base_url('asset/instagram.png')?>">&nbsp;dinkominfobanjarnegara</a>
+          </div>
+        </div>
+        <div class="col-6 rounded-right" style="background:#27156E; color:#FFFFFF;">
+          <div class="card-header">
+            <br><p class="h5" style="text-align: center; opacity: 0.8"><i class="fas fa-sign-in-alt"></i> Login ke akun Anda</p><br>
           </div>
           <div class="card-body">
             <!-- Error -->
             <?php if (isset($alertLogin)) { ?>
               <div class="alert alert-danger alert-dismissible">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+  <span aria-hidden="true">&times;</span>
+</button>
                 <?= $alertLogin ?>
               </div>
             <?php } ?>
@@ -82,12 +96,6 @@
                 <!-- /.col -->
               </div>
             </form>
-          </div>
-        </div>
-        <div class="col-6 rounded-right" style="background:#27156E; color:#FFFFFF;">
-          <div class="card-body text-center">
-            <p class="h4"><b>SELAMAT DATANG</b></p><br><br>Primbon adalah Pusat Informasi Data Dinas Komunikasi dan
-            Informatika Kabupaten Banjarnegara
           </div>
         </div>
       </div>
