@@ -32,44 +32,43 @@
         </div>
       </div>
       <div class="row justify-content-md-center">
-        <div class="col-lg-2">
+        <div class="col-lg-2" style="margin-right:1em; margin-left:1em">
           <!-- small box -->
-          <!-- <div class="small-box" style="background-color: #F9F7F2;"> -->
-          <div class="small-box" style="border-radius: 50px 50px 0px 0px; background-color: #b2bec3">
-            <div class="inner text-center">
-              <img src="<?=base_url('asset/administrator-resize.png')?>">
+          <div class="small-box bg-light border" style="border-radius: 50px 50px 0px 0px; border-width: medium">
+            <div class="inner text-center" style="padding: 2em 0 2em 0">
+              <img src="<?=base_url('asset/search.png')?>">
             </div>
             <a href="<?=site_url('dashboard/search')?>" class="small-box-footer">Cek Data <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
-        <div class="col-lg-2">
+        <div class="col-lg-2" style="margin-right:1em; margin-left:1em">
           <!-- small box -->
-          <div class="small-box bg-success" style="border-radius: 50px 50px 0px 0px">
-            <div class="inner text-center">
-              <img src="<?=base_url('asset/administrator-resize.png')?>">
+          <div class="small-box bg-light border" style="border-radius: 50px 50px 0px 0px; border-width: medium">
+            <div class="inner text-center" style="padding: 2em 0 2em 0">
+              <img src="<?=base_url('asset/approved.png')?>">
+            </div>
+            <a href="<?=site_url('dashboard/approval/onreview')?>" class="small-box-footer">Approval Dokumen <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-2" style="margin-right:1em; margin-left:1em">
+          <!-- small box -->
+          <div class="small-box bg-light border" style="border-radius: 50px 50px 0px 0px; border-width: medium">
+            <div class="inner text-center" style="padding: 2em 0 2em 0">
+              <img src="<?=base_url('asset/add-file.png')?>">
             </div>
             <a href="<?=site_url('dashboard/update')?>" class="small-box-footer">Tambah Dokumen <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
-        <div class="col-lg-2">
+        <div class="col-lg-2" style="margin-right:1em; margin-left:1em">
           <!-- small box -->
-          <div class="small-box bg-warning" style="border-radius: 50px 50px 0px 0px">
-            <div class="inner text-center">
-              <img src="<?=base_url('asset/administrator-resize.png')?>">
+          <div class="small-box bg-light border" style="border-radius: 50px 50px 0px 0px; border-width: medium">
+            <div class="inner text-center" style="padding: 2em 0 2em 0">
+              <img src="<?=base_url('asset/admin.png')?>">
             </div>
             <a href="#" class="small-box-footer">Administrasi <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-        <!-- ./col -->
-        <div class="col-lg-2">
-          <!-- small box -->
-          <div class="small-box bg-danger" style="border-radius: 50px 50px 0px 0px">
-            <div class="inner text-center">
-              <img src="<?=base_url('asset/administrator-resize.png')?>">
-            </div>
-            <a href="<?=site_url('dashboard/approval/onreview')?>" class="small-box-footer">Approval Dokumen <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
