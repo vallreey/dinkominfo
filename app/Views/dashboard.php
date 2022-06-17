@@ -1,6 +1,4 @@
-<!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper with-background">
-  <!-- Content Header (Page header) -->
   <section class="content-header">
     <div class="container-fluid">
       <div class="row mb-2">
@@ -14,12 +12,10 @@
           </ol>
         </div>
       </div>
-    </div><!-- /.container-fluid -->
+    </div>
   </section>
-  <!-- Main content -->
   <section class="content">
     <div class="container-fluid">
-      <!-- Small boxes (Stat box) -->
       <div class="row justify-content-md-center">
         <div class="col-6">
           <div class="card-body text-center">
@@ -68,13 +64,10 @@
             <div class="inner text-center" style="padding: 2em 0 2em 0">
               <img src="<?=base_url('asset/admin.png')?>">
             </div>
-            <a href="#" class="small-box-footer">Administrasi <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?=site_url('admin')?>" class="small-box-footer">Administrasi <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
-        <!-- ./col -->
       </div>
     </div>
   </section>
-  <!-- /.content -->
 </div>
-<!-- /.content-wrapper -->

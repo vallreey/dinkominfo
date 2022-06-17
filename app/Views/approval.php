@@ -7,9 +7,7 @@
 <!-- Toastr -->
 <link rel="stylesheet" href="<?=base_url('adminLTE/plugins/toastr/toastr.min.css')?>">
 
-<!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-  <!-- Content Header (Page header) -->
   <section class="content-header">
     <div class="container-fluid">
       <div class="row mb-2">
@@ -23,90 +21,73 @@
           </ol>
         </div>
       </div>
-    </div><!-- /.container-fluid -->
+    </div>
   </section>
 
-  <!-- Main content -->
   <section class="content">
     <div class="container-fluid">
-      <!-- <form id="form-search"> -->
-      <!-- <div class="row"> -->
-          <div class="col-md-12">
-            <div class="card card-primary">
-              <div class="card-header">
-                <h3 class="card-title"><?=$title?></h3>
-                <input id="hidStatus" type="hidden" value="<?=$status?>"/>
-              </div>
-              <!-- /.card-header -->
-              <!-- ./card-body -->
-              <div class="card-footer">
-                <div class="row">
-                  <div class="col-sm-6 col-12">
-                    <div class="description-block border-right">
-                      <h2><span class="description-percentage text-success"><i class="fas fa-caret-up">&nbsp;<span id="totReviewed"></span></i></span></h2>
-                      <span class="description-text"><a href="<?=site_url('dashboard/approval/onreview')?>">DOCUMENTS WAITING TO BE REVIEWED</a></span>
-                    </div>
-                    <!-- /.description-block -->
-                  </div>
-                  <!-- /.col -->
-                  <div class="col-sm-6 col-12">
-                    <div class="description-block">
-                      <h2><span class="description-percentage text-danger"><i class="fas fa-caret-down">&nbsp;<span id="totRejected"></span></i></span></h2>
-                      <span class="description-text"><a href="<?=site_url('dashboard/approval/rejected')?>">DOCUMENTS REJECTED</a></span>
-                    </div>
-                    <!-- /.description-block -->
-                  </div>
-              
-                </div>
-                <!-- /.row -->
-              </div>
-              <!-- /.card-footer -->
-            </div>
-            <!-- /.card -->
+      <div class="col-md-12">
+        <div class="card card-primary">
+          <div class="card-header">
+            <h3 class="card-title"><?=$title?></h3>
+            <input id="hidStatus" type="hidden" value="<?=$status?>"/>
           </div>
-          <!-- /.col -->
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-sm-6 col-12">
+                <div class="description-block border-right">
+                  <h2><span class="description-percentage text-success"><i class="fas fa-caret-up">&nbsp;<span id="totReviewed"></span></i></span></h2>
+                  <span class="description-text"><a href="<?=site_url('dashboard/approval/onreview')?>">DOCUMENTS WAITING TO BE REVIEWED</a></span>
+                </div>
+              </div>
+              <div class="col-sm-6 col-12">
+                <div class="description-block">
+                  <h2><span class="description-percentage text-danger"><i class="fas fa-caret-down">&nbsp;<span id="totRejected"></span></i></span></h2>
+                  <span class="description-text"><a href="<?=site_url('dashboard/approval/rejected')?>">DOCUMENTS REJECTED</a></span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      <!-- </form> -->
-      <div class="row" style="padding-top:30px">
-        <div class="col-12">
-    
-          <div class="card">
-            <div class="card-body">
-              <!-- <div id="button_pdf" style="float:right;"></div> -->
-              <table id="example1" class="table table-bordered table-striped display" style="width: 100%;">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th><input type="checkbox" id="checkall"></th>
-                    <th>Action</th>
-                    <th>Nama File</th>
-                    <th>Deskripsi</th>
-                    <th>Hak Akses</th>
-                    <th>Tanggal Diunggah</th>
-                    <th>Tanggal Ubah</th>
-                    <th>Pemilik</th>
-                    <th>Bidang</th>
-                    <th>Ukuran</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tfoot>
-                  <tr>
-                    <th>ID</th>
-                    <th></th>
-                    <th>Action</th>
-                    <th>Nama File</th>
-                    <th>Deskripsi</th>
-                    <th>Hak Akses</th>
-                    <th>Tanggal Diunggah</th>
-                    <th>Tanggal Ubah</th>
-                    <th>Pemilik</th>
-                    <th>Bidang</th>
-                    <th>Ukuran</th>
-                    <th>Status</th>
-                  </tr>
-                </tfoot>
-              </table>
+        <div class="row" style="padding-top:30px">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped display" style="width: 100%;">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th><input type="checkbox" id="checkall"></th>
+                      <th>Action</th>
+                      <th>Nama File</th>
+                      <th>Deskripsi</th>
+                      <th>Hak Akses</th>
+                      <th>Tanggal Diunggah</th>
+                      <th>Tanggal Ubah</th>
+                      <th>Pemilik</th>
+                      <th>Bidang</th>
+                      <th>Ukuran</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tfoot>
+                    <tr>
+                      <th>ID</th>
+                      <th></th>
+                      <th>Action</th>
+                      <th>Nama File</th>
+                      <th>Deskripsi</th>
+                      <th>Hak Akses</th>
+                      <th>Tanggal Diunggah</th>
+                      <th>Tanggal Ubah</th>
+                      <th>Pemilik</th>
+                      <th>Bidang</th>
+                      <th>Ukuran</th>
+                      <th>Status</th>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -117,20 +98,20 @@
 
 <div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
-      <div class="modal-content">
-          <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-              <h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
-          </div>
-          <div class="modal-body">
-              <p>You are about to delete <b><i class="title"></i></b> record, this procedure is irreversible.</p>
-              <p>Do you want to proceed?</p>
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-              <button type="button" class="btn btn-danger btn-ok">Delete</button>
-          </div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
       </div>
+      <div class="modal-body">
+        <p>You are about to delete <b><i class="title"></i></b> record, this procedure is irreversible.</p>
+        <p>Do you want to proceed?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger btn-ok">Delete</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -197,22 +178,16 @@
             </div>
             <div class="tab-pane fade" id="custom-tabs-one-history" role="tabpanel" aria-labelledby="custom-tabs-one-history-tab">
             <div class="timeline timeline-inverse">
-              <!-- timeline time label -->
               <div class="time-label">
                 <span class="bg-danger">
                   10 Feb. 2014
                 </span>
               </div>
-              <!-- /.timeline-label -->
-              <!-- timeline item -->
               <div>
                 <i class="fas fa-envelope bg-primary"></i>
-
                 <div class="timeline-item">
                   <span class="time"><i class="far fa-clock"></i> 12:05</span>
-
                   <h3 class="timeline-header"><a href="#">Support Team</a> sent you an email</h3>
-
                   <div class="timeline-body">
                     Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles,
                     weebly ning heekya handango imeem plugg dopplr jibjab, movity
@@ -221,7 +196,6 @@
                   </div>
                 </div>
               </div>
-              <!-- END timeline item -->
               <div>
                 <i class="far fa-clock bg-gray"></i>
               </div>
