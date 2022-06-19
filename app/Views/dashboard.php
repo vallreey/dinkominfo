@@ -64,7 +64,7 @@
             <div class="inner text-center" style="padding: 2em 0 2em 0">
               <img src="<?=base_url('asset/admin.png')?>">
             </div>
-            <a href="<?=site_url('admin')?>" class="small-box-footer">Administrasi <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?=site_url('admin/user')?>" class="small-box-footer">Administrasi <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
       </div>

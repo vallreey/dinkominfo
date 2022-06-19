@@ -100,7 +100,7 @@ class Dashboard extends BaseController
                 $data[] = array(
                     'id'        => $val->id,
                     'check'     => $status == 'onreview' || $status == 'rejected' ? '<input type="checkbox" value="'.$val->id.'" id="check'.$val->id.'">' : '',
-                    'detail'    => '<div class="btn-group" role="group"><button type="button" class="btn btn-default btn-sm btn-detail" id="'.$val->id.'"><i class="fas fa-folder"></i></button><a href="'.base_url('dashboard/update').'/'.$status.'/'.$val->id.'" class="btn btn-default btn-sm"><i class="fas fa-pencil-alt"></i></a><button type="button" class="btn btn-default btn-sm btn-delete" data-toogle="modal" data-target="#confirmDelete" data-record-id="'.$val->id.'"><i class="fas fa-trash"></i></button></div>',
+                    'detail'    => '<div class="btn-group" role="group"><button type="button" class="btn btn-default btn-sm btn-detail" id="'.$val->id.'"><i class="fas fa-folder"></i></button><a href="'.site_url('dashboard/update').'/'.$status.'/'.$val->id.'" class="btn btn-default btn-sm"><i class="fas fa-pencil-alt"></i></a><button type="button" class="btn btn-default btn-sm btn-delete" data-toogle="modal" data-target="#confirmDelete" data-href="'.site_url('dashboard/delete?id='.$val->id).'"><i class="fas fa-trash"></i></button></div>',
                     'nama_file' => $val->realname,
                     'deskripsi' => $val->description,
                     'hak_akses' => '-',

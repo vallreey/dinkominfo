@@ -84,7 +84,7 @@
         </li>
         <li class="nav-header">ADMINISTRASI</li>
         <li class="nav-item">
-          <a href="../calendar.html" class="nav-link">
+          <a href="<?=site_url('admin/user')?>" class="nav-link">
             <i class="nav-icon far fa-calendar-alt"></i>
             <p>
               Users
@@ -93,10 +93,18 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="../gallery.html" class="nav-link">
+          <a href="<?=site_url('admin/bidang')?>" class="nav-link">
             <i class="nav-icon far fa-image"></i>
             <p>
-              Bidang/Kategori
+              Bidang
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="<?=site_url('admin/kategori')?>" class="nav-link">
+            <i class="nav-icon far fa-image"></i>
+            <p>
+              Kategori
             </p>
           </a>
         </li>

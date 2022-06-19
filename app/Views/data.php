@@ -113,7 +113,7 @@
     </div>
   </section>
   
-  <div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <!-- <div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -129,6 +129,25 @@
                 <button type="button" class="btn btn-danger btn-ok">Delete</button>
             </div>
         </div>
+    </div>
+  </div> -->
+
+  <div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body text-center mb-5">
+          <img src="<?=base_url('asset/right.png')?>" class="img-responsive">
+          <h1>Are You Sure?</h1>
+          <p>Do you really want to delete these records? This process cannot be undone.</p>
+          <div class="btn-group">
+            <button type="button" class="btn btn-secondary btn-lg mr-2 rounded-lg" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-danger btn-lg rounded-lg">Delete</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -315,13 +334,13 @@
       // listDataTable.draw();
     });
 
-    $('#example1').on('click', '.btn-delete', function(){
-      var confirmation = confirm("Anda yakin menghapus dokumen ini?");
+    // $('#example1').on('click', '.btn-delete', function(){
+    //   var confirmation = confirm("Anda yakin menghapus dokumen ini?");
 
-      if (confirmation) {
-        toastr.error('Sukses! Dokumen berhasil terhapus.')
-      }
-    });
+    //   if (confirmation) {
+    //     toastr.error('Sukses! Dokumen berhasil terhapus.')
+    //   }
+    // });
 
     // $('#example1').on('click', '.btn-delete', function(e) {
     //     var $modalDiv = $(e.delegateTarget);
@@ -361,6 +380,11 @@
         }
       });
     });
+
+    $('#example1').on('click', '.btn-delete', function(){
+      $('#confirmDelete').modal('show');
+    });
+
     return false;
   });
 </script>

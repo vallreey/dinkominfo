@@ -10,6 +10,7 @@ class Account extends BaseController
 	{
         $this->session = \Config\Services::session();
 
+        $this->user = new UserModel();
 		helper(['user', 'permission', 'url', 'form']);
 	}
 
@@ -22,8 +23,7 @@ class Account extends BaseController
             $request = \Config\Services::request();
             $account = $request->getPost();
 
-            $user = new UserModel();
-            $isUser = $user->checkAccount($account);
+            $isUser = $this->user->checkAccount($account);
 
             if (count($isUser) < 1) {
                 $data['alertLogin'] = 'Login gagal! Username & Password tidak sesuai.';

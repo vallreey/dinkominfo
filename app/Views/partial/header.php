@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="<?=base_url('adminLTE/plugins/select2/css/select2.min.css')?>">
   <!-- Theme style -->
   <link rel="stylesheet" href="<?=base_url('adminLTE/dist/css/adminlte.min.css')?>">
+
 </head>
 
 <body class="hold-transition sidebar-mini sidebar-collapse layout-footer-fixed">

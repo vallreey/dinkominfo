@@ -21,9 +21,6 @@
 <script src="<?=base_url('adminLTE/plugins/select2/js/select2.full.min.js')?>"></script>
 <!-- AdminLTE App -->
 <script src="<?=base_url('adminLTE/dist/js/adminlte.min.js')?>"></script>
-</body>
-</html>
-
 <!-- DataTables  & Plugins -->
 <script src="<?=base_url('adminLTE/plugins/datatables/jquery.dataTables.min.js')?>"></script>
 <script src="<?=base_url('adminLTE/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js')?>"></script>
@@ -37,6 +34,10 @@
 <script src="<?=base_url('adminLTE/plugins/datatables-buttons/js/buttons.html5.min.js')?>"></script>
 <script src="<?=base_url('adminLTE/plugins/datatables-buttons/js/buttons.print.min.js')?>"></script>
 <script src="<?=base_url('adminLTE/plugins/datatables-buttons/js/buttons.colVis.min.js')?>"></script>
+
+</body>
+</html>
+
 <script>
   $(function () {
     $('.select2').select2();
