@@ -30,7 +30,7 @@
       <div class="col-md-12">
         <div class="row">
           <div class="col-md-3">
-            <button type="button" class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#add-bidang-modal">Add Bidang</button>
+            <button type="button" class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#add-kategori-modal">Add Kategori</button>
 
             <div class="card">
               <div class="card-header">
@@ -50,13 +50,13 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="<?=site_url('admin/bidang')?>" class="nav-link" style="color:#007bff">
-                      <i class="fas fa-inbox"></i> Bidang <span class="badge bg-primary float-right">&#10003;	</span>
+                    <a href="<?=site_url('admin/bidang')?>" class="nav-link">
+                      <i class="far fa-envelope"></i> Bidang
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="<?=site_url('admin/kategori')?>" class="nav-link">
-                      <i class="far fa-file-alt"></i> Kategori
+                    <a href="<?=site_url('admin/kategori')?>" class="nav-link" style="color:#007bff">
+                      <i class="fas fa-inbox"></i> Kategori <span class="badge bg-primary float-right">&#10003;	</span>
                     </a>
                   </li>
                   <li class="nav-item">
@@ -71,9 +71,7 @@
                   </li>
                 </ul>
               </div>
-              <!-- /.card-body -->
             </div>
-            <!-- /.card -->
             <div class="card">
               <div class="card-header">
                 <h3 class="card-title">About</h3>
@@ -94,26 +92,21 @@
                   </li>
                 </ul>
               </div>
-              <!-- /.card-body -->
             </div>
-            <!-- /.card -->
           </div>
-          <!-- /.col -->
           <div class="col-md-9">
             <div class="card card-primary card-outline">
               <div class="card-footer">
-                <h3 class="card-title float-right"><i>Bidang</i></h3>
+                <h3 class="card-title float-right"><i>Kategori</i></h3>
               </div>
-              <!-- /.card-header -->
               <div class="card-body">
                 <div class="table-responsive mailbox-messages">
-                  <!-- <table class="table table-hover table-striped"> -->
-                  <table id="bidangTable" class="table table-bordered table-striped display" style="width: 100%;">
+                  <table id="kategoriTable" class="table table-bordered table-striped display" style="width: 100%;">
                     <thead>
                       <tr>
                         <th>ID</th>
                         <th></th>
-                        <th>Bidang</th>
+                        <th>Kategori</th>
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -121,7 +114,7 @@
                       <tr>
                         <th>ID</th>
                         <th></th>
-                        <th>Bidang</th>
+                        <th>Kategori</th>
                         <th>Action</th>
                       </tr>
                     </tfoot>
@@ -136,11 +129,11 @@
   </section>
 </div>
 
-<div class="modal fade" id="add-bidang-modal">
+<div class="modal fade" id="add-kategori-modal">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title"><i><span id="title-modal">Add Bidang</span></i></h4>
+        <h4 class="modal-title"><i><span id="title-modal">Add Kategori</span></i></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -150,8 +143,8 @@
           <div class="row">
             <div class="col-md-12">
               <div class="form-group">
-                <label>Department</label>
-                <input type="text" class="form-control" id="inputNamaBidang" placeholder="Bidang ....">
+                <label>Kategori</label>
+                <input type="text" class="form-control" id="inputNamaKategori" placeholder="Nama Kategori">
               </div>
             </div>
           </div>
@@ -179,23 +172,22 @@
         .text( 'Loading...' );
 
     $.ajax({
-      url: "<?=site_url('admin/getUserInDept/')?>" + d.id,
+      url: "<?=site_url('admin/getDataByKategoriId/')?>" + d.id,
       type: "POST",
       success: function(response){
         var arr = JSON.parse(response);
 
         if (arr === '') {
-          div.html('<span style="color:red"><i>Tidak ada user terdaftar.</i></span>').removeClass('loading');
+          div.html('<span style="color:red"><i>Tidak ada file terdaftar.</i></span>').removeClass('loading');
         } else {
-          var string_tbl = '<table class="table table-sm table-bordered table-striped" style="width:50%"><thead class="bg-primary"><tr><th>UID</th><th>Users in : <i>' + d.bidang + '</i></th></tr></thead>';
+          var string_tbl = '<table class="table table-sm table-bordered table-striped"><thead class="bg-primary"><tr><th>ID</th><th>Filename in : <i>' + d.kategori + '</i></th></tr></thead>';
 
           arr.forEach(function(profile, index, myArray) {
-            string_tbl += '<tr><td>' + profile.id + '</td><td>' + profile.first_name + ' ' + profile.last_name + '</td></tr>';
+            string_tbl += '<tr><td>' + profile.id + '</td><td>' + profile.realname + '</td></tr>';
           });
 
           string_tbl += '</table>';
           div.html(string_tbl).removeClass('loading');
-          // element(string_tbl);
         }
       },
       error: function(xhr, status, error){
@@ -208,12 +200,12 @@
   }
   
   $(function () {
-    var table = $('#bidangTable').DataTable({
+    var table = $('#kategoriTable').DataTable({
       'processing': true,
       'serverSide': true,
       'pageLength': 10,
       'ajax': {
-        'url': '<?=site_url('admin/loadData/department')?>',
+        'url': '<?=site_url('admin/loadData/category')?>',
         'type': 'POST',
       },
       'columns': [
@@ -224,12 +216,12 @@
             data: null,
             defaultContent: '',
         },
-        { data: 'bidang'},
+        { data: 'kategori'},
         { data: 'action', orderable: false},
       ]
     });
 
-    $('#bidangTable tbody').on('click', 'td.dt-control', function () {
+    $('#kategoriTable tbody').on('click', 'td.dt-control', function () {
         var tr = $(this).closest('tr');
         var row = table.row(tr);
  
@@ -239,30 +231,28 @@
             tr.removeClass('shown');
         } else {
             // Open this row
-            // format(row.child, row.data());
-            // row.child.show();
             row.child(format(row.data())).show();
             tr.addClass('shown');
         }
     });
 
-    $('#bidangTable tbody').on('click', '.btn-edit', function () {
-        $('#title-modal').html('Update Bidang');
+    $('#kategoriTable tbody').on('click', '.btn-edit', function () {
+        $('#title-modal').html('Update Kategori');
         
         const id = $(this).attr('id');
         $.ajax({
-          url: "<?=site_url('admin/getBidangById/')?>" + id,
+          url: "<?=site_url('admin/getKategoriById/')?>" + id,
           type: "POST",
           success: function(response){
             var arr = JSON.parse(response);
-            $('#inputNamaBidang').val(arr.name);
-            $('#add-bidang-modal').modal('show');
+            $('#inputNamaKategori').val(arr.name);
+            $('#add-kategori-modal').modal('show');
           }
         });
     });
 
-    $('#add-bidang-modal').on('hidden.bs.modal', function () {
-        $('#title-modal').html('Add Bidang');
+    $('#add-kategori-modal').on('hidden.bs.modal', function () {
+        $('#title-modal').html('Add Kategori');
         $(this).find('form').trigger('reset');
         return false;
     })

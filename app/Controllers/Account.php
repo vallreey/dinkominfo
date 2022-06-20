@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 use App\Models\UserModel;
+use App\Models\DashboardModel;
 
 class Account extends BaseController
 {
@@ -11,8 +12,25 @@ class Account extends BaseController
         $this->session = \Config\Services::session();
 
         $this->user = new UserModel();
+        $this->dashboard = new DashboardModel();
+
 		helper(['user', 'permission', 'url', 'form']);
 	}
+
+    public function profile()
+    {
+        $header['title'] = 'Profile';
+
+        $id = $_SESSION['id'];
+        $data = $this->user->getUserDetail($id);
+        $data['listBidang'] = $this->dashboard->getOptionalList('bidang');
+
+        echo view('partial/header', $header);
+        echo view('partial/top_menu');
+        echo view('partial/side_menu');
+        echo view('profile', $data);
+        echo view('partial/footer');
+    }
 
     public function logon()
 	{   

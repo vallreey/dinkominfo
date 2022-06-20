@@ -44,9 +44,9 @@
               </div>
               <div class="card-body p-0">
                 <ul class="nav nav-pills flex-column">
-                  <li class="nav-item active">
-                    <a href="<?=site_url('admin/user')?>" class="nav-link">
-                      <i class="fas fa-inbox"></i> User
+                  <li class="nav-item">
+                    <a href="<?=site_url('admin/user')?>" class="nav-link" style="color:#007bff">
+                      <i class="fas fa-inbox"></i> User <span class="badge bg-primary float-right">&#10003;	</span>
                     </a>
                   </li>
                   <li class="nav-item">
@@ -256,21 +256,21 @@
   function format(d) {
     // `d` is the original data object for the row
     return (
-        '<table class="table table-sm table-bordered table-striped">' +
-        '<tr>' +
+        '<table class="table table-sm table-bordered">' +
+        '<thead class="bg-primary">' + 
+        '<tr>' + 
         '<th>Department</th>' +
+        '<th>Email</th>' +
+        '<th>Phone Number</th>' +
+        '</tr>' + 
+        '</thead>' +
+        '<tr>' +
         '<td>' +
         d.dept_name +
         '</td>' +
-        '</tr>' +
-        '<tr>' +
-        '<th>Email</th>' +
         '<td>' +
         d.email +
         '</td>' +
-        '</tr>' +
-        '<tr>' +
-        '<th>Phone Number</th>' +
         '<td>' +
         d.phone + 
         '</td>' + 

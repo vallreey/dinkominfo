@@ -29,6 +29,7 @@ class AdminModel extends Model
                                 ->orLike('first_name', $wheres['searchValue']);
                   break;
                 case 'department':
+                case 'category':
                   $query = $builder->orLike('id', $wheres['searchValue'])
                                 ->orLike('name', $wheres['searchValue']);
                   break;
@@ -38,10 +39,11 @@ class AdminModel extends Model
         if (isset($wheres['columnName']) && isset($wheres['columnSortOrder'])) {
             // orderby
             $fieldOrder = array(
-                'id'          => 'id',
-                'nama'        => 'last_name',
-                'username'    => 'username',
-                'nama_bidang' => 'name',
+                'id'        => 'id',
+                'nama'      => 'last_name',
+                'username'  => 'username',
+                'bidang'    => 'name',
+                'kategori'  => 'name'
             );
             $query = $builder->orderBy($fieldOrder[$wheres['columnName']], $wheres['columnSortOrder']);
         }
@@ -67,6 +69,64 @@ class AdminModel extends Model
         // var_dump($this->db->getLastQuery());exit();
         if (count($query->getResult()) > 0)
             return $query->getRowArray();
+        else 
+            return '';
+           
+    }
+
+    public function getUserInDept($dept_id)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('odm_user');
+        
+        $query = $builder->select('id, username, last_name, first_name')
+                         ->where('department', $dept_id)->get();
+        
+        if (count($query->getResult()) > 0)
+            return $query->getResultArray();
+        else 
+            return '';
+           
+    }
+
+    public function getBidangById($id)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('odm_department');
+        
+        $query = $builder->where('id', $id)->get();
+
+        if (count($query->getResult()) > 0)
+            return $query->getRowArray();
+        else 
+            return '';
+           
+    }
+
+    public function getKategoriById($id)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('odm_category');
+        
+        $query = $builder->where('id', $id)->get();
+        
+        if (count($query->getResult()) > 0)
+            return $query->getRowArray();
+        else 
+            return '';
+           
+    }
+
+    public function getDataByKategoriId($cat_id)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('odm_data');
+        
+        $query = $builder->select('id, realname')
+                         ->where('category', $cat_id)->get();
+        
+        if (count($query->getResult()) > 0)
+            return $query->getResultArray();
         else 
             return '';
            

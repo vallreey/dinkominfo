@@ -63,7 +63,7 @@ class Admin extends BaseController
                         'phone'    => $val->phone
                     );
                 }
-            } elseif ($table == 'bidang') {
+            } elseif ($table == 'department') {
                 foreach ($files as $key => $val) {
                     $data[] = array(
                         'id'       => $val->id,
@@ -71,7 +71,15 @@ class Admin extends BaseController
                         'action'   => '<div class="btn-group btn-group-sm"><button type="button" class="btn btn-info btn-edit" id="'.$val->id.'"><i class="fas fa-pencil-alt"></i></button><button type="button" class="btn btn-danger btn-delete"><i class="fas fa-trash"></i></button></div>'
                     );
                 }
-            }
+            } elseif ($table == 'category') {
+              foreach ($files as $key => $val) {
+                  $data[] = array(
+                      'id'       => $val->id,
+                      'kategori' => $val->name,
+                      'action'   => '<div class="btn-group btn-group-sm"><button type="button" class="btn btn-info btn-edit" id="'.$val->id.'"><i class="fas fa-pencil-alt"></i></button><button type="button" class="btn btn-danger btn-delete"><i class="fas fa-trash"></i></button></div>'
+                  );
+              }
+          }
         }
 
         $dataset = array(
@@ -93,14 +101,47 @@ class Admin extends BaseController
     public function bidang()
     {
         $header['title'] = 'Administrasi Bidang';
-
-        $data['listBidang'] = $this->dashboard->getOptionalList('bidang');
         
         echo view('partial/header', $header);
         echo view('partial/top_menu');
         echo view('partial/side_menu');
-        echo view('manage_bidang', $data);
+        echo view('manage_bidang');
         echo view('partial/footer');
+    }
+
+    public function getUserInDept($dept_id)
+    {
+        $detail = $this->admin->getUserInDept($dept_id);
+        echo json_encode($detail);
+    }
+
+    public function getBidangById($id)
+    {
+        $detail = $this->admin->getBidangById($id);
+        echo json_encode($detail);
+    }
+
+    public function kategori()
+    {
+        $header['title'] = 'Administrasi Kategori';
+        
+        echo view('partial/header', $header);
+        echo view('partial/top_menu');
+        echo view('partial/side_menu');
+        echo view('manage_kategori');
+        echo view('partial/footer');
+    }
+
+    public function getKategoriById($id)
+    {
+        $detail = $this->admin->getKategoriById($id);
+        echo json_encode($detail);
+    }
+
+    public function getDataByKategoriId($cat_id)
+    {
+        $detail = $this->admin->getDataByKategoriId($cat_id);
+        echo json_encode($detail);
     }
 
 }

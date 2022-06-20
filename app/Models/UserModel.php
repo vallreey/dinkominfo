@@ -35,4 +35,19 @@ class UserModel extends Model
 
         return $query->getResult();
     }
+
+    public function getUserDetail($uid)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('odm_user u');
+        
+        $query = $builder->select('u.*, d.name as dept_name')
+                        ->join('odm_department d', 'u.department = d.id')
+                        ->where('u.id', $uid)->get();
+        
+        if (count($query->getResult()) > 0)
+            return $query->getRowArray();
+        else 
+            return '';
+    }
 }   
