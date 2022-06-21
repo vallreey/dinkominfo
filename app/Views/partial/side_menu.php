@@ -82,6 +82,7 @@
             </li>
           </ul>
         </li>
+        <?php if ($_SESSION['is_admin']) { ?>
         <li class="nav-header">ADMINISTRASI</li>
         <li class="nav-item">
           <a href="<?=site_url('admin/user')?>" class="nav-link">
@@ -108,6 +109,7 @@
             </p>
           </a>
         </li>
+        <?php } ?>
       </ul>
     </nav>
     <!-- /.sidebar-menu -->

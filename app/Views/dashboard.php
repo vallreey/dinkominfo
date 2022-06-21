@@ -58,6 +58,7 @@
           </div>
         </div>
         <!-- ./col -->
+        <?php if ($_SESSION['is_admin']) { ?>
         <div class="col-lg-2" style="margin-right:1em; margin-left:1em">
           <!-- small box -->
           <div class="small-box bg-light border" style="border-radius: 50px 50px 0px 0px; border-width: medium">
@@ -67,6 +68,7 @@
             <a href="<?=site_url('admin/user')?>" class="small-box-footer">Administrasi <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
+        <?php } ?>
       </div>
     </div>
   </section>

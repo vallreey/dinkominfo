@@ -9,8 +9,13 @@ class Admin extends BaseController
 	  {
         $this->session = \Config\Services::session();
         if (!isset($_SESSION['login_state'])) {
-          $message = 'Session Anda telah Habis';
-          echo "<SCRIPT>alert('$message');window.location='" . site_url('logon') . "';</SCRIPT>";
+            $message = 'Session Anda telah Habis';
+            echo "<SCRIPT>alert('$message');window.location='" . site_url('logon') . "';</SCRIPT>";
+        }
+
+        if (!$_SESSION['is_admin']) {
+            $message = 'Anda tidak terdaftar sebagai user Admin';
+            echo "<SCRIPT>alert('$message');window.location='" . site_url('dashboard') . "';</SCRIPT>";
         }
 
         $this->admin = new AdminModel();

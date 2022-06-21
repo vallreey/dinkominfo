@@ -379,7 +379,7 @@
         last_name: "required",
         username: {
           required: true,
-          minlength: 5,
+          minlength: 3,
         },
         password: {
           required: true,
