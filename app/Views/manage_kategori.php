@@ -138,13 +138,13 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="userForm" name="user">
+      <form id="form-kategori">
         <div class="modal-body">
           <div class="row">
             <div class="col-md-12">
               <div class="form-group">
                 <label>Kategori</label>
-                <input type="text" class="form-control" id="inputNamaKategori" placeholder="Nama Kategori">
+                <input type="text" class="form-control" id="inputNamaKategori" name="cat_name" placeholder="Nama Kategori">
               </div>
             </div>
           </div>
@@ -253,9 +253,29 @@
 
     $('#add-kategori-modal').on('hidden.bs.modal', function () {
         $('#title-modal').html('Add Kategori');
-        $(this).find('form').trigger('reset');
-        return false;
-    })
+        var fbidang = $('#form-kategori');
+        fbidang.validate().resetForm();
+        fbidang.find('.error').removeClass('error');
+        fbidang.find('.is-invalid').removeClass('is-invalid');
+        fbidang.trigger('reset');
+    });
+
+    $('#form-kategori').validate({
+      rules: {
+        cat_name: "required"
+      },
+      errorElement: 'span',
+      errorPlacement: function (error, element) {
+        error.addClass('invalid-feedback');
+        element.closest('.form-group').append(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass('is-invalid');
+      }
+    });
 
   });
 </script>

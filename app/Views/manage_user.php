@@ -151,25 +151,25 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="userForm" name="user">
+      <form id="form-user" name="user">
         <div class="modal-body">
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
                 <label>Nama Depan</label>
-                <input type="text" class="form-control" id="inputNamaDepan" placeholder="John">
+                <input type="text" class="form-control" id="inputNamaDepan" name="first_name" placeholder="John">
               </div>
               <div class="form-group">
                 <label>Username</label>
-                <input type="text" class="form-control" id="inputUsername" placeholder="johncarter">
+                <input type="text" class="form-control" id="inputUsername" name="username" placeholder="johncarter">
               </div>
               <div class="form-group">
                 <label>Phone Number</label>
-                <input type="text" class="form-control" id="inputPhoneNumber" placeholder="082xxxxxxxxx">
+                <input type="text" class="form-control" id="inputPhoneNumber" name="phone" placeholder="082xxxxxxxxx">
               </div>
               <div class="form-group">
                 <label>Bidang</label>
-                <select class="form-control select2" style="width: 100%;">
+                <select class="form-control select2" name="department" style="width: 100%;">
                   <?php
                     // $ownerDept = isset($fileExist) ? $fileExist[0]->department : $_SESSION['department'];
                     foreach ($listBidang as $key => $val) { 
@@ -184,19 +184,19 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label>Nama Belakang</label>
-                <input type="text" class="form-control" id="inputNamaBelakang" placeholder="Carter">
+                <input type="text" class="form-control" id="inputNamaBelakang" name="last_name" placeholder="Carter">
               </div>
               <div class="form-group">
                 <label>Password</label>
-                <input type="password" class="form-control" id="inputPassword" placeholder="jjg67ee">
+                <input type="password" class="form-control" id="inputPassword" name="password" placeholder="jjg67ee">
               </div>
               <div class="form-group">
                 <label>Email Address</label>
-                <input type="email" class="form-control" id="inputEmail" placeholder="john@gmail.com">
+                <input type="email" class="form-control" id="inputEmail" name="email" placeholder="john@gmail.com">
               </div>
               <div class="form-group">
                 <label>Dept. Reviewer for</label>
-                <select class="select2" multiple="multiple" data-placeholder="Select one or more" style="width: 100%;">
+                <select class="select2" name="deptreviewer" multiple="multiple" data-placeholder="Select one or more" style="width: 100%;">
                   <?php
                     // $ownerDept = isset($fileExist) ? $fileExist[0]->department : $_SESSION['department'];
                     foreach ($listBidang as $key => $val) { 
@@ -214,19 +214,19 @@
                   <div class="col-md-4 text-center">
                     <div class="form-group">
                       <label><br>Is Admin?</label><br>
-                      <input class="form-check-input" type="checkbox" checked>
+                      <input class="form-check-input" name="is_admin" type="checkbox" checked>
                     </div>
                   </div>
                   <div class="col-md-4 text-center">
                   <div class="form-group">
                       <label>Can<br>"Tambah Dokumen"?</label><br>
-                      <input class="form-check-input" type="checkbox">
+                      <input class="form-check-input" name="can_add" type="checkbox">
                     </div>
                   </div>
                   <div class="col-md-4 text-center">
                     <div class="form-group">
                       <label>Can<br>"Cek Data"?</label><br>
-                      <input class="form-check-input" type="checkbox">
+                      <input class="form-check-input" name="can_checkin" type="checkbox">
                     </div>
                   </div>
                 </div>
@@ -363,9 +363,60 @@
 
     $('#add-user-modal').on('hidden.bs.modal', function () {
         $('#title-modal').html('Add User');
-        $(this).find('form').trigger('reset');
+        
+        var fuser = $('#form-user');
+        fuser.validate().resetForm();
+        fuser.find('.error').removeClass('error');
+        fuser.find('.is-invalid').removeClass('is-invalid');
+        fuser.trigger('reset');
+
         return false;
-    })
+    });
+
+    $('#form-user').validate({
+      rules: {
+        first_name: "required",
+        last_name: "required",
+        username: {
+          required: true,
+          minlength: 5,
+        },
+        password: {
+          required: true,
+          minlength: 5
+        },
+        phone: {
+          required: true,
+          digits: true
+        },
+        email: {
+          required: true,
+          email: true
+        },
+        department: "required"
+      },
+      messages: {
+        username: {
+          required: "Please enter a valid username",
+          email: "Your password must be at least 5 characters long"
+        },
+        password: {
+          required: "Please enter a valid password",
+          minlength: "Your password must be at least 5 characters long"
+        },
+      },
+      errorElement: 'span',
+      errorPlacement: function (error, element) {
+        error.addClass('invalid-feedback');
+        element.closest('.form-group').append(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass('is-invalid');
+      }
+    });
 
   });
 </script>

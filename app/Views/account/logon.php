@@ -63,7 +63,7 @@
                 <?= $alertLogin ?>
               </div>
             <?php } ?>
-            <form id="form-login" action="<?=base_url('account/logon')?>" method="post">
+            <form id="form-login" action="<?=site_url('account/logon')?>" method="post">
               <?=csrf_field();?>
               <div>
                 <div class="input-group mb-3">

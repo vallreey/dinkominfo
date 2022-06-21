@@ -61,7 +61,7 @@
                 </li>
               </ul>
 
-              <button id="btn-edit-profile" class="btn btn-primary btn-block"><b>Edit Profile</b></button>
+              <button type="button" class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#edit-profile-modal">Edit Profile</button>
             </div>
             <!-- /.card-body -->
           </div>
@@ -71,7 +71,7 @@
   </section>
 </div>
 
-<div class="modal fade" id="add-user-modal">
+<div class="modal fade" id="edit-profile-modal">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -80,30 +80,28 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="userForm" name="user">
+      <form id="form-profile">
         <div class="modal-body">
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
                 <label>Nama Depan</label>
-                <input type="text" class="form-control" id="inputNamaDepan" value="<?=$first_name?>">
+                <input type="text" class="form-control" id="inputNamaDepan" name="first_name" value="<?=$first_name?>">
               </div>
               <div class="form-group">
                 <label>Username</label>
-                <input type="text" class="form-control" id="inputUsername" placeholder="johncarter">
+                <input type="text" class="form-control" id="inputUsername" name="username" value="<?=$username?>">
               </div>
               <div class="form-group">
                 <label>Phone Number</label>
-                <input type="text" class="form-control" id="inputPhoneNumber" placeholder="082xxxxxxxxx">
+                <input type="text" class="form-control" id="inputPhoneNumber" name="phone" value="<?=$phone?>">
               </div>
               <div class="form-group">
                 <label>Bidang</label>
-                <select class="form-control select2" style="width: 100%;">
+                <select class="form-control select2" name="department" style="width: 100%;">
                   <?php
-                    // $ownerDept = isset($fileExist) ? $fileExist[0]->department : $_SESSION['department'];
                     foreach ($listBidang as $key => $val) { 
-                      $selected = '';
-                      // $selected = $val->id == $ownerDept ? "selected" : "";  
+                      $selected = $val->id == $department ? "selected" : "";  
                   ?>
                   <option value="<?=$val->id?>" <?=$selected?>><?=$val->name?></option>
                   <?php } ?>
@@ -113,51 +111,28 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label>Nama Belakang</label>
-                <input type="text" class="form-control" id="inputNamaBelakang" placeholder="Carter">
+                <input type="text" class="form-control" id="inputNamaBelakang" name="last_name" value="<?=$last_name?>">
               </div>
               <div class="form-group">
                 <label>Password</label>
-                <input type="password" class="form-control" id="inputPassword" placeholder="jjg67ee">
+                <input type="password" class="form-control" id="inputPassword" name="password" value="<?=$password?>">
               </div>
               <div class="form-group">
                 <label>Email Address</label>
-                <input type="email" class="form-control" id="inputEmail" placeholder="john@gmail.com">
+                <input type="email" class="form-control" id="inputEmail" name="email" value="<?=$Email?>">
               </div>
               <div class="form-group">
-                <label>Dept. Reviewer for</label>
-                <select class="select2" multiple="multiple" data-placeholder="Select one or more" style="width: 100%;">
-                  <?php
-                    // $ownerDept = isset($fileExist) ? $fileExist[0]->department : $_SESSION['department'];
-                    foreach ($listBidang as $key => $val) { 
-                      $selected = '';
-                      // $selected = $val->id == $ownerDept ? "selected" : "";  
-                  ?>
-                  <option value="<?=$val->id?>" <?=$selected?>><?=$val->name?></option>
-                  <?php } ?>
-                </select>
-              </div>
-            </div>
-            <div class="col-md-12">
-              <div class="card card-footer">
-                <div class="row">
-                  <div class="col-md-4 text-center">
-                    <div class="form-group">
-                      <label><br>Is Admin?</label><br>
-                      <input class="form-check-input" type="checkbox" checked>
-                    </div>
-                  </div>
-                  <div class="col-md-4 text-center">
-                  <div class="form-group">
-                      <label>Can<br>"Tambah Dokumen"?</label><br>
-                      <input class="form-check-input" type="checkbox">
-                    </div>
-                  </div>
-                  <div class="col-md-4 text-center">
-                    <div class="form-group">
-                      <label>Can<br>"Cek Data"?</label><br>
-                      <input class="form-check-input" type="checkbox">
-                    </div>
-                  </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" <?=isAdmin($id) ? 'checked' : ''?>>
+                  <label class="form-check-label">Admin</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="can_add" <?=$can_add == 1 ? 'checked' : ''?>>
+                  <label class="form-check-label">Can Add Documents</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="can_checkin" <?=$can_checkin == 1 ? 'checked' : ''?>>
+                  <label class="form-check-label">Can Check-In Documents</label>
                 </div>
               </div>
             </div>
@@ -174,28 +149,64 @@
 
 <!-- jQuery -->
 <script src="<?=base_url('adminLTE/plugins/jquery/jquery.min.js')?>"></script>
+<!-- jquery-validation -->
+<script src="<?=base_url('adminLTE/plugins/jquery-validation/jquery.validate.min.js')?>"></script>
+<script src="<?=base_url('adminLTE//plugins/jquery-validation/additional-methods.min.js')?>"></script>
 
 <script>
-  $(function () {
-    $('#btn-edit-profile').on('click', function () {
-        const id = $(this).attr('id');
-        $.ajax({
-          url: "<?=site_url('admin/getUserById/')?>" + id,
-          type: "POST",
-          success: function(response){
-            var arr = JSON.parse(response);
-            $('#inputNamaDepan').val(arr.first_name);
-            $('#inputNamaBelakang').val(arr.last_name);
-            $('#inputUsername').val(arr.username);
-            $('#inputPassword').val(arr.password);
-            $('#inputPhone').val(arr.phone);
-            $('#inputEmail').val(arr.Email);
-            // $('#inputBidang').val(arr.department);
-            $('#inputCanAdd').val(arr.can_add);
-            $('#inputCanCheckin').val(arr.can_checkin);
-            $('#add-user-modal').modal('show');
-          }
-        });
+  $(function() {
+    $('#form-profile').validate({
+      rules: {
+        first_name: "required",
+        last_name: "required",
+        username: {
+          required: true,
+          minlength: 5,
+        },
+        password: {
+          required: true,
+          minlength: 5
+        },
+        phone: {
+          required: true,
+          digits: true
+        },
+        email: {
+          required: true,
+          email: true
+        },
+        department: "required"
+      },
+      messages: {
+        username: {
+          required: "Please enter a valid username",
+          email: "Your password must be at least 5 characters long"
+        },
+        password: {
+          required: "Please enter a valid password",
+          minlength: "Your password must be at least 5 characters long"
+        },
+      },
+      errorElement: 'span',
+      errorPlacement: function (error, element) {
+        error.addClass('invalid-feedback');
+        element.closest('.form-group').append(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass('is-invalid');
+      }
+    });
+
+    $('#edit-profile-modal').on('hidden.bs.modal', function () {
+      var profile = $('#form-profile');
+      profile.validate().resetForm();
+      profile.find('.error').removeClass('error');
+      profile.find('.is-invalid').removeClass('is-invalid');
+      profile.trigger('reset');
+      return false;
     });
   });
 </script>

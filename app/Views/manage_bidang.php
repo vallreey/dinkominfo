@@ -145,13 +145,13 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="userForm" name="user">
+      <form id="form-bidang">
         <div class="modal-body">
           <div class="row">
             <div class="col-md-12">
               <div class="form-group">
                 <label>Department</label>
-                <input type="text" class="form-control" id="inputNamaBidang" placeholder="Bidang ....">
+                <input type="text" class="form-control" id="inputNamaBidang" name="dept_name" placeholder="Bidang ....">
               </div>
             </div>
           </div>
@@ -263,9 +263,28 @@
 
     $('#add-bidang-modal').on('hidden.bs.modal', function () {
         $('#title-modal').html('Add Bidang');
-        $(this).find('form').trigger('reset');
-        return false;
-    })
+        var fbidang = $('#form-bidang');
+        fbidang.validate().resetForm();
+        fbidang.find('.error').removeClass('error');
+        fbidang.find('.is-invalid').removeClass('is-invalid');
+        fbidang.trigger('reset');
+    });
 
+    $('#form-bidang').validate({
+      rules: {
+        dept_name: "required"
+      },
+      errorElement: 'span',
+      errorPlacement: function (error, element) {
+        error.addClass('invalid-feedback');
+        element.closest('.form-group').append(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass('is-invalid');
+      }
+    });
   });
 </script>
