@@ -17,7 +17,7 @@
   <section class="content">
     <div class="container-fluid">
       <div class="row justify-content-md-center">
-        <div class="col-6">
+        <div class="col-md-6">
           <div class="card card-primary card-outline">
             <div class="card-body box-profile">
               <div class="text-center">
@@ -25,8 +25,34 @@
                       src="<?=base_url('adminLTE/dist/img/avatar5.png')?>"
                       alt="User profile picture">
               </div>
-              <h5><p class="text-muted text-center"><?=$first_name.' '.$last_name?></p></h5>
-              <ul class="list-group list-group-unbordered mb-3">
+              <h3 class="profile-username text-center"><?=$first_name.' '.$last_name?></h3>
+              <p class="text-muted text-center"></p>
+              <br>
+              <div class="row">
+                <div class="col-md-6">
+                  <strong><i class="fas fa-book mr-1"></i> Username</strong><p class="text-muted"><?=$username?></p><hr>
+                  <strong><i class="fas fa-map-marker-alt mr-1"></i> Nama Depan</strong><p class="text-muted"><?=$first_name?></p><hr>
+                  <strong><i class="fas fa-map-marker-alt mr-1"></i> Nama Belakang</strong><p class="text-muted"><?=$last_name?></p><hr>
+                  <strong><i class="fas fa-file-alt mr-1"></i> Department</strong><p class="text-muted"><?=$dept_name?></p><hr>
+                </div>
+                <div class="col-md-6">
+                  <strong><i class="fas fa-pencil-alt mr-1"></i> Phone Number</strong><p class="text-muted"><?=$phone?></p><hr>
+                  <strong><i class="fas fa-map-marker-alt mr-1"></i> Email Address</strong><p class="text-muted"><?=$Email?></p><hr>
+                  <strong><i class="fas fa-map-marker-alt mr-1"></i> Akses</strong>
+                  <p class="text-muted">
+                  <?php 
+                    $isAdmin = isAdmin($id) ? 'checked' : '';
+                    $canAdd  = $can_add == 1 ? 'checked' : '';
+                    $canCheckIn  = $can_checkin == 1 ? 'checked' : '';
+                  ?>
+                  <input type="checkbox" <?=$isAdmin?> disabled> Admin <br>
+                  <input type="checkbox" <?=$canAdd?> disabled> Can Add Doc <br>
+                  <input type="checkbox" <?=$canCheckIn?> disabled> Can Check-In Doc <br>
+                  </p>
+                </div>
+              </div>
+
+              <!-- <ul class="list-group list-group-unbordered mb-3">
                 <li class="list-group-item">
                   <b>Username</b> <a class="float-right"><?=$username?></a>
                 </li>
@@ -59,7 +85,7 @@
                 <li class="list-group-item">
                   <b>Can Check-In Documents ?</b> <a class="float-right"><i class="fa <?=$canCheckIn?>" aria-hidden="true"></i></a>
                 </li>
-              </ul>
+              </ul> -->
 
               <button type="button" class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#edit-profile-modal">Edit Profile</button>
             </div>
