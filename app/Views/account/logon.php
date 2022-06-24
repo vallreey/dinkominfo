@@ -19,7 +19,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?=$title?></title>
+  <title><?=$_SESSION['title']?></title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,400i,700&display=fallback">
@@ -55,14 +55,11 @@
           </div>
           <div class="card-body">
             <!-- Error -->
-            <?php if (isset($alertLogin)) { ?>
-              <div class="alert alert-danger alert-dismissible">
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-  <span aria-hidden="true">&times;</span>
-</button>
-                <?= $alertLogin ?>
-              </div>
-            <?php } ?>
+            <?php if (isset($_SESSION['info_success'])) { ?>
+              <div class="alert alert-info" role="alert"><?=$_SESSION['info_success']?></div><?php unset($_SESSION['info_success']); }
+            elseif(isset($_SESSION['info_error'])) { ?>
+              <div class="alert alert-warning" role="alert"><?=$_SESSION['info_error']?></div><?php unset($_SESSION['info_error']); }
+            ?>
             <form id="form-login" action="<?=site_url('account/logon')?>" method="post">
               <?=csrf_field();?>
               <div>
@@ -111,6 +108,12 @@
   <script src="<?=base_url('adminLTE//plugins/jquery-validation/additional-methods.min.js')?>"></script>
 
   <script>
+    window.setTimeout(function() {
+      $(".alert").fadeTo(500, 0).slideUp(500, function(){
+        $(this).remove(); 
+      });
+    }, 5000);
+
     $(function () {
       $('#form-login').validate({
         rules: {

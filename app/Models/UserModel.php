@@ -13,7 +13,6 @@ class UserModel extends Model
         parent::__construct();
         $db = \Config\Database::connect();
         $builder = $db->table('odm_user');
-        // OR $this->db = db_connect();
     }
 
     public function checkAccount($data = array())

@@ -34,9 +34,9 @@ class Account extends BaseController
 
     public function logon()
 	{   
-        $data['title'] = 'Login Primbon Dinkominfo';
+        $_SESSION['title'] = settingVal('title');
         if (!$_POST) {
-            return view('account/logon', $data);
+            return view('account/logon');
         } else {
             $request = \Config\Services::request();
             $account = $request->getPost();
@@ -44,8 +44,8 @@ class Account extends BaseController
             $isUser = $this->user->checkAccount($account);
 
             if (count($isUser) < 1) {
-                $data['alertLogin'] = 'Login gagal! Username & Password tidak sesuai.';
-                return view('account/logon', $data);
+                $_SESSION['info_error'] = '<b>Login gagal!</b> Username & Password tidak sesuai.';
+                return redirect()->to('account/logon');
             } else {
                 $_SESSION['login_state'] = true;
 
@@ -63,6 +63,7 @@ class Account extends BaseController
                     $_SESSION['can_checkin'] = canCheckIn($_SESSION['id']);
                 }
                 $_SESSION['dept_name'] = getDeptName($_SESSION['id']);
+                $_SESSION['root_id']   = settingVal('root_id');
                     
                 return redirect()->to('dashboard');
             }

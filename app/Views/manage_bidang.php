@@ -100,6 +100,11 @@
           </div>
           <!-- /.col -->
           <div class="col-md-9">
+            <?php if (isset($_SESSION['info_success'])) { ?>
+              <div class="alert alert-info" role="alert"><?=$_SESSION['info_success']?></div><?php unset($_SESSION['info_success']); }
+            elseif(isset($_SESSION['info_error'])) { ?>
+              <div class="alert alert-warning" role="alert"><?=$_SESSION['info_error']?></div><?php unset($_SESSION['info_error']); }
+            ?>
             <div class="card card-primary card-outline">
               <div class="card-footer">
                 <h3 class="card-title float-right"><i>Bidang</i></h3>
@@ -145,7 +150,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="form-bidang">
+      <form id="form-bidang" action="<?=site_url('admin/updateBidang')?>" method="POST">
         <div class="modal-body">
           <div class="row">
             <div class="col-md-12">
@@ -157,6 +162,7 @@
           </div>
         </div>
         <div class="modal-footer justify-content-between">
+          <input type="hidden" id="inputBidangId" name="id">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-info">Save</button>
         </div>
@@ -255,6 +261,7 @@
           type: "POST",
           success: function(response){
             var arr = JSON.parse(response);
+            $('#inputBidangId').val(id);
             $('#inputNamaBidang').val(arr.name);
             $('#add-bidang-modal').modal('show');
           }

@@ -52,41 +52,6 @@
                 </div>
               </div>
 
-              <!-- <ul class="list-group list-group-unbordered mb-3">
-                <li class="list-group-item">
-                  <b>Username</b> <a class="float-right"><?=$username?></a>
-                </li>
-                <li class="list-group-item">
-                  <b>Nama Depan</b> <a class="float-right"><?=$first_name?></a>
-                </li>
-                <li class="list-group-item">
-                  <b>Nama Belakang</b> <a class="float-right"><?=$last_name?></a>
-                </li>
-                <li class="list-group-item">
-                  <b>Department</b> <a class="float-right"><?=$dept_name?></a>
-                </li>
-                <li class="list-group-item">
-                  <b>Phone Number</b> <a class="float-right"><?=$phone?></a>
-                </li>
-                <li class="list-group-item">
-                  <b>Email Address</b> <a class="float-right"><?=$Email?></a>
-                </li>
-                <?php 
-                  $isAdmin = isAdmin($id) ? 'fa-check' : 'fa-times';
-                  $canAdd  = $can_add == 1 ? 'fa-check' : 'fa-times';
-                  $canCheckIn  = $can_checkin == 1 ? 'fa-check' : 'fa-times';
-                ?>
-                <li class="list-group-item">
-                  <b>Admin</b> <a class="float-right"><i class="fa <?=$isAdmin?>" aria-hidden="true"></i></a>
-                </li>
-                <li class="list-group-item">
-                  <b>Can Add Documents ?</b> <a class="float-right"><i class="fa <?=$canAdd?>" aria-hidden="true"></i></a>
-                </li>
-                <li class="list-group-item">
-                  <b>Can Check-In Documents ?</b> <a class="float-right"><i class="fa <?=$canCheckIn?>" aria-hidden="true"></i></a>
-                </li>
-              </ul> -->
-
               <button type="button" class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#edit-profile-modal">Edit Profile</button>
             </div>
             <!-- /.card-body -->

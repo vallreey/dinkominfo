@@ -100,6 +100,11 @@
           </div>
           <!-- /.col -->
           <div class="col-md-9">
+            <?php if (isset($_SESSION['info_success'])) { ?>
+              <div class="alert alert-info" role="alert"><?=$_SESSION['info_success']?></div><?php unset($_SESSION['info_success']); }
+            elseif(isset($_SESSION['info_error'])) { ?>
+              <div class="alert alert-warning" role="alert"><?=$_SESSION['info_error']?></div><?php unset($_SESSION['info_error']); }
+            ?>
             <div class="card card-primary card-outline">
               <div class="card-footer">
                 <h3 class="card-title float-right"><i>User</i></h3>
@@ -151,7 +156,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="form-user" name="user">
+      <form id="form-user" action="<?=site_url('admin/updateUser')?>" method="POST">
         <div class="modal-body">
           <div class="row">
             <div class="col-md-6">
@@ -169,14 +174,12 @@
               </div>
               <div class="form-group">
                 <label>Bidang</label>
-                <select class="form-control select2" name="department" style="width: 100%;">
+                <select class="form-control select2" name="department" id="inputDepartment" style="width: 100%;" data-placeholder="Select a department">
+                  <option value=""></option>
                   <?php
-                    // $ownerDept = isset($fileExist) ? $fileExist[0]->department : $_SESSION['department'];
-                    foreach ($listBidang as $key => $val) { 
-                      $selected = '';
-                      // $selected = $val->id == $ownerDept ? "selected" : "";  
+                    foreach ($listBidang as $key => $val) {
                   ?>
-                  <option value="<?=$val->id?>" <?=$selected?>><?=$val->name?></option>
+                  <option value="<?=$val->id?>"><?=$val->name?></option>
                   <?php } ?>
                 </select>
               </div>
@@ -196,14 +199,11 @@
               </div>
               <div class="form-group">
                 <label>Dept. Reviewer for</label>
-                <select class="select2" name="deptreviewer" multiple="multiple" data-placeholder="Select one or more" style="width: 100%;">
+                <select class="form-control select2" name="deptreviewer[]" id="inputDeptReviewer" multiple="multiple" data-placeholder="Select one or more department" style="width: 100%;">
                   <?php
-                    // $ownerDept = isset($fileExist) ? $fileExist[0]->department : $_SESSION['department'];
                     foreach ($listBidang as $key => $val) { 
-                      $selected = '';
-                      // $selected = $val->id == $ownerDept ? "selected" : "";  
                   ?>
-                  <option value="<?=$val->id?>" <?=$selected?>><?=$val->name?></option>
+                  <option value="<?=$val->id?>"><?=$val->name?></option>
                   <?php } ?>
                 </select>
               </div>
@@ -214,19 +214,19 @@
                   <div class="col-md-4 text-center">
                     <div class="form-group">
                       <label><br>Is Admin?</label><br>
-                      <input class="form-check-input" name="is_admin" type="checkbox" checked>
+                      <input class="form-check-input" id="inputIsAdmin" name="is_admin" value="1" type="checkbox" checked>
                     </div>
                   </div>
                   <div class="col-md-4 text-center">
                   <div class="form-group">
                       <label>Can<br>"Tambah Dokumen"?</label><br>
-                      <input class="form-check-input" name="can_add" type="checkbox">
+                      <input class="form-check-input" id="inputCanAdd" name="can_add" value="1" type="checkbox" checked>
                     </div>
                   </div>
                   <div class="col-md-4 text-center">
                     <div class="form-group">
                       <label>Can<br>"Cek Data"?</label><br>
-                      <input class="form-check-input" name="can_checkin" type="checkbox">
+                      <input class="form-check-input" id="inputCanCheckIn" name="can_checkin" value="1" type="checkbox" checked>
                     </div>
                   </div>
                 </div>
@@ -235,6 +235,7 @@
           </div>
         </div>
         <div class="modal-footer justify-content-between">
+          <input type="hidden" id="inputUserId" name="id">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-info">Save</button>
         </div>
@@ -347,15 +348,23 @@
           type: "POST",
           success: function(response){
             var arr = JSON.parse(response);
+            // console.log(arr);return false;
+            $('#inputUserId').val(id);
             $('#inputNamaDepan').val(arr.first_name);
             $('#inputNamaBelakang').val(arr.last_name);
             $('#inputUsername').val(arr.username);
             $('#inputPassword').val(arr.password);
-            $('#inputPhone').val(arr.phone);
+            $('#inputPhoneNumber').val(arr.phone);
             $('#inputEmail').val(arr.Email);
-            // $('#inputBidang').val(arr.department);
-            $('#inputCanAdd').val(arr.can_add);
-            $('#inputCanCheckin').val(arr.can_checkin);
+            $('#inputDepartment').val(arr.department).trigger('change');
+            $('#inputDeptReviewer').val(arr.dept_rev).trigger('change');
+            if (arr.can_add == 1) $('#inputCanAdd').prop('checked', true);
+            else $('#inputCanAdd').prop('checked', false);
+            if (arr.can_checkin == 1) $('#inputCanCheckIn').prop('checked', true);
+            else $('#inputCanCheckIn').prop('checked', false);
+            if (arr.is_admin == 1) $('#inputIsAdmin').prop('checked', true);
+            else $('#inputIsAdmin').prop('checked', false);
+
             $('#add-user-modal').modal('show');
           }
         });
@@ -369,29 +378,42 @@
         fuser.find('.error').removeClass('error');
         fuser.find('.is-invalid').removeClass('is-invalid');
         fuser.trigger('reset');
+        $('.select2').val([]).trigger('change');
 
         return false;
     });
 
     $('#form-user').validate({
       rules: {
-        first_name: "required",
-        last_name: "required",
+        first_name: {
+          required: true,
+          minlength: 2,
+          maxlength: 255
+        },
+        last_name: {
+          required: true,
+          minlength: 2,
+          maxlength: 255
+        },
         username: {
           required: true,
-          minlength: 3,
+          minlength: 2,
+          maxlength: 25
         },
         password: {
           required: true,
-          minlength: 5
+          minlength: 5,
+          maxlength: 32
         },
         phone: {
           required: true,
-          digits: true
+          digits: true,
+          maxlength: 20
         },
         email: {
           required: true,
-          email: true
+          email: true,
+          maxlength: 50
         },
         department: "required"
       },
