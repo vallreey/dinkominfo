@@ -95,6 +95,11 @@
             </div>
           </div>
           <div class="col-md-9">
+            <?php if (isset($_SESSION['info_success'])) { ?>
+              <div class="alert alert-info" role="alert"><?=$_SESSION['info_success']?></div><?php unset($_SESSION['info_success']); }
+            elseif(isset($_SESSION['info_error'])) { ?>
+              <div class="alert alert-warning" role="alert"><?=$_SESSION['info_error']?></div><?php unset($_SESSION['info_error']); }
+            ?>
             <div class="card card-primary card-outline">
               <div class="card-footer">
                 <h3 class="card-title float-right"><i>Kategori</i></h3>
@@ -150,6 +155,7 @@
           </div>
         </div>
         <div class="modal-footer justify-content-between">
+          <input type="hidden" id="inputKategoriId" name="id">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-info">Save</button>
         </div>
@@ -168,13 +174,27 @@
               <h4 class="modal-title w-100">Are you sure?</h4>
               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
           </div>
-          <div class="modal-body">
-              <p>Do you really want to delete these records? This process cannot be undone.</p>
-          </div>
-          <div class="modal-footer justify-content-center">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-              <a href="#" class="btn btn-danger btn-delete" role="button">Delete</a>
-          </div>
+          <form id="form-delete" action="#" method="POST">
+            <div class="modal-body">
+                <p>Do you really want to delete these records? This process cannot be undone.</p>
+                <hr>
+                <div class="form-group">
+                  <label>Re-assign to other category</label>
+                  <select class="form-control select2" name="new_cat" style="width: 100%;" data-placeholder="Select a category">
+                    <option value=""></option>
+                    <?php
+                      foreach ($listKategori as $key => $val) {
+                    ?>
+                    <option value="<?=$val->id?>"><?=$val->name?></option>
+                    <?php } ?>
+                  </select>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </div>
+          </form>
       </div>
   </div>
 </div>
@@ -344,6 +364,7 @@
           type: "POST",
           success: function(response){
             var arr = JSON.parse(response);
+            $('#inputKategoriId').val(id);
             $('#inputNamaKategori').val(arr.name);
             $('#add-kategori-modal').modal('show');
           }
@@ -378,6 +399,23 @@
 
     $('#confirmDelete').on('show.bs.modal', function(e) {
         $(this).find('#form-delete').attr('action', $(e.relatedTarget).data('href'));
+    });
+
+    $('#form-delete').validate({
+      rules: {
+        new_cat: "required"
+      },
+      errorElement: 'span',
+      errorPlacement: function (error, element) {
+        error.addClass('invalid-feedback');
+        element.closest('.form-group').append(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass('is-invalid');
+      }
     });
 
   });

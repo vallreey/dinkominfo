@@ -472,10 +472,12 @@ class Admin extends BaseController
     {
         $header['title'] = 'Administrasi Kategori';
         
+        $data['listKategori']= $this->dashboard->getOptionalList('kategori');
+        
         echo view('partial/header', $header);
         echo view('partial/top_menu');
         echo view('partial/side_menu');
-        echo view('manage_kategori');
+        echo view('manage_kategori', $data);
         echo view('partial/footer');
     }
 
@@ -560,54 +562,37 @@ class Admin extends BaseController
 
     public function deleteKategori($cid)
     {
-        $assignBid = trim($_POST['new_dept']);
-        if (is_null($assignBid) || $assignBid == '') {
-            $_SESSION['info_error'] = '<b>Error!</b> Undefined re-assign department.';
-            return redirect()->to('admin/bidang');
+        $assignCid = trim($_POST['new_cat']);
+        if (is_null($assignCid) || $assignCid == '') {
+            $_SESSION['info_error'] = '<b>Error!</b> Undefined re-assign category.';
+            return redirect()->to('admin/kategori');
         }
 
-        // check new dept <> deleted dept
-        if ($bid == $assignBid) {
-            $_SESSION['info_error'] = '<b>Error!</b> Tidak diperkenankan re-asign ke departement yang sama.';
-            return redirect()->to('admin/bidang');
+        // check new cat <> deleted cat
+        if ($cid == $assignCid) {
+            $_SESSION['info_error'] = '<b>Error!</b> Tidak diperkenankan re-asign ke kategori yang sama.';
+            return redirect()->to('admin/kategori');
         } else {
             $this->db->transBegin();
             try {
                 // update _data
-                $depts['department'] = $assignBid;
-                $updDept = $this->main->updateData('data', array('department' => $bid), $depts);
-                if (!$updDept)
-                    throw new \Exception('Re-asign data department gagal terupdate.');
+                $cats['category'] = $assignCid;
+                $updCat = $this->main->updateData('data', array('category' => $cid), $cats);
+                if (!$updCat)
+                    throw new \Exception('Re-asign data kategori gagal terupdate.');
 
-                // update _user
-                $updUser = $this->main->updateData('user', array('department' => $bid), $depts);
-                if (!$updUser)
-                    throw new \Exception('Re-asign user department gagal terupdate.');
-
-                // update _dept_perms
-                $perms['dept_id'] = $assignBid;
-                $updPerms = $this->main->updateData('dept_perms', array('dept_id' => $bid), $perms);
-                if (!$updPerms)
-                    throw new \Exception('Re-asign department permission gagal terupdate.');
-
-                // update _dept_reviewer
-                $revs['dept_id'] = $assignBid;
-                $updRevs = $this->main->updateData('dept_reviewer', array('dept_id' => $bid), $revs);
-                if (!$updRevs)
-                    throw new \Exception('Re-asign department reviewer gagal terupdate.');
-
-                // delete _department
-                $delDept = $this->main->deleteData('department', array('id' => $bid));
-                if (!$delDept)
-                    throw new \Exception('Department gagal dihapus.');
+                // delete _category
+                $delCat = $this->main->deleteData('category', array('id' => $cid));
+                if (!$delCat)
+                    throw new \Exception('Kategori gagal dihapus.');
 
                 $this->db->transCommit();
-                $_SESSION['info_success'] = '<b>Sukses!</b> Data department berhasil terhapus.';
-                return redirect()->to('admin/bidang');   
+                $_SESSION['info_success'] = '<b>Sukses!</b> Data kategori berhasil terhapus.';
+                return redirect()->to('admin/kategori');   
             } catch (\Exception $e) {
                 $this->db->transRollback();
                 $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
-                return redirect()->to('admin/bidang');
+                return redirect()->to('admin/kategori');
             }
         }
     }
