@@ -66,7 +66,7 @@ class Admin extends BaseController
                         'username' => $val->username,
                         'is_admin' => '<i class="fa '.$isAdmin.'" aria-hidden="true"></i>',
                         'is_reviewer'=> '<i class="fa '.$isReviewer.'" aria-hidden="true"></i>',
-                        'action'   => '<div class="btn-group btn-group-sm"><button type="button" class="btn btn-info btn-edit" id="'.$val->id.'"><i class="fas fa-pencil-alt"></i></button><a href="'.site_url('admin/deleteUser/').$val->id.'" type="button" class="btn btn-danger btn-delete"><i class="fas fa-trash"></i></a></div>',
+                        'action'   => '<div class="btn-group btn-group-sm"><button type="button" class="btn btn-info btn-edit" id="'.$val->id.'"><i class="fas fa-pencil-alt"></i></button><button type="button" class="btn btn-danger" data-toggle="modal" data-href="'.site_url('admin/deleteUser/').$val->id.'" data-target="#confirmDelete"><i class="fas fa-trash"></i></button></div>',
                         'dept_name'=> getDeptName($val->id),
                         'email'    => $val->Email,
                         'phone'    => $val->phone
@@ -77,7 +77,7 @@ class Admin extends BaseController
                     $data[] = array(
                         'id'       => $val->id,
                         'bidang'   => $val->name,
-                        'action'   => '<div class="btn-group btn-group-sm"><button type="button" class="btn btn-info btn-edit" id="'.$val->id.'"><i class="fas fa-pencil-alt"></i></button><button type="button" class="btn btn-danger btn-delete"><i class="fas fa-trash"></i></button></div>'
+                        'action'   => '<div class="btn-group btn-group-sm"><button type="button" class="btn btn-info btn-edit" id="'.$val->id.'"><i class="fas fa-pencil-alt"></i></button><button type="button" id="'.$val->id.'" class="btn btn-danger" data-toggle="modal" data-href="'.site_url('admin/deleteBidang/').$val->id.'" data-target="#confirmDelete"><i class="fas fa-trash"></i></button></div>'
                     );
                 }
             } elseif ($table == 'category') {
@@ -85,7 +85,7 @@ class Admin extends BaseController
                   $data[] = array(
                       'id'       => $val->id,
                       'kategori' => $val->name,
-                      'action'   => '<div class="btn-group btn-group-sm"><button type="button" class="btn btn-info btn-edit" id="'.$val->id.'"><i class="fas fa-pencil-alt"></i></button><button type="button" class="btn btn-danger btn-delete"><i class="fas fa-trash"></i></button></div>'
+                      'action'   => '<div class="btn-group btn-group-sm"><button type="button" class="btn btn-info btn-edit" id="'.$val->id.'"><i class="fas fa-pencil-alt"></i></button><button type="button" id="'.$val->id.'" class="btn btn-danger" data-toggle="modal" data-href="'.site_url('admin/deleteKategori/').$val->id.'" data-target="#confirmDelete"><i class="fas fa-trash"></i></button></div>'
                   );
               }
           }
@@ -226,21 +226,17 @@ class Admin extends BaseController
                 }
             }
         } else {
-            $this->main->transBegin();
+            $this->db->transBegin();
             try {
                 // UPDATE EXISTING USER
                 $updateUser = $this->main->updateData('user', array('id' => $uid), $users);
-                if (!$updateUser) {
-                    $_SESSION['info_error'] = '<b>Error!</b> User data gagal terupdate.';
-                    return redirect()->to('admin/user');
-                }
+                if (!$updateUser)
+                    throw new \Exception('User data gagal terupdate.');
 
                 // update _admin
                 $insertAdmin = $this->main->updateData('admin', array('id' => $uid), $admins);
-                if (!$insertAdmin) {
-                    $_SESSION['info_error'] = '<b>Error!</b> User admin gagal terupdate.';
-                    return redirect()->to('admin/user');
-                }
+                if (!$insertAdmin)
+                    throw new \Exception('User admin gagal terupdate.');
 
                 // update _dept_reviewer
                 if ($dept_rev != '') {
@@ -252,24 +248,20 @@ class Admin extends BaseController
 
                     // delete exist data
                     $deleteDeptReviewer = $this->main->deleteData('dept_reviewer', array('user_id' => $uid));
-                    if (!$deleteDeptReviewer) {
-                        $_SESSION['info_error'] = '<b>Error!</b> Department reviewer gagal diupdate. [act: delete]';
-                        return redirect()->to('admin/user');
-                    }
+                    if (!$deleteDeptReviewer)
+                        throw new \Exception('Department reviewer gagal diupdate. [act: delete]');
 
                     // insert new data
                     $insertDeptReviewer = $this->main->insertBatchData('dept_reviewer', $deptr);
-                    if (!$insertDeptReviewer) {
-                        $_SESSION['info_error'] = '<b>Error!</b> Department reviewer gagal diupdate. [act: insert]';
-                        return redirect()->to('admin/user');
-                    }
+                    if (!$insertDeptReviewer)
+                        throw new \Exception('Department reviewer gagal diupdate. [act: insert]');
                 }
 
-                $this->main->transCommit();
+                $this->db->transCommit();
                 $_SESSION['info_success'] = '<b>Sukses!</b> Data user berhasil terupdate [Username: '.$username.']';
                 return redirect()->to('admin/user');   
             } catch (\Exception $e) {
-                $this->main->transRollback();
+                $this->db->transRollback();
                 $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
                 return redirect()->to('admin/user');
             }
@@ -278,49 +270,39 @@ class Admin extends BaseController
 
     public function deleteUser($uid)
     {
-        $this->main->db->transBegin();
+        $this->db->transBegin();
         try {
             // delete from _user
             $delUser = $this->main->deleteData('user', array('id' => $uid));
-            if (!$delUser) {
-                $_SESSION['info_error'] = '<b>Error!</b> User data gagal dihapus.';
-                return redirect()->to('admin/user');
-            }
+            if (!$delUser)
+                throw new \Exception('User data gagal dihapus.');
 
             // delete from _admin
             $delUser = $this->main->deleteData('admin', array('id' => $uid));
-            if (!$delUser) {
-                $_SESSION['info_error'] = '<b>Error!</b> User admin gagal dihapus.';
-                return redirect()->to('admin/user');
-            }
+            if (!$delUser)
+                throw new \Exception('User admin gagal dihapus.');
 
             // delete from _user_perms
             $delPerms = $this->main->deleteData('user_perms', array('uid' => $uid));
-            if (!$delPerms) {
-                $_SESSION['info_error'] = '<b>Error!</b> User permission gagal dihapus.';
-                return redirect()->to('admin/user');
-            }
+            if (!$delPerms)
+                throw new \Exception('User permission gagal dihapus.');
 
             // delete from _dept_reviewer
             $delUser = $this->main->deleteData('dept_reviewer', array('user_id' => $uid));
-            if (!$delUser) {
-                $_SESSION['info_error'] = '<b>Error!</b> Department reviewer gagal dihapus.';
-                return redirect()->to('admin/user');
-            }
+            if (!$delUser)
+                throw new \Exception('Department reviewer gagal dihapus.');
 
             // change owner to root user
             $newdata['owner'] = $_SESSION['root_id'];
             $updOwner = $this->main->updateData('data', array('owner' => $uid), $newdata);
-            if (!$updOwner) {
-                $_SESSION['info_error'] = '<b>Error!</b> Data root owner gagal terupdate.';
-                return redirect()->to('admin/user');
-            }
+            if (!$updOwner)
+                throw new \Exception('Data root owner gagal terupdate.');
 
-            $this->main->db->transCommit();
+            $this->db->transCommit();
             $_SESSION['info_success'] = '<b>Sukses!</b> Data user berhasil terhapus.';
             return redirect()->to('admin/user');   
         } catch (\Exception $e) {
-            $this->main->db->transRollback();
+            $this->db->transRollback();
             $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
             return redirect()->to('admin/user');
         }
@@ -329,11 +311,13 @@ class Admin extends BaseController
     public function bidang()
     {
         $header['title'] = 'Administrasi Bidang';
+
+        $data['listBidang'] = $this->dashboard->getOptionalList('bidang');
         
         echo view('partial/header', $header);
         echo view('partial/top_menu');
         echo view('partial/side_menu');
-        echo view('manage_bidang');
+        echo view('manage_bidang', $data);
         echo view('partial/footer');
     }
 
@@ -414,8 +398,8 @@ class Admin extends BaseController
                 $this->db->transBegin();
                 try {   
                     // update info _department
-                    $deptID = $this->main->updateData('department', array('id' => $bid), $dept);
-                    if (!$deptID)
+                    $updDept = $this->main->updateData('department', array('id' => $bid), $dept);
+                    if (!$updDept)
                         throw new \Exception('Data department gagal terupdate.');
 
                     $this->db->transCommit();
@@ -426,6 +410,60 @@ class Admin extends BaseController
                     $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
                     return redirect()->to('admin/bidang');
                 }
+            }
+        }
+    }
+
+    public function deleteBidang($bid)
+    {
+        $assignBid = trim($_POST['new_dept']);
+        if (is_null($assignBid) || $assignBid == '') {
+            $_SESSION['info_error'] = '<b>Error!</b> Undefined re-assign department.';
+            return redirect()->to('admin/bidang');
+        }
+
+        // check new dept <> deleted dept
+        if ($bid == $assignBid) {
+            $_SESSION['info_error'] = '<b>Error!</b> Tidak diperkenankan re-asign ke departement yang sama.';
+            return redirect()->to('admin/bidang');
+        } else {
+            $this->db->transBegin();
+            try {
+                // update _data
+                $depts['department'] = $assignBid;
+                $updDept = $this->main->updateData('data', array('department' => $bid), $depts);
+                if (!$updDept)
+                    throw new \Exception('Re-asign data department gagal terupdate.');
+
+                // update _user
+                $updUser = $this->main->updateData('user', array('department' => $bid), $depts);
+                if (!$updUser)
+                    throw new \Exception('Re-asign user department gagal terupdate.');
+
+                // update _dept_perms
+                $perms['dept_id'] = $assignBid;
+                $updPerms = $this->main->updateData('dept_perms', array('dept_id' => $bid), $perms);
+                if (!$updPerms)
+                    throw new \Exception('Re-asign department permission gagal terupdate.');
+
+                // update _dept_reviewer
+                $revs['dept_id'] = $assignBid;
+                $updRevs = $this->main->updateData('dept_reviewer', array('dept_id' => $bid), $revs);
+                if (!$updRevs)
+                    throw new \Exception('Re-asign department reviewer gagal terupdate.');
+
+                // delete _department
+                $delDept = $this->main->deleteData('department', array('id' => $bid));
+                if (!$delDept)
+                    throw new \Exception('Department gagal dihapus.');
+
+                $this->db->transCommit();
+                $_SESSION['info_success'] = '<b>Sukses!</b> Data department berhasil terhapus.';
+                return redirect()->to('admin/bidang');   
+            } catch (\Exception $e) {
+                $this->db->transRollback();
+                $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
+                return redirect()->to('admin/bidang');
             }
         }
     }
@@ -453,6 +491,125 @@ class Admin extends BaseController
         $wheres['id'] = $cat_id;
         $detail = $this->main->getResultData('data', $wheres, false, 'id, realname');
         echo json_encode($detail);
+    }
+
+    public function updateKategori()
+    {
+        if (!$_POST) {
+            $_SESSION['info_error'] = '<b>Error!</b> Tidak ada data yang terinput.';
+            return redirect()->to('admin/kategori');
+        }
+
+        $cid      = trim($_POST['id']);
+        $cat_name = ucwords(trim($_POST['cat_name']));
+        
+        // data kategori
+        $cat['name'] = $cat_name;
+        
+        // ADD NEW CATEGORY
+        if ($cid == '') {
+            // check existing category
+            $existingCat = $this->main->getRowData('category', array('name' => $cat_name), true);
+            
+            if ($existingCat !== '') {
+                $_SESSION['info_error'] = '<b>Error!</b> Data kategori duplikat.';
+                return redirect()->to('admin/kategori');
+            } else {
+                $this->db->transBegin();
+                try {   
+                    // insert into _category
+                    $catID = $this->main->insertData('category', $cat, true);
+                    if (!$catID)
+                        throw new \Exception('Data kategori gagal disimpan.');
+
+                    $this->db->transCommit();
+                    $_SESSION['info_success'] = '<b>Sukses!</b> Data kategori berhasil terbentuk [Kat: '.$cat_name.']';
+                    return redirect()->to('admin/kategori');
+                } catch (\Exception $e) {
+                    $this->db->transRollback();
+                    $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
+                    return redirect()->to('admin/kategori');
+                }
+            }
+        } else {
+            // check existing category
+            $existingCat = $this->main->getRowData('category', array('name' => $cat_name, 'id <>' => $cid), true);
+            
+            if ($existingCat !== '') {
+                $_SESSION['info_error'] = '<b>Error!</b> Data kategori duplikat.';
+                return redirect()->to('admin/kategori');
+            } else {
+                $this->db->transBegin();
+                try {   
+                    // update info _category
+                    $updCat = $this->main->updateData('category', array('id' => $cid), $cat);
+                    if (!$updCat)
+                        throw new \Exception('Data kategori gagal terupdate.');
+
+                    $this->db->transCommit();
+                    $_SESSION['info_success'] = '<b>Sukses!</b> Data kategori berhasil terupdate. [Kat: '.$cat_name.']';
+                    return redirect()->to('admin/kategori');
+                } catch (\Exception $e) {
+                    $this->db->transRollback();
+                    $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
+                    return redirect()->to('admin/kategori');
+                }
+            }
+        }
+    }
+
+    public function deleteKategori($cid)
+    {
+        $assignBid = trim($_POST['new_dept']);
+        if (is_null($assignBid) || $assignBid == '') {
+            $_SESSION['info_error'] = '<b>Error!</b> Undefined re-assign department.';
+            return redirect()->to('admin/bidang');
+        }
+
+        // check new dept <> deleted dept
+        if ($bid == $assignBid) {
+            $_SESSION['info_error'] = '<b>Error!</b> Tidak diperkenankan re-asign ke departement yang sama.';
+            return redirect()->to('admin/bidang');
+        } else {
+            $this->db->transBegin();
+            try {
+                // update _data
+                $depts['department'] = $assignBid;
+                $updDept = $this->main->updateData('data', array('department' => $bid), $depts);
+                if (!$updDept)
+                    throw new \Exception('Re-asign data department gagal terupdate.');
+
+                // update _user
+                $updUser = $this->main->updateData('user', array('department' => $bid), $depts);
+                if (!$updUser)
+                    throw new \Exception('Re-asign user department gagal terupdate.');
+
+                // update _dept_perms
+                $perms['dept_id'] = $assignBid;
+                $updPerms = $this->main->updateData('dept_perms', array('dept_id' => $bid), $perms);
+                if (!$updPerms)
+                    throw new \Exception('Re-asign department permission gagal terupdate.');
+
+                // update _dept_reviewer
+                $revs['dept_id'] = $assignBid;
+                $updRevs = $this->main->updateData('dept_reviewer', array('dept_id' => $bid), $revs);
+                if (!$updRevs)
+                    throw new \Exception('Re-asign department reviewer gagal terupdate.');
+
+                // delete _department
+                $delDept = $this->main->deleteData('department', array('id' => $bid));
+                if (!$delDept)
+                    throw new \Exception('Department gagal dihapus.');
+
+                $this->db->transCommit();
+                $_SESSION['info_success'] = '<b>Sukses!</b> Data department berhasil terhapus.';
+                return redirect()->to('admin/bidang');   
+            } catch (\Exception $e) {
+                $this->db->transRollback();
+                $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
+                return redirect()->to('admin/bidang');
+            }
+        }
     }
 
 }
