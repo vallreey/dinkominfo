@@ -101,10 +101,14 @@
           <!-- /.col -->
           <div class="col-md-9">
             <?php if (isset($_SESSION['info_success'])) { ?>
-              <div class="alert alert-info" role="alert"><?=$_SESSION['info_success']?></div><?php unset($_SESSION['info_success']); }
-            elseif(isset($_SESSION['info_error'])) { ?>
-              <div class="alert alert-warning" role="alert"><?=$_SESSION['info_error']?></div><?php unset($_SESSION['info_error']); }
-            ?>
+            <div class="alert alert-success alert-dismissible">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+              <h5><i class="icon fas fa-check"></i> Alert!</h5>
+                <?=$_SESSION['info_success']?></div><?php unset($_SESSION['info_success']); } elseif(isset($_SESSION['info_error'])) { ?>
+            <div class="alert alert-danger alert-dismissible">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+              <h5><i class="icon fas fa-ban"></i> Alert!</h5>
+              <?=$_SESSION['info_error']?></div><?php unset($_SESSION['info_error']); } ?>
             <div class="card card-primary card-outline">
               <div class="card-footer">
                 <h3 class="card-title float-right"><i>User</i></h3>
@@ -144,125 +148,134 @@
         </div>
       </div>
     </div>
-  </section>
-</div>
 
-<div class="modal fade" id="add-user-modal">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title"><i><span id="title-modal">Add User</span></i></h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form id="form-user" action="<?=site_url('admin/updateUser')?>" method="POST">
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Nama Depan</label>
-                <input type="text" class="form-control" id="inputNamaDepan" name="first_name" placeholder="John">
-              </div>
-              <div class="form-group">
-                <label>Username</label>
-                <input type="text" class="form-control" id="inputUsername" name="username" placeholder="johncarter">
-              </div>
-              <div class="form-group">
-                <label>Phone Number</label>
-                <input type="text" class="form-control" id="inputPhoneNumber" name="phone" placeholder="082xxxxxxxxx">
-              </div>
-              <div class="form-group">
-                <label>Bidang</label>
-                <select class="form-control select2" name="department" id="inputDepartment" style="width: 100%;" data-placeholder="Select a department">
-                  <option value=""></option>
-                  <?php
-                    foreach ($listBidang as $key => $val) {
-                  ?>
-                  <option value="<?=$val->id?>"><?=$val->name?></option>
-                  <?php } ?>
-                </select>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Nama Belakang</label>
-                <input type="text" class="form-control" id="inputNamaBelakang" name="last_name" placeholder="Carter">
-              </div>
-              <div class="form-group">
-                <label>Password</label>
-                <input type="password" class="form-control" id="inputPassword" name="password" placeholder="jjg67ee">
-              </div>
-              <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" class="form-control" id="inputEmail" name="email" placeholder="john@gmail.com">
-              </div>
-              <div class="form-group">
-                <label>Dept. Reviewer for</label>
-                <select class="form-control select2" name="deptreviewer[]" id="inputDeptReviewer" multiple="multiple" data-placeholder="Select one or more department" style="width: 100%;">
-                  <?php
-                    foreach ($listBidang as $key => $val) { 
-                  ?>
-                  <option value="<?=$val->id?>"><?=$val->name?></option>
-                  <?php } ?>
-                </select>
-              </div>
-            </div>
-            <div class="col-md-12">
-              <div class="card card-footer">
-                <div class="row">
-                  <div class="col-md-4 text-center">
-                    <div class="form-group">
-                      <label><br>Is Admin?</label><br>
-                      <input class="form-check-input" id="inputIsAdmin" name="is_admin" value="1" type="checkbox" checked>
-                    </div>
-                  </div>
-                  <div class="col-md-4 text-center">
+    <div class="modal fade" id="add-user-modal">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title"><i><span id="title-modal">Add User</span></i></h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form id="form-user" action="<?=site_url('admin/updateUser')?>" method="POST">
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-md-6">
                   <div class="form-group">
-                      <label>Can<br>"Tambah Dokumen"?</label><br>
-                      <input class="form-check-input" id="inputCanAdd" name="can_add" value="1" type="checkbox" checked>
-                    </div>
+                    <label>Nama Depan</label>
+                    <input type="text" class="form-control" id="inputNamaDepan" name="first_name" placeholder="John">
                   </div>
-                  <div class="col-md-4 text-center">
-                    <div class="form-group">
-                      <label>Can<br>"Cek Data"?</label><br>
-                      <input class="form-check-input" id="inputCanCheckIn" name="can_checkin" value="1" type="checkbox" checked>
+                  <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" class="form-control" id="inputUsername" name="username" placeholder="johncarter">
+                  </div>
+                  <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" class="form-control" id="inputPhoneNumber" name="phone" placeholder="082xxxxxxxxx">
+                  </div>
+                  <div class="form-group">
+                    <label>Bidang</label>
+                    <select class="form-control select2" name="department" id="inputDepartment" style="width: 100%;" data-placeholder="Select a department">
+                      <option value=""></option>
+                      <?php
+                        foreach ($listBidang as $key => $val) {
+                      ?>
+                      <option value="<?=$val->id?>"><?=$val->name?></option>
+                      <?php } ?>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Nama Belakang</label>
+                    <input type="text" class="form-control" id="inputNamaBelakang" name="last_name" placeholder="Carter">
+                  </div>
+                  <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-control" id="inputPassword" name="password" placeholder="jjg67ee">
+                  </div>
+                  <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" class="form-control" id="inputEmail" name="email" placeholder="john@gmail.com">
+                  </div>
+                  <div class="form-group">
+                    <label>Dept. Reviewer for</label>
+                    <select class="form-control select2" name="deptreviewer[]" id="inputDeptReviewer" multiple="multiple" data-placeholder="Select one or more department" style="width: 100%;">
+                      <?php
+                        foreach ($listBidang as $key => $val) { 
+                      ?>
+                      <option value="<?=$val->id?>"><?=$val->name?></option>
+                      <?php } ?>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="card card-footer">
+                    <div class="row">
+                      <div class="col-md-4 text-center">
+                        <div class="form-group">
+                          <label><br>Is Admin?</label><br>
+                          <input class="form-check-input" id="inputIsAdmin" name="is_admin" value="1" type="checkbox" checked>
+                        </div>
+                      </div>
+                      <div class="col-md-4 text-center">
+                      <div class="form-group">
+                          <label>Can<br>"Tambah Dokumen"?</label><br>
+                          <input class="form-check-input" id="inputCanAdd" name="can_add" value="1" type="checkbox" checked>
+                        </div>
+                      </div>
+                      <div class="col-md-4 text-center">
+                        <div class="form-group">
+                          <label>Can<br>"Cek Data"?</label><br>
+                          <input class="form-check-input" id="inputCanCheckIn" name="can_checkin" value="1" type="checkbox" checked>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+            <div class="modal-footer justify-content-between">
+              <input type="hidden" id="inputUserId" name="id">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-info">Save</button>
+            </div>
+          </form>
         </div>
-        <div class="modal-footer justify-content-between">
-          <input type="hidden" id="inputUserId" name="id">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-info">Save</button>
-        </div>
-      </form>
+      </div>
     </div>
-  </div>
-</div>
 
-<div id="confirmDelete" class="modal fade">
-  <div class="modal-dialog modal-confirm">
-      <div class="modal-content">
-          <div class="modal-header flex-column">
-              <div class="icon-box">
-                  <i class="fa fa-times"></i>
+    <div id="confirmDelete" class="modal fade">
+      <div class="modal-dialog modal-confirm">
+          <div class="modal-content">
+              <div class="modal-header flex-column">
+                  <div class="icon-box">
+                      <i class="fa fa-times"></i>
+                  </div>
+                  <h4 class="modal-title w-100">Are you sure?</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
               </div>
-              <h4 class="modal-title w-100">Are you sure?</h4>
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          </div>
-          <div class="modal-body">
-              <p>Do you really want to delete these records? This process cannot be undone.</p>
-          </div>
-          <div class="modal-footer justify-content-center">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-              <a href="#" class="btn btn-danger btn-delete" role="button">Delete</a>
+              <div class="modal-body">
+                  <p>Do you really want to delete these records? This process cannot be undone.</p>
+              </div>
+              <div class="modal-footer justify-content-center">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  <a href="#" class="btn btn-danger btn-delete" role="button">Delete</a>
+              </div>
           </div>
       </div>
+    </div>
+  </section>
+</div>
+
+<footer class="main-footer">
+  <div class="float-right d-none d-sm-block">
+    <b>Version</b> 2.0.0
   </div>
+  <strong>Copyright © 2022 <a href="#"> Dinkominfo Kabupaten Banjarnegara</a>.</strong> 
+</footer>
+
 </div>
 
 <style>

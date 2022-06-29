@@ -96,10 +96,14 @@
           </div>
           <div class="col-md-9">
             <?php if (isset($_SESSION['info_success'])) { ?>
-              <div class="alert alert-info" role="alert"><?=$_SESSION['info_success']?></div><?php unset($_SESSION['info_success']); }
-            elseif(isset($_SESSION['info_error'])) { ?>
-              <div class="alert alert-warning" role="alert"><?=$_SESSION['info_error']?></div><?php unset($_SESSION['info_error']); }
-            ?>
+            <div class="alert alert-success alert-dismissible">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+              <h5><i class="icon fas fa-check"></i> Alert!</h5>
+                <?=$_SESSION['info_success']?></div><?php unset($_SESSION['info_success']); } elseif(isset($_SESSION['info_error'])) { ?>
+            <div class="alert alert-danger alert-dismissible">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+              <h5><i class="icon fas fa-ban"></i> Alert!</h5>
+              <?=$_SESSION['info_error']?></div><?php unset($_SESSION['info_error']); } ?>
             <div class="card card-primary card-outline">
               <div class="card-footer">
                 <h3 class="card-title float-right"><i>Kategori</i></h3>
