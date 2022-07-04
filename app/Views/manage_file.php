@@ -2,6 +2,10 @@
 <link rel="stylesheet" href="<?=base_url('adminLTE/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css')?>">
 <link rel="stylesheet" href="<?=base_url('adminLTE/plugins/datatables-responsive/css/responsive.bootstrap4.min.css')?>">
 <link rel="stylesheet" href="<?=base_url('adminLTE/plugins/datatables-buttons/css/buttons.bootstrap4.min.css')?>">
+<!-- SweetAlert2 -->
+<link rel="stylesheet" href="<?=base_url('adminLTE/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css')?>">
+<!-- Toastr -->
+<link rel="stylesheet" href="<?=base_url('adminLTE/plugins/toastr/toastr.min.css')?>">
 
 <div class="content-wrapper">
   <section class="content-header">
@@ -26,9 +30,8 @@
       <div class="col-md-12">
         <div class="row">
           <div class="col-md-3">
-            <button type="button" class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#add-bidang-modal">Add Bidang</button>
-
-            <?=view('submenu_admin', $submenu)?>
+            <button type="button" class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#add-kategori-modal"></button>
+            <?=view('manage_file', $submenu)?>
           </div>
           <div class="col-md-9">
             <?php if (isset($_SESSION['info_success'])) { ?>
@@ -42,18 +45,16 @@
               <?=$_SESSION['info_error']?></div><?php unset($_SESSION['info_error']); } ?>
             <div class="card card-primary card-outline">
               <div class="card-footer">
-                <h3 class="card-title float-right"><i>Bidang</i></h3>
+                <h3 class="card-title float-right"><i>Kategori</i></h3>
               </div>
-              <!-- /.card-header -->
               <div class="card-body">
                 <div class="table-responsive mailbox-messages">
-                  <!-- <table class="table table-hover table-striped"> -->
-                  <table id="bidangTable" class="table table-bordered table-striped display" style="width: 100%;">
+                  <table id="kategoriTable" class="table table-bordered table-striped display" style="width: 100%;">
                     <thead>
                       <tr>
                         <th>ID</th>
                         <th></th>
-                        <th>Bidang</th>
+                        <th>Kategori</th>
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -61,7 +62,7 @@
                       <tr>
                         <th>ID</th>
                         <th></th>
-                        <th>Bidang</th>
+                        <th>Kategori</th>
                         <th>Action</th>
                       </tr>
                     </tfoot>
@@ -76,28 +77,28 @@
   </section>
 </div>
 
-<div class="modal fade" id="add-bidang-modal">
+<div class="modal fade" id="add-kategori-modal">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title"><i><span id="title-modal">Add Bidang</span></i></h4>
+        <h4 class="modal-title"><i><span id="title-modal">Add Kategori</span></i></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="form-bidang" action="<?=site_url('admin/updateBidang')?>" method="POST">
+      <form id="form-kategori" action="<?=site_url('admin/updateKategori')?>" method="POST">
         <div class="modal-body">
           <div class="row">
             <div class="col-md-12">
               <div class="form-group">
-                <label>Department</label>
-                <input type="text" class="form-control" id="inputNamaBidang" name="dept_name" placeholder="Bidang ....">
+                <label>Kategori</label>
+                <input type="text" class="form-control" id="inputNamaKategori" name="cat_name" placeholder="Nama Kategori">
               </div>
             </div>
           </div>
         </div>
         <div class="modal-footer justify-content-between">
-          <input type="hidden" id="inputBidangId" name="id">
+          <input type="hidden" id="inputKategoriId" name="id">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-info">Save</button>
         </div>
@@ -121,11 +122,11 @@
                 <p>Do you really want to delete these records? This process cannot be undone.</p>
                 <hr>
                 <div class="form-group">
-                  <label>Re-assign to other department</label>
-                  <select class="form-control select2" name="new_dept" style="width: 100%;" data-placeholder="Select a department">
+                  <label>Re-assign to other category</label>
+                  <select class="form-control select2" name="new_cat" style="width: 100%;" data-placeholder="Select a category">
                     <option value=""></option>
                     <?php
-                      foreach ($listBidang as $key => $val) {
+                      foreach ($listKategori as $key => $val) {
                     ?>
                     <option value="<?=$val->id?>"><?=$val->name?></option>
                     <?php } ?>
@@ -151,23 +152,22 @@
         .text( 'Loading...' );
 
     $.ajax({
-      url: "<?=site_url('admin/getUserInDept/')?>" + d.id,
+      url: "<?=site_url('admin/getDataByKategoriId/')?>" + d.id,
       type: "POST",
       success: function(response){
         var arr = JSON.parse(response);
 
         if (arr === '') {
-          div.html('<span style="color:red"><i>Tidak ada user terdaftar.</i></span>').removeClass('loading');
+          div.html('<span style="color:red"><i>Tidak ada file terdaftar.</i></span>').removeClass('loading');
         } else {
-          var string_tbl = '<table class="table table-sm table-bordered table-striped" style="width:50%"><thead class="bg-primary"><tr><th>UID</th><th>Users in : <i>' + d.bidang + '</i></th></tr></thead>';
+          var string_tbl = '<table class="table table-sm table-bordered table-striped"><thead class="bg-primary"><tr><th>ID</th><th>Filename in : <i>' + d.kategori + '</i></th></tr></thead>';
 
           arr.forEach(function(profile, index, myArray) {
-            string_tbl += '<tr><td>' + profile.id + '</td><td>' + profile.first_name + ' ' + profile.last_name + '</td></tr>';
+            string_tbl += '<tr><td>' + profile.id + '</td><td>' + profile.realname + '</td></tr>';
           });
 
           string_tbl += '</table>';
           div.html(string_tbl).removeClass('loading');
-          // element(string_tbl);
         }
       },
       error: function(xhr, status, error){
@@ -180,12 +180,12 @@
   }
   
   $(function () {
-    var table = $('#bidangTable').DataTable({
+    var table = $('#kategoriTable').DataTable({
       'processing': true,
       'serverSide': true,
       'pageLength': 10,
       'ajax': {
-        'url': '<?=site_url('admin/loadData/department')?>',
+        'url': '<?=site_url('admin/loadData/category')?>',
         'type': 'POST',
       },
       'columns': [
@@ -196,12 +196,12 @@
             data: null,
             defaultContent: '',
         },
-        { data: 'bidang'},
+        { data: 'kategori'},
         { data: 'action', orderable: false},
       ]
     });
 
-    $('#bidangTable tbody').on('click', 'td.dt-control', function () {
+    $('#kategoriTable tbody').on('click', 'td.dt-control', function () {
         var tr = $(this).closest('tr');
         var row = table.row(tr);
  
@@ -211,41 +211,39 @@
             tr.removeClass('shown');
         } else {
             // Open this row
-            // format(row.child, row.data());
-            // row.child.show();
             row.child(format(row.data())).show();
             tr.addClass('shown');
         }
     });
 
-    $('#bidangTable tbody').on('click', '.btn-edit', function () {
-        $('#title-modal').html('Update Bidang');
+    $('#kategoriTable tbody').on('click', '.btn-edit', function () {
+        $('#title-modal').html('Update Kategori');
         
         const id = $(this).attr('id');
         $.ajax({
-          url: "<?=site_url('admin/getBidangById/')?>" + id,
+          url: "<?=site_url('admin/getKategoriById/')?>" + id,
           type: "POST",
           success: function(response){
             var arr = JSON.parse(response);
-            $('#inputBidangId').val(id);
-            $('#inputNamaBidang').val(arr.name);
-            $('#add-bidang-modal').modal('show');
+            $('#inputKategoriId').val(id);
+            $('#inputNamaKategori').val(arr.name);
+            $('#add-kategori-modal').modal('show');
           }
         });
     });
 
-    $('#add-bidang-modal').on('hidden.bs.modal', function () {
-        $('#title-modal').html('Add Bidang');
-        var fbidang = $('#form-bidang');
+    $('#add-kategori-modal').on('hidden.bs.modal', function () {
+        $('#title-modal').html('Add Kategori');
+        var fbidang = $('#form-kategori');
         fbidang.validate().resetForm();
         fbidang.find('.error').removeClass('error');
         fbidang.find('.is-invalid').removeClass('is-invalid');
         fbidang.trigger('reset');
     });
 
-    $('#form-bidang').validate({
+    $('#form-kategori').validate({
       rules: {
-        dept_name: "required"
+        cat_name: "required"
       },
       errorElement: 'span',
       errorPlacement: function (error, element) {
@@ -266,7 +264,7 @@
 
     $('#form-delete').validate({
       rules: {
-        new_dept: "required"
+        new_cat: "required"
       },
       errorElement: 'span',
       errorPlacement: function (error, element) {

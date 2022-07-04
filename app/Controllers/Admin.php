@@ -33,6 +33,7 @@ class Admin extends BaseController
         $header['title'] = 'Administrasi User';
 
         $data['listBidang'] = $this->dashboard->getOptionalList('bidang');
+        $data['submenu']    = array('active' => 'user');
         
         echo view('partial/header', $header);
         echo view('partial/top_menu');
@@ -313,6 +314,7 @@ class Admin extends BaseController
         $header['title'] = 'Administrasi Bidang';
 
         $data['listBidang'] = $this->dashboard->getOptionalList('bidang');
+        $data['submenu']    = array('active' => 'bidang');
         
         echo view('partial/header', $header);
         echo view('partial/top_menu');
@@ -473,6 +475,7 @@ class Admin extends BaseController
         $header['title'] = 'Administrasi Kategori';
         
         $data['listKategori']= $this->dashboard->getOptionalList('kategori');
+        $data['submenu']     = array('active' => 'kategori');
         
         echo view('partial/header', $header);
         echo view('partial/top_menu');
@@ -595,6 +598,19 @@ class Admin extends BaseController
                 return redirect()->to('admin/kategori');
             }
         }
+    }
+
+    public function file()
+    {
+        $header['title'] = 'Administrasi File';
+
+        $data['submenu'] = array('active' => 'file');
+        
+        echo view('partial/header', $header);
+        echo view('partial/top_menu');
+        echo view('partial/side_menu');
+        echo view('manage_file', $data);
+        echo view('partial/footer');
     }
 
 }
