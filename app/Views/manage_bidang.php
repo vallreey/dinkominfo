@@ -1,8 +1,3 @@
-<!-- DataTables -->
-<link rel="stylesheet" href="<?=base_url('adminLTE/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css')?>">
-<link rel="stylesheet" href="<?=base_url('adminLTE/plugins/datatables-responsive/css/responsive.bootstrap4.min.css')?>">
-<link rel="stylesheet" href="<?=base_url('adminLTE/plugins/datatables-buttons/css/buttons.bootstrap4.min.css')?>">
-
 <div class="content-wrapper">
   <section class="content-header">
     <div class="container-fluid">
@@ -140,9 +135,6 @@
       </div>
   </div>
 </div>
-
-<!-- jQuery -->
-<script src="<?=base_url('adminLTE/plugins/jquery/jquery.min.js')?>"></script>
 
 <script>
   function format(d) {

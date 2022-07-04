@@ -1,12 +1,3 @@
-<!-- DataTables -->
-<link rel="stylesheet" href="<?=base_url('adminLTE/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css')?>">
-<link rel="stylesheet" href="<?=base_url('adminLTE/plugins/datatables-responsive/css/responsive.bootstrap4.min.css')?>">
-<link rel="stylesheet" href="<?=base_url('adminLTE/plugins/datatables-buttons/css/buttons.bootstrap4.min.css')?>">
-<!-- SweetAlert2 -->
-<link rel="stylesheet" href="<?=base_url('adminLTE/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css')?>">
-<!-- Toastr -->
-<link rel="stylesheet" href="<?=base_url('adminLTE/plugins/toastr/toastr.min.css')?>">
-
 <div class="content-wrapper">
   <section class="content-header">
     <div class="container-fluid">
@@ -45,7 +36,7 @@
               <?=$_SESSION['info_error']?></div><?php unset($_SESSION['info_error']); } ?>
             <div class="card card-primary card-outline">
               <div class="card-footer">
-                <h3 class="card-title float-right"><i>Kategori</i></h3>
+                <h3 class="card-title float-right"><i>File</i></h3>
               </div>
               <div class="card-body">
                 <div class="table-responsive mailbox-messages">
@@ -141,9 +132,6 @@
       </div>
   </div>
 </div>
-
-<!-- jQuery -->
-<script src="<?=base_url('adminLTE/plugins/jquery/jquery.min.js')?>"></script>
 
 <script>
   function format(d) {

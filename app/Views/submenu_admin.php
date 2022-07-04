@@ -1,3 +1,8 @@
+<!-- DataTables -->
+<link rel="stylesheet" href="<?=base_url('adminLTE/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('adminLTE/plugins/datatables-responsive/css/responsive.bootstrap4.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('adminLTE/plugins/datatables-buttons/css/buttons.bootstrap4.min.css')?>">
+
 <div class="card">
   <div class="card-header">
     <h3 class="card-title">Administrasi</h3>
@@ -9,7 +14,8 @@
     </div>
   </div>
   <div class="card-body p-0">
-    <ul class="nav nav-pills flex-column">
+    <!-- <ul class="nav nav-pills flex-column"> -->
+    <ul id="submenus" class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="true" style="border-bottom: 1px solidrgba(0,0,0,.125);">
       <li class="nav-item active">
         <a href="<?=site_url('admin/user')?>" class="nav-link" <?=$active == 'user' ? 'style="color:#007bff"' : ''?>>
           <i class="fas fa-inbox"></i> User <?=$active == 'user' ? '<span class="badge bg-primary float-right">&#10003;	</span>' : ''?>
@@ -29,6 +35,29 @@
         <a href="<?=site_url('admin/file')?>" class="nav-link" <?=$active == 'file' ? 'style="color:#007bff"' : ''?>>
           <i class="fas fa-filter"></i> File <?=$active == 'file' ? '<span class="badge bg-primary float-right">&#10003;	</span>' : ''?>
         </a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link">
+          <i class="nav-icon far fa-envelope"></i>
+          <p>
+            Approval Dokumen
+            <i class="fas fa-angle-left right"></i>
+          </p>
+        </a>
+        <ul class="nav nav-treeview">
+          <li class="nav-item">
+            <a href="<?=site_url('dashboard/approval/onreview')?>" class="nav-link">
+              <i class="far fa-circle nav-icon"></i>
+              <p>On Review</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?=site_url('dashboard/approval/rejected')?>" class="nav-link">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Rejected</p>
+            </a>
+          </li>
+        </ul>
       </li>
       <li class="nav-item">
         <a href="#" class="nav-link" <?=$active == 'report' ? 'style="color:#007bff"' : ''?>>
@@ -141,3 +170,8 @@
       background: #ee3535;
   }
 </style>
+
+<!-- jQuery -->
+<script src="<?=base_url('adminLTE/plugins/jquery/jquery.min.js')?>"></script>
+<!-- InputMask -->
+<script src="<?=base_url('adminLTE/plugins/inputmask/jquery.inputmask.min.js')?>"></script>
