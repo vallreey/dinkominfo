@@ -38,7 +38,7 @@ class Admin extends BaseController
         echo view('partial/header', $header);
         echo view('partial/top_menu');
         echo view('partial/side_menu');
-        echo view('manage_user', $data);
+        echo view('admin/manage_user', $data);
         echo view('partial/footer');
     }
 
@@ -330,7 +330,7 @@ class Admin extends BaseController
         echo view('partial/header', $header);
         echo view('partial/top_menu');
         echo view('partial/side_menu');
-        echo view('manage_bidang', $data);
+        echo view('admin/manage_bidang', $data);
         echo view('partial/footer');
     }
 
@@ -491,7 +491,7 @@ class Admin extends BaseController
         echo view('partial/header', $header);
         echo view('partial/top_menu');
         echo view('partial/side_menu');
-        echo view('manage_kategori', $data);
+        echo view('admin/manage_kategori', $data);
         echo view('partial/footer');
     }
 
@@ -620,7 +620,7 @@ class Admin extends BaseController
         echo view('partial/header', $header);
         echo view('partial/top_menu');
         echo view('partial/side_menu');
-        echo view('manage_file', $data);
+        echo view('admin/manage_file', $data);
         echo view('partial/footer');
     }
 
@@ -633,7 +633,7 @@ class Admin extends BaseController
         echo view('partial/header', $header);
         echo view('partial/top_menu');
         echo view('partial/side_menu');
-        echo view('manage_filetypes', $data);
+        echo view('admin/manage_filetypes', $data);
         echo view('partial/footer');
     }
 

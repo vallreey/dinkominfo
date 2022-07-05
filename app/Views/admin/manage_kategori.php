@@ -22,7 +22,7 @@
         <div class="row">
           <div class="col-md-3">
             <button type="button" class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#add-kategori-modal">Add Kategori</button>
-            <?=view('submenu_admin', $submenu)?>
+            <?=view('admin/submenu_admin', $submenu)?>
           </div>
           <div class="col-md-9">
             <?php if (isset($_SESSION['info_success'])) { ?>
