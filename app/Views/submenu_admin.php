@@ -16,53 +16,98 @@
   <div class="card-body p-0">
     <!-- <ul class="nav nav-pills flex-column"> -->
     <ul id="submenus" class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="true" style="border-bottom: 1px solidrgba(0,0,0,.125);">
-      <li class="nav-item active">
-        <a href="<?=site_url('admin/user')?>" class="nav-link" <?=$active == 'user' ? 'style="color:#007bff"' : ''?>>
-          <i class="fas fa-inbox"></i> User <?=$active == 'user' ? '<span class="badge bg-primary float-right">&#10003;	</span>' : ''?>
+      <li class="nav-item">
+        <a href="<?=site_url('admin/user')?>" class="nav-link <?=$active == 'user' ? 'active' : ''?>">
+          <i class="nav-icon far fa-user"></i>
+          <p>
+            User
+          </p>
         </a>
       </li>
       <li class="nav-item">
-        <a href="<?=site_url('admin/bidang')?>" class="nav-link" <?=$active == 'bidang' ? 'style="color:#007bff"' : ''?>>
-          <i class="far fa-envelope"></i> Bidang <?=$active == 'bidang' ? '<span class="badge bg-primary float-right">&#10003;	</span>' : ''?>
+        <a href="<?=site_url('admin/bidang')?>" class="nav-link <?=$active == 'bidang' ? 'active' : ''?>">
+          <i class="nav-icon far fa-list-alt"></i>
+          <p>
+            Bidang
+          </p>
         </a>
       </li>
       <li class="nav-item">
-        <a href="<?=site_url('admin/kategori')?>" class="nav-link" <?=$active == 'kategori' ? 'style="color:#007bff"' : ''?>>
-          <i class="fas fa-inbox"></i> Kategori <?=$active == 'kategori' ? '<span class="badge bg-primary float-right">&#10003;	</span>' : ''?>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="<?=site_url('admin/file')?>" class="nav-link" <?=$active == 'file' ? 'style="color:#007bff"' : ''?>>
-          <i class="fas fa-filter"></i> File <?=$active == 'file' ? '<span class="badge bg-primary float-right">&#10003;	</span>' : ''?>
+        <a href="<?=site_url('admin/kategori')?>" class="nav-link <?=$active == 'kategori' ? 'active' : ''?>">
+          <i class="nav-icon far fa-envelope"></i>
+          <p>
+            Kategori
+          </p>
         </a>
       </li>
       <li class="nav-item">
         <a href="#" class="nav-link">
-          <i class="nav-icon far fa-envelope"></i>
+          <i class="nav-icon far fa-file-alt"></i>
           <p>
-            Approval Dokumen
+            File
             <i class="fas fa-angle-left right"></i>
           </p>
         </a>
         <ul class="nav nav-treeview">
           <li class="nav-item">
-            <a href="<?=site_url('dashboard/approval/onreview')?>" class="nav-link">
+            <a href="<?=site_url('dashboard/approval/onreview')?>" class="nav-link <?=$active == 'file_deleted' ? 'active' : ''?>">
               <i class="far fa-circle nav-icon"></i>
-              <p>On Review</p>
+              <p>Deleted/Undeleted</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="<?=site_url('dashboard/approval/rejected')?>" class="nav-link">
+            <a href="<?=site_url('dashboard/approval/rejected')?>" class="nav-link <?=$active == 'file_review' ? 'active' : ''?>">
               <i class="far fa-circle nav-icon"></i>
-              <p>Rejected</p>
+              <p>Reviews</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?=site_url('dashboard/approval/rejected')?>" class="nav-link <?=$active == 'file_reject' ? 'active' : ''?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Rejections</p>
             </a>
           </li>
         </ul>
       </li>
       <li class="nav-item">
-        <a href="#" class="nav-link" <?=$active == 'report' ? 'style="color:#007bff"' : ''?>>
-          <i class="far fa-trash-alt"></i> Report <?=$active == 'report' ? '<span class="badge bg-primary float-right">&#10003;	</span>' : ''?>
+        <a href="#" class="nav-link">
+          <i class="nav-icon far fa-file-alt"></i>
+          <p>
+            Reports
+            <i class="fas fa-angle-left right"></i>
+          </p>
         </a>
+        <ul class="nav nav-treeview">
+          <li class="nav-item">
+            <a href="<?=site_url('dashboard/approval/onreview')?>" class="nav-link <?=$active == 'file_deleted' ? 'active' : ''?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Access Log</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?=site_url('dashboard/approval/rejected')?>" class="nav-link <?=$active == 'file_review' ? 'active' : ''?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>File List Export</p>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="nav-item <?=$active == 'filetypes' ? 'menu-open' : ''?>">
+        <a href="#" class="nav-link <?=$active == 'filetypes' ? 'active' : ''?>">
+          <i class="nav-icon far fa-file-alt"></i>
+          <p>
+            Settings
+            <i class="fas fa-angle-left right"></i>
+          </p>
+        </a>
+        <ul class="nav nav-treeview">
+          <li class="nav-item">
+            <a href="<?=site_url('admin/filetypes')?>" class="nav-link <?=$active == 'filetypes' ? 'active' : ''?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>File Types</p>
+            </a>
+          </li>
+        </ul>
       </li>
     </ul>
   </div>
@@ -175,3 +220,5 @@
 <script src="<?=base_url('adminLTE/plugins/jquery/jquery.min.js')?>"></script>
 <!-- InputMask -->
 <script src="<?=base_url('adminLTE/plugins/inputmask/jquery.inputmask.min.js')?>"></script>
+<!-- Bootstrap Switch -->
+<script src="<?=base_url('adminLTE/plugins/bootstrap-switch/js/bootstrap-switch.min.js')?>"></script>

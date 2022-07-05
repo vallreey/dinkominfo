@@ -88,8 +88,19 @@ class Admin extends BaseController
                       'kategori' => $val->name,
                       'action'   => '<div class="btn-group btn-group-sm"><button type="button" class="btn btn-info btn-edit" id="'.$val->id.'"><i class="fas fa-pencil-alt"></i></button><button type="button" id="'.$val->id.'" class="btn btn-danger" data-toggle="modal" data-href="'.site_url('admin/deleteKategori/').$val->id.'" data-target="#confirmDelete"><i class="fas fa-trash"></i></button></div>'
                   );
-              }
-          }
+                }
+            }  elseif ($table == 'filetypes') {
+                foreach ($files as $key => $val) {
+                    $status = $val->active == 1 ? 'checked' : '';
+
+                    $data[] = array(
+                        'id'      => $val->id,
+                        'type'    => $val->type,
+                        'active'  => '<div class="form-check"><input class="form-check-input status-active" id="'.$val->id.'" type="checkbox" '.$status.'></div>',
+                        'action'  => '<button type="button" id="'.$val->id.'" class="btn btn-sm btn-danger" data-toggle="modal" data-href="'.site_url('admin/deleteFileType/').$val->id.'" data-target="#confirmDelete"><i class="fas fa-trash"></i></button>'
+                    );
+                }
+            }
         }
 
         $dataset = array(
@@ -611,6 +622,114 @@ class Admin extends BaseController
         echo view('partial/side_menu');
         echo view('manage_file', $data);
         echo view('partial/footer');
+    }
+
+    public function filetypes()
+    {
+        $header['title'] = 'Setting File Types';
+
+        $data['submenu'] = array('active' => 'filetypes');
+        
+        echo view('partial/header', $header);
+        echo view('partial/top_menu');
+        echo view('partial/side_menu');
+        echo view('manage_filetypes', $data);
+        echo view('partial/footer');
+    }
+
+    public function getFileTypeById($id)
+    {
+        $wheres['id'] = $id;
+        $detail = $this->main->getRowData('filetypes', $wheres);
+        echo json_encode($detail);
+    }
+
+    public function updateFileType($tid, $active)
+    {   
+        // check existing filetypes
+        $existingType = $this->main->getRowData('filetypes', array('id' => $tid));
+        
+        if ($existingType == '') {
+            $_SESSION['info_error'] = '<b>Error!</b> Undefined filetype.';
+            return redirect()->to('admin/filetypes');
+        } else {
+            $this->db->transBegin();
+            try {   
+                $type = $existingType['type'];
+
+                // update _filetypes
+                $ftp['active'] = $active;
+                $updType = $this->main->updateData('filetypes', array('id' => $tid), $ftp);
+                if (!$updType)
+                    throw new \Exception('Status '.$type.' gagal terupdate.');
+
+                $this->db->transCommit();
+
+                $statusdesc = $active == 1 ? 'AKTIF' : 'NON AKTIF';
+                $_SESSION['info_success'] = '<b>Sukses!</b> Status '.$type.' berhasil terupdate. [Status: <b>'.$statusdesc.'</b>]';
+            } catch (\Exception $e) {
+                $this->db->transRollback();
+                $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
+            }
+        }
+    }
+
+    public function addFileType()
+    {
+        if (!$_POST) {
+            $_SESSION['info_error'] = '<b>Error!</b> Tidak ada data yang terinput.';
+            return redirect()->to('admin/filetypes');
+        }
+
+        $type   = strtolower(trim($_POST['type']));
+        $active = isset($_POST['active']) && $_POST['active'] != '' ? trim($_POST['active']) : 0;
+        
+        // data kategori
+        $ftp['type']    = $type;
+        $ftp['active']  = $active;
+        
+        // check existing filetypes
+        $existingType = $this->main->getRowData('filetypes', array('type' => $type), true);
+        
+        if ($existingType !== '') {
+            $_SESSION['info_error'] = '<b>Error!</b> Data file type duplikat.';
+            return redirect()->to('admin/filetypes');
+        } else {
+            $this->db->transBegin();
+            try {   
+                // insert into _filetypes
+                $typeID = $this->main->insertData('filetypes', $ftp, true);
+                if (!$typeID)
+                    throw new \Exception('Data file type gagal disimpan.');
+
+                $this->db->transCommit();
+                $_SESSION['info_success'] = '<b>Sukses!</b> Data file type berhasil terbentuk [Filetype: '.$type.']';
+                return redirect()->to('admin/filetypes');
+            } catch (\Exception $e) {
+                $this->db->transRollback();
+                $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
+                return redirect()->to('admin/filetypes');
+            }
+        }
+    }
+
+    public function deleteFileType($tid)
+    {
+        $this->db->transBegin();
+        try {
+            // delete _filetypes
+            $delCat = $this->main->deleteData('filetypes', array('id' => $tid));
+            if (!$delCat)
+                throw new \Exception('Filetype gagal dihapus.');
+
+            $this->db->transCommit();
+            $_SESSION['info_success'] = '<b>Sukses!</b> Data filetype berhasil terhapus.';
+            return redirect()->to('admin/filetypes');   
+        } catch (\Exception $e) {
+            $this->db->transRollback();
+            $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
+            return redirect()->to('admin/filetypes');
+        }
     }
 
 }

@@ -33,6 +33,10 @@ class AdminModel extends Model
                   $query = $builder->orLike('id', $wheres['searchValue'])
                                 ->orLike('name', $wheres['searchValue']);
                   break;
+                case 'filetypes':
+                    $query = $builder->orLike('id', $wheres['searchValue'])
+                                    ->orLike('type', $wheres['searchValue']);
+                    break;
             }
         }
 
@@ -43,7 +47,8 @@ class AdminModel extends Model
                 'nama'      => 'last_name',
                 'username'  => 'username',
                 'bidang'    => 'name',
-                'kategori'  => 'name'
+                'kategori'  => 'name',
+                'type'      => 'type',
             );
             $query = $builder->orderBy($fieldOrder[$wheres['columnName']], $wheres['columnSortOrder']);
         }
