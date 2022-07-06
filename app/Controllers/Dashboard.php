@@ -2,6 +2,7 @@
 namespace App\Controllers;
 use App\Models\DashboardModel;
 use App\Models\UserModel;
+use App\Models\GeneralModel;
 
 class Dashboard extends BaseController
 {
@@ -13,8 +14,11 @@ class Dashboard extends BaseController
 			echo "<SCRIPT>alert('$message');window.location='" . site_url('logon') . "';</SCRIPT>";
 		}
 
+        $this->db = \Config\Database::connect();
+
 		$this->dashboard = new DashboardModel();
 		$this->user = new UserModel();
+        $this->main = new GeneralModel;
 
         helper(['permission']);
 	}
@@ -45,9 +49,9 @@ class Dashboard extends BaseController
 
     public function getDataById($status, $id = null)
     {
-        $dataId = isset($id) && !is_null($id) ? $id : $_GET['id'];
-        $wheres['searchValue']['id'] = $dataId;
+        $wheres['id'] = isset($id) && !is_null($id) ? $id : $_GET['id'];
         $wheres['publishable'] = publishableByStatus($status);
+        $wheres['status'] = $status;
 
         $dataById = $this->dashboard->getData($wheres, true);
         
@@ -102,11 +106,11 @@ class Dashboard extends BaseController
         $arrStatus = array('deleted', 'onreview', 'rejected');
 
         if (count($files) > 0) {
+            $i = 0;
             foreach ($files as $key => $val) {
-                $data[] = array(
+                $data[$i] = array(
                     'id'        => $val->id,
-                    'check'     => in_array($status, $arrStatus) ? '<input type="checkbox" value="'.$val->id.'" id="check'.$val->id.'">' : '',
-                    'detail'    => '<div class="btn-group" role="group"><button type="button" class="btn btn-default btn-sm btn-detail" id="'.$val->id.'"><i class="fas fa-folder"></i></button><a href="'.site_url('dashboard/update').'/'.$status.'/'.$val->id.'" class="btn btn-default btn-sm"><i class="fas fa-pencil-alt"></i></a><button type="button" class="btn btn-default btn-sm btn-delete" data-toogle="modal" data-target="#confirmDelete" data-href="'.site_url('dashboard/delete?id='.$val->id).'"><i class="fas fa-trash"></i></button></div>',
+                    'check'     => in_array($status, $arrStatus) ? '<input type="checkbox" name="ids" value="'.$val->id.'" id="check'.$val->id.'">' : '',
                     'nama_file' => $val->realname,
                     'deskripsi' => $val->description,
                     'hak_akses' => '-',
@@ -117,6 +121,13 @@ class Dashboard extends BaseController
                     'ukuran'    => '-',
                     'status'    => $val->status
                 );
+
+                $detail = '<div class="btn-group" role="group"><button type="button" class="btn btn-default btn-sm btn-detail" id="'.$val->id.'"><i class="fas fa-folder"></i></button>';
+
+                if ($status == 'deleted') $data[$i]['detail'] = $detail . '</div>';
+                else $data[$i]['detail'] = $detail . '<a href="'.site_url('dashboard/update').'/'.$status.'/'.$val->id.'" class="btn btn-default btn-sm"><i class="fas fa-pencil-alt"></i></a><button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-href="'.site_url('dashboard/tempDeleteFile/').$val->id.'" data-target="#confirmDelete"><i class="fas fa-trash"></i></button></div>';
+                
+                $i++;
             }
         }
 
@@ -201,5 +212,46 @@ class Dashboard extends BaseController
         echo view('partial/side_menu');
         echo view('approval', $data);
         echo view('partial/footer');
+    }
+
+    // User has requested a deletion from the file detail page
+    public function tempDeleteFile($fid)
+    {
+        $datas['publishable'] = 2;
+        $this->db->transBegin();
+        try {
+            // update _data
+            $updData = $this->main->updateData('data', array('id' => $fid), $datas);
+            if (!$updData)
+                    throw new \Exception('Status publishable gagal terupdate.');
+            
+            // PR LANJUTAN MOVE FILE (IVAN) 
+            // if (!is_dir($GLOBALS['CONFIG']['archiveDir'])) {
+            //     // Make sure directory is writable
+            //     if (!mkdir($GLOBALS['CONFIG']['archiveDir'], 0775)) {
+            //         $last_message='Could not create ' . $GLOBALS['CONFIG']['archiveDir'];
+            //         header('Location:error.php?ec=23&last_message=' . urlencode($last_message));
+            //         exit;
+            //     }
+            // }
+            // fmove($GLOBALS['CONFIG']['dataDir'] . $val . '.dat', $GLOBALS['CONFIG']['archiveDir'] . $val . '.dat');
+
+            // audit trail
+            $logs['file_id'] = $fid;
+            $logs['user_id'] = $_SESSION['username'];
+            $logs['timestamp'] = date('Y-m-d H:i:s');
+            $logs['action'] = 'X';
+            $insLogs = $this->main->insertData('access_log', $logs);
+            if (!$insLogs)
+                throw new \Exception('Log entry gagal tersimpan.');
+
+            $this->db->transCommit();
+            $_SESSION['info_success'] = '<b>Sukses!</b> Dokumen berhasil dipindahkan ke archive.';
+            return redirect()->to('dashboard/approval/onreview');   
+        } catch (\Exception $e) {
+            $this->db->transRollback();
+            $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
+            return redirect()->to('dashboard/approval/onreview');   
+        }
     }
 }

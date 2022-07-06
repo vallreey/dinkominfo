@@ -25,7 +25,9 @@ class DashboardModel extends Model
                     ->join('odm_department dept', 'd.department = dept.id')
                     ->join('odm_category c', 'd.category = c.id')
                     ->where('d.publishable', $wheres['publishable']);
-        
+
+        if (isset($wheres['id']) && $wheres['id'] != '') $query = $builder->where('d.id', $wheres['id']);
+
         if (isset($wheres['searchValue']) && $wheres['searchValue'] != '') {
             // search values  
             if ($wheres['status'] == 'approved') {

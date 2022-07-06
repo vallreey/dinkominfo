@@ -58,6 +58,15 @@
         </div>
         <div class="row" style="padding-top:30px">
           <div class="col-12">
+          <?php if (isset($_SESSION['info_success'])) { ?>
+          <div class="alert alert-success alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <h5><i class="icon fas fa-check"></i> Alert!</h5>
+              <?=$_SESSION['info_success']?></div><?php unset($_SESSION['info_success']); } elseif(isset($_SESSION['info_error'])) { ?>
+          <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <h5><i class="icon fas fa-ban"></i> Alert!</h5>
+            <?=$_SESSION['info_error']?></div><?php unset($_SESSION['info_error']); } ?>
             <div class="card">
               <div class="card-body">
                 <table id="example1" class="table table-bordered table-striped display" style="width: 100%;">
@@ -101,98 +110,121 @@
       </div>
     </div>
   </section>
-</div>
-
-<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="card card-primary card-tabs">
-        <div class="card-header p-0 pt-1">
-          <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
-            <li class="nav-item">
-              <a class="nav-link active" id="custom-tabs-one-detail-tab" data-toggle="pill" href="#custom-tabs-one-detail" role="tab" aria-controls="custom-tabs-one-detail" aria-selected="true">Detail</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="custom-tabs-one-history-tab" data-toggle="pill" href="#custom-tabs-one-history" role="tab" aria-controls="custom-tabs-one-history" aria-selected="false">History</a>
-            </li>
-          </ul>
-        </div>
-        <div class="card-body">
-          <div class="tab-content" id="custom-tabs-one-tabContent">
-            <div class="tab-pane fade show active" id="custom-tabs-one-detail" role="tabpanel" aria-labelledby="custom-tabs-one-detail-tab">
-              <table class="table table-bordered table-striped">
-                <tr>
-                  <td>Kategori</td>
-                  <td><p id="pKategori"></p></td>
-                </tr>
-                <tr>
-                  <td>Ukuran</td>
-                  <td><p id="pUkuran"></p></td>
-                </tr>
-                <tr>
-                  <td>Tanggal Dibuat</td>
-                  <td><p id="pCreated"></p></td>
-                </tr>
-                <tr>
-                  <td>Pemilik</td>
-                  <td><p id="pPemilik"></p></td>
-                </tr>
-                <tr>
-                  <td>Deskripsi</td>
-                  <td><p id="pDeskripsi"></p></td>
-                </tr>
-                <tr>
-                  <td>Comment</td>
-                  <td><p id="pComment"></p></td>
-                </tr>
-                <tr>
-                  <td>Revision</td>
-                  <td><p id="pRevision"></p></td>
-                </tr>
-                <tr>
-                  <td>File</td>
-                  <td>
-                    <span class="mailbox-attachment-icon"><i class="far fa-file-pdf"></i></span>
-                    <div class="mailbox-attachment-info">
-                      <a href="#" class="mailbox-attachment-name"><i class="fas fa-paperclip"></i> <span id="pFileName"></span></a>
-                          <span class="mailbox-attachment-size clearfix mt-1">
-                            <span>1,245 KB</span>
-                            <a href="#" class="btn btn-default btn-sm float-right"><i class="fas fa-cloud-download-alt"></i></a>
-                          </span>
-                    </div>
-                  </td>
-                </tr>
-              </table>
+  
+  <div id="confirmDelete" class="modal fade">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header flex-column">
+                <div class="icon-box">
+                    <i class="fa fa-times"></i>
+                </div>
+                <h4 class="modal-title w-100">Are you sure?</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             </div>
-            <div class="tab-pane fade" id="custom-tabs-one-history" role="tabpanel" aria-labelledby="custom-tabs-one-history-tab">
-            <div class="timeline timeline-inverse">
-              <div class="time-label">
-                <span class="bg-danger">
-                  10 Feb. 2014
-                </span>
+            <form id="form-delete" action="#" method="POST">
+              <div class="modal-body">
+                  <p>Do you really want to delete these records? This process cannot be undone.</p>
               </div>
-              <div>
-                <i class="fas fa-envelope bg-primary"></i>
-                <div class="timeline-item">
-                  <span class="time"><i class="far fa-clock"></i> 12:05</span>
-                  <h3 class="timeline-header"><a href="#">Support Team</a> sent you an email</h3>
-                  <div class="timeline-body">
-                    Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles,
-                    weebly ning heekya handango imeem plugg dopplr jibjab, movity
-                    jajah plickers sifteo edmodo ifttt zimbra. Babblely odeo kaboodle
-                    quora plaxo ideeli hulu weebly balihoo...
+              <div class="modal-footer justify-content-center">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn btn-danger">Delete</button>
+              </div>
+            </form>
+        </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="card card-primary card-tabs">
+          <div class="card-header p-0 pt-1">
+            <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" id="custom-tabs-one-detail-tab" data-toggle="pill" href="#custom-tabs-one-detail" role="tab" aria-controls="custom-tabs-one-detail" aria-selected="true">Detail</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="custom-tabs-one-history-tab" data-toggle="pill" href="#custom-tabs-one-history" role="tab" aria-controls="custom-tabs-one-history" aria-selected="false">History</a>
+              </li>
+            </ul>
+          </div>
+          <div class="card-body">
+            <div class="tab-content" id="custom-tabs-one-tabContent">
+              <div class="tab-pane fade show active" id="custom-tabs-one-detail" role="tabpanel" aria-labelledby="custom-tabs-one-detail-tab">
+                <table class="table table-bordered table-striped">
+                  <tr>
+                    <td>Kategori</td>
+                    <td><p id="pKategori"></p></td>
+                  </tr>
+                  <tr>
+                    <td>Ukuran</td>
+                    <td><p id="pUkuran"></p></td>
+                  </tr>
+                  <tr>
+                    <td>Tanggal Dibuat</td>
+                    <td><p id="pCreated"></p></td>
+                  </tr>
+                  <tr>
+                    <td>Pemilik</td>
+                    <td><p id="pPemilik"></p></td>
+                  </tr>
+                  <tr>
+                    <td>Deskripsi</td>
+                    <td><p id="pDeskripsi"></p></td>
+                  </tr>
+                  <tr>
+                    <td>Comment</td>
+                    <td><p id="pComment"></p></td>
+                  </tr>
+                  <tr>
+                    <td>Revision</td>
+                    <td><p id="pRevision"></p></td>
+                  </tr>
+                  <tr>
+                    <td>File</td>
+                    <td>
+                      <span class="mailbox-attachment-icon"><i class="far fa-file-pdf"></i></span>
+                      <div class="mailbox-attachment-info">
+                        <a href="#" class="mailbox-attachment-name"><i class="fas fa-paperclip"></i> <span id="pFileName"></span></a>
+                            <span class="mailbox-attachment-size clearfix mt-1">
+                              <span>1,245 KB</span>
+                              <a href="#" class="btn btn-default btn-sm float-right"><i class="fas fa-cloud-download-alt"></i></a>
+                            </span>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <div class="tab-pane fade" id="custom-tabs-one-history" role="tabpanel" aria-labelledby="custom-tabs-one-history-tab">
+              <div class="timeline timeline-inverse">
+                <div class="time-label">
+                  <span class="bg-danger">
+                    10 Feb. 2014
+                  </span>
+                </div>
+                <div>
+                  <i class="fas fa-envelope bg-primary"></i>
+                  <div class="timeline-item">
+                    <span class="time"><i class="far fa-clock"></i> 12:05</span>
+                    <h3 class="timeline-header"><a href="#">Support Team</a> sent you an email</h3>
+                    <div class="timeline-body">
+                      Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles,
+                      weebly ning heekya handango imeem plugg dopplr jibjab, movity
+                      jajah plickers sifteo edmodo ifttt zimbra. Babblely odeo kaboodle
+                      quora plaxo ideeli hulu weebly balihoo...
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div>
-                <i class="far fa-clock bg-gray"></i>
+                <div>
+                  <i class="far fa-clock bg-gray"></i>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="modal-footer justify-content-between">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
       </div>
     </div>
   </div>
@@ -205,6 +237,106 @@
   .card {
     margin-bottom: 0px;
   }
+  .modal-confirm {
+      color: #636363;
+      width: 400px;
+  }
+
+  .modal-confirm .modal-content {
+      padding: 20px;
+      border-radius: 5px;
+      border: none;
+      text-align: center;
+      font-size: 14px;
+  }
+
+  .modal-confirm .modal-header {
+      border-bottom: none;
+      position: relative;
+  }
+
+  .modal-confirm h4 {
+      text-align: center;
+      font-size: 26px;
+      margin: 30px 0 -10px;
+  }
+
+  .modal-confirm .close {
+      position: absolute;
+      top: -5px;
+      right: -2px;
+  }
+
+  .modal-confirm .modal-body {
+      color: #999;
+  }
+
+  .modal-confirm .modal-footer {
+      border: none;
+      text-align: center;
+      border-radius: 5px;
+      font-size: 13px;
+      padding: 10px 15px 25px;
+  }
+
+  .modal-confirm .modal-footer a {
+      color: #999;
+  }
+
+  .modal-confirm .icon-box {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto;
+      border-radius: 50%;
+      z-index: 9;
+      text-align: center;
+      border: 3px solid #f15e5e;
+  }
+
+  .modal-confirm .icon-box i {
+      color: #f15e5e;
+      font-size: 46px;
+      display: inline-block;
+      margin-top: 13px;
+  }
+
+  .modal-confirm .btn,
+  .modal-confirm .btn:active {
+      color: #fff;
+      border-radius: 4px;
+      background: #60c7c1;
+      text-decoration: none;
+      transition: all 0.4s;
+      line-height: normal;
+      min-width: 120px;
+      border: none;
+      min-height: 40px;
+      border-radius: 3px;
+      margin: 0 5px;
+  }
+
+  .modal-confirm .btn-secondary {
+      background: #c1c1c1;
+  }
+
+  .modal-confirm .btn-secondary:hover,
+  .modal-confirm .btn-secondary:focus {
+      background: #a8a8a8;
+  }
+
+  .modal-confirm .btn-danger {
+      background: #f15e5e;
+  }
+
+  .modal-confirm .btn-danger:hover,
+  .modal-confirm .btn-danger:focus {
+      background: #ee3535;
+  }
+
+  .trigger-btn {
+      display: inline-block;
+      margin: 100px auto;
+  }
 </style>
 
 <!-- jQuery -->
@@ -212,66 +344,137 @@
 
 <script>
   $(function () {
-    fill_datatable();
+    var status = $('#hidStatus').val();
+    var ids = [];
 
-    function fill_datatable() {
-      var status = $('#hidStatus').val();
-      var listDataTable = $('#example1').DataTable({
-        'dom': '<"d-flex justify-content-between align-items-end"Blf>rt<"d-flex justify-content-between"ip><"clear">', 
-        'responsive': true, 
-        'autoWidth': false,
-        'buttons': [
-            {
-                extend: 'collection',
-                text: 'Export',
-                buttons: [
-                    'copy',
-                    'excel',
-                    'csv',
-                    'pdf',
-                    'print'
-                ]
+    var listDataTable = $('#example1').DataTable({
+      'dom': '<"d-flex justify-content-between align-items-end"Blf>rt<"d-flex justify-content-between"ip><"clear">', 
+      'responsive': true, 
+      'autoWidth': false,
+      'buttons': [
+          {
+              extend: 'collection',
+              text: 'Export',
+              buttons: [
+                  'copy',
+                  'excel',
+                  'csv',
+                  'pdf',
+                  'print'
+              ]
+          }
+      ],
+      'processing': true,
+      'serverSide': true,
+      'ajax': {
+        'url': '<?=site_url('dashboard/loadAjaxTables/')?>' + status,
+        'type': 'POST'
+      },
+      'columns': [
+        { data: 'id' },
+        { data: 'check', orderable: false},
+        { data: 'detail', orderable: false},
+        { data: 'nama_file' },
+        { data: 'deskripsi' },
+        { data: 'hak_akses', orderable: false},
+        { data: 'created' },
+        { data: 'changed' },
+        { data: 'pemilik' },
+        { data: 'bidang' },
+        { data: 'ukuran' },
+        { data: 'status' },
+      ],
+      'drawCallback': function (settings) { 
+        var response = settings.json;
+        $('#totDeleted').html(response.totDeleted);
+        $('#totReviewed').html(response.totReviewed);
+        $('#totRejected').html(response.totRejected);
+      },
+    });
+
+    if (status == 'deleted') {
+      listDataTable.button().add( 0, {
+        action: function ( e, dt, button, config ) {
+          var isChecked =  $('input:checkbox').is(':checked');
+          if (!isChecked) {
+            alert('Tidak ada data yang dipilih !');
+            return false;
+          } else {
+            $('input:checkbox[name=ids]:checked').each(function(){
+              ids.push($(this).val());
+            });
+          }
+
+          $.ajax({
+            url: "<?=site_url('admin/undeleteFile')?>",
+            method: 'POST',
+            data: {ids:ids},
+            success: function(response) {
+              location.reload();
             }
-        ],
-        'processing': true,
-        'serverSide': true,
-        'ajax': {
-          'url': '<?=site_url('dashboard/loadAjaxTables/')?>' + status,
-          'type': 'POST'
+          })
         },
-        'columns': [
-          { data: 'id' },
-          { data: 'check', orderable: false},
-          { data: 'detail', orderable: false},
-          { data: 'nama_file' },
-          { data: 'deskripsi' },
-          { data: 'hak_akses', orderable: false},
-          { data: 'created' },
-          { data: 'changed' },
-          { data: 'pemilik' },
-          { data: 'bidang' },
-          { data: 'ukuran' },
-          { data: 'status' },
-        ],
-        'drawCallback': function (settings) { 
-          var response = settings.json;
-          $('#totDeleted').html(response.totDeleted);
-          $('#totReviewed').html(response.totReviewed);
-          $('#totRejected').html(response.totRejected);
+        text: 'Undelete',
+        className: 'btn-default'
+      } ).add( 1, {
+        action: function ( e, dt, button, config ) {
+          var isChecked =  $('input:checkbox').is(':checked');
+          if (!isChecked) {
+            alert('Tidak ada data yang dipilih !');
+            return false;
+          } else {
+            $('input:checkbox[name=ids]:checked').each(function(){
+              ids.push($(this).val());
+            });
+          }
+
+          $.ajax({
+            url: "<?=site_url('admin/permDeleteFile')?>",
+            method: 'POST',
+            data: {ids:ids},
+            success: function(response) {
+              location.reload();
+            }
+          })
         },
+        text: 'Delete',
+        className: 'btn-default'
+      });
+    } else if (status == 'onreview') {
+      listDataTable.button().add( 0, {
+        action: function ( e, dt, button, config ) {
+            // dt.ajax.reload();
+        },
+        text: 'Authorize',
+        className: 'btn-default btns'
+      } ).add( 1, {
+        action: function ( e, dt, button, config ) {
+            // dt.ajax.reload();
+        },
+        text: 'Reject',
+        className: 'btn-default btns'
+      });
+    } else if (status == 'rejected') {
+      listDataTable.button().add( 0, {
+        action: function ( e, dt, button, config ) {
+          
+        },
+        text: 'Re-submit for Review',
+        className: 'btn-default btns'
+      } ).add( 1, {
+        action: function ( e, dt, button, config ) {
+            // dt.ajax.reload();
+        },
+        text: 'Delete',
+        className: 'btn-default btns'
       });
     }
-
-    // $('.dataTables_filter input').off().on('keyup', function() {
-    //   $('#example1').DataTable().search(this.value.trim(), false, false).draw();
-    // }); 
 
     $('#checkall').click(function () {
       $('input:checkbox').not(this).prop('checked', this.checked);
     });
 
     $('#example1').on('click', '.btn-detail', function(){
-      var status = $('#hidStatus').val();
       const id = $(this).attr('id');
       $.ajax({
         url: "<?=site_url('dashboard/getDataById/')?>" + status,
@@ -291,7 +494,9 @@
         }
       });
     });
-    return false;
 
+    $('#confirmDelete').on('show.bs.modal', function(e) {
+        $(this).find('#form-delete').attr('action', $(e.relatedTarget).data('href'));
+    });
   });
 </script>
