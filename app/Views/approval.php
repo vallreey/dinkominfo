@@ -27,6 +27,15 @@
   <section class="content">
     <div class="container-fluid">
       <div class="col-md-12">
+
+        <?php if (isset($_SESSION['info_success'])) { ?>
+        <div class="alert alert-success alert-dismissible">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <?=$_SESSION['info_success']?></div><?php unset($_SESSION['info_success']); } elseif(isset($_SESSION['info_error'])) { ?>
+        <div class="alert alert-danger alert-dismissible">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          <?=$_SESSION['info_error']?></div><?php unset($_SESSION['info_error']); } ?>
+          
         <div class="card card-primary">
           <div class="card-header">
             <h3 class="card-title"><?=$title?></h3>

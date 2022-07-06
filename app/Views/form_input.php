@@ -27,12 +27,21 @@
   <section class="content">
     <div class="container-fluid">
       <div class="col-md-12">
+        <?php if (isset($_SESSION['info_success'])) { ?>
+        <div class="alert alert-success alert-dismissible">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          <h5><i class="icon fas fa-check"></i> Alert!</h5>
+            <?=$_SESSION['info_success']?></div><?php unset($_SESSION['info_success']); } elseif(isset($_SESSION['info_error'])) { ?>
+        <div class="alert alert-danger alert-dismissible">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          <h5><i class="icon fas fa-ban"></i> Alert!</h5>
+          <?=$_SESSION['info_error']?></div><?php unset($_SESSION['info_error']); } ?>
+
         <div class="card card-primary">
           <div class="card-header">
             <h3 class="card-title"><?=$title?></h3>
           </div>
-
-          <form id="form-input" action="#" method="POST">
+          <form id="form-input" action="<?=site_url('dashboard/upload')?>" enctype="multipart/form-data" method="POST">
             <div class="card-body">
               <div class="bs-stepper">
                 <div class="bs-stepper-header" role="tablist" style="margin-top: 20px; margin-bottom: 50px">
@@ -77,7 +86,7 @@
                       <label for="inputFile" class="col-sm-2 col-form-label">File</label>
                       <div class="col-sm-10">
                         <?php if (isset($fileExist)) {
-                          echo '<a href="#">'.$fileExist[0]->realname.'</a>';
+                          echo '<a id="existingFile" href="#">'.$fileExist[0]->realname.'</a>';
                         } else {
                           echo '<div class="custom-file">
                                   <input type="file" class="custom-file-input" id="customFile" name="filename">
@@ -165,7 +174,7 @@
                                   <td><?=$dept->name?></td>
                                   <?php for ($i=-1; $i < 5; $i++) { 
                                     $checked = $deptRights == $i ? 'checked' : '';
-                                    echo '<td><input type="radio" name="bidang_perms_'.$dept->id.'" value="'.$i.'" '.$checked.'></td>';
+                                    echo '<td><input type="radio" name="bidang_perms['.$dept->id.']" value="'.$i.'" '.$checked.'></td>';
                                   }?>
                                 </tr>
                                 <?php } ?>
@@ -205,7 +214,7 @@
                                     <?php for ($i=-1; $i < 5; $i++) {
                                       if ($i !== 0) {
                                         $checked = $userRights == $i ? 'checked' : '';
-                                        echo '<td><input type="radio" name="user_perms_'.$user->id.'" value="'.$i.'" '.$checked.'></td>';
+                                        echo '<td><input type="radio" name="user_perms['.$user->id.']" value="'.$i.'" '.$checked.'></td>';
                                       } 
                                     }?>
                                   </tr>
@@ -270,7 +279,7 @@
                             <b>Deskripsi</b>
                             <a class="float-right">
                               <span id="in_deskripsi">
-                              <?=isset($fileExist) ? $fileExist[0]->description : '';?>
+                              <?=isset($fileExist) && $fileExist[0]->description ? $fileExist[0]->description : '-';?>
                               </span>
                             </a>
                           </li>
@@ -278,7 +287,7 @@
                             <b>Komentar</b>
                             <a class="float-right">
                               <span id="in_komentar">
-                              <?=isset($fileExist) ? $fileExist[0]->comment : '';?>
+                              <?=isset($fileExist) && $fileExist[0]->comment ? $fileExist[0]->comment : '-';?>
                               </span>
                             </a>
                           </li>
@@ -290,8 +299,8 @@
               </div>
             </div>
             <div class="card-footer">
-              <button class="btn btn-primary" id="btn-prev" onclick="stepper.previous()">Previous</button>
-              <button class="btn btn-primary" id="btn-next" onclick="stepper.next()">Next</button>
+              <button class="btn btn-primary" id="btn-prev">Previous</button>
+              <button class="btn btn-primary" id="btn-next">Next</button>
               <?php 
                 switch ($status) {
                   case 'onreview': $cancelUrl = 'dashboard/approval/onreview'; break;
@@ -300,8 +309,8 @@
                   default: $cancelUrl = 'dashboard'; break;
                 }
               ?>
-              <a href="<?=site_url($cancelUrl)?>" class="btn btn-default float-right ml-1">Cancel</a>
-              <button type="submit" class="btn btn-info float-right">Save</button>
+              <button type="submit" id="btn-save" class="btn btn-info float-right ml-1"><?php echo isset($fileExist) ? 'Ubah' : 'Submit' ?></button>
+              <a href="<?=site_url($cancelUrl)?>" class="btn btn-default float-right">Cancel</a>
             </div>
           </form>
         </div>
@@ -314,6 +323,9 @@
 
 <!-- jQuery -->
 <script src="<?=base_url('adminLTE/plugins/jquery/jquery.min.js')?>"></script>
+<!-- jquery-validation -->
+<script src="<?=base_url('adminLTE/plugins/jquery-validation/jquery.validate.min.js')?>"></script>
+<script src="<?=base_url('adminLTE//plugins/jquery-validation/additional-methods.min.js')?>"></script>
 <!-- bs-custom-file-input -->
 <script src="<?=base_url('adminLTE/plugins/bs-custom-file-input/bs-custom-file-input.min.js')?>"></script>
 <!-- Select2 -->
@@ -323,6 +335,13 @@
 
 <script>
   $(function () {
+    // Jika ini menu ubah
+    if($('#existingFile').text()) lastCompleteStep = 4;
+    // menu tambah
+    else lastCompleteStep = 0;
+
+    updateUI(0, 5);
+
     bsCustomFileInput.init();
 
     $('#form-input').validate({
@@ -346,6 +365,52 @@
       }
     });
 
+    $('#btn-prev').on("click", (e) => {
+      e.preventDefault();
+      stepper.previous();
+    });
+   
+    $('#btn-next').on("click", (e) => {
+        e.preventDefault();
+        stepper.next();
+    });
+
+    $('#customFile').on('change', function(){ 
+      $('#in_file').text($(this).val())
+      lastCompleteStep = 4;
+      updateUI(stepper._currentIndex, stepper._steps.length)
+    });
+
+    $("select[name='pemilik']").on('change', function(){ 
+      $('#in_pemilik').text($(this).find(":selected").text())
+      updateUI(stepper._currentIndex, stepper._steps.length)
+    });
+
+    $("select[name='bidang']").on('change', function(){ 
+      $('#in_bidang').text($(this).find(":selected").text())
+      updateUI(stepper._currentIndex, stepper._steps.length)
+    });
+
+    $("select[name='kategori']").on('change', function(){ 
+      $('#in_kategori').text($(this).find(":selected").text())
+      updateUI(stepper._currentIndex, stepper._steps.length)
+    });
+
+    $("input[name='deskripsi']").on('input', function(){ 
+      $('#in_deskripsi').text($(this).val())
+      updateUI(stepper._currentIndex, stepper._steps.length)
+    });
+  
+    $("textarea[name='komentar']").on('input', function(){ 
+      $('#in_komentar').text($(this).val())
+      updateUI(stepper._currentIndex, stepper._steps.length)
+    });
+
+    // Set text di tahap 5.validasi
+    $('#in_pemilik').text($("select[name='pemilik']").find(":selected").text())
+    $('#in_bidang').text($("select[name='bidang']").find(":selected").text())
+    $('#in_kategori').text($("select[name='kategori']").find(":selected").text())
+
   });
 
   function showHideRights(obj)
@@ -366,11 +431,44 @@
     return false;
   }
 
+  let lastCompleteStep = 0;
+  function updateUI(stepIndex, stepTotal) {
+    // console.log(`update ui. step=${stepIndex}, length=${stepTotal}, lastCompleteStep=${lastCompleteStep}`)
+    if(stepIndex == 0) { 
+      $('#btn-prev').hide(); 
+      $('#btn-save').hide(); 
+      $('#btn-next').show();
+    }
+    else if(stepIndex == stepTotal - 1) { 
+      $('#btn-prev').show(); 
+      $('#btn-next').hide();
+      $('#btn-save').show(); 
+    }
+    else { 
+      $('#btn-prev').show();
+      $('#btn-next').show(); 
+      $('#btn-save').hide(); 
+    }
+    
+    // untuk set step disable sesuai dengan last complete step
+    for (let i = 0; i < stepTotal; i++) $('.step-trigger:eq('+i+')').prop("disabled", i > lastCompleteStep);
+
+    // untuk set button next disable sesuai dengan last complete step
+    $('#btn-next').prop("disabled", !(stepIndex < lastCompleteStep));
+
+    // untuk set button save disable sesuai dengan last step
+    $('#btn-save').prop("disabled", !(stepIndex == lastCompleteStep));
+  }
+
   // BS-Stepper Init
   document.addEventListener('DOMContentLoaded', function () {
-    window.stepper = new Stepper(document.querySelector('.bs-stepper'),{
+    const stepperEl = document.querySelector('.bs-stepper');
+    window.stepper = new Stepper(stepperEl, {
       linear: false,
       animation: true
+    })
+    stepperEl.addEventListener('show.bs-stepper', function (event) {
+      updateUI(event.detail.indexStep, stepper._steps.length)
     })
   });
 </script>

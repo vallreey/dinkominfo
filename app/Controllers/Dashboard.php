@@ -2,6 +2,9 @@
 namespace App\Controllers;
 use App\Models\DashboardModel;
 use App\Models\UserModel;
+use App\Models\GeneralModel;
+
+use CodeIgniter\Files\File;
 
 class Dashboard extends BaseController
 {
@@ -15,6 +18,7 @@ class Dashboard extends BaseController
 
 		$this->dashboard = new DashboardModel();
 		$this->user = new UserModel();
+		$this->main = new GeneralModel();
 
         helper(['permission']);
 	}
@@ -23,24 +27,23 @@ class Dashboard extends BaseController
     {
         $header['title'] = 'Dashboard';
         
-        echo view('partial/header', $header);
-        echo view('partial/top_menu');
-        echo view('partial/side_menu');
-        echo view('dashboard');
-        echo view('partial/footer');
+        return view('partial/header', $header)
+            .view('partial/top_menu')
+            .view('partial/side_menu')
+            .view('dashboard')
+            .view('partial/footer');
     }
 
     public function search()
     {
         $header['title'] = 'Pencarian Dokumen';
-        
         $data['status'] = 'approved';
 
-        echo view('partial/header', $header);
-        echo view('partial/top_menu');
-        echo view('partial/side_menu');
-        echo view('data', $data);
-        echo view('partial/footer');
+        return view('partial/header', $header)
+            .view('partial/top_menu')
+            .view('partial/side_menu')
+            .view('data', $data)
+            .view('partial/footer');
     }
 
     public function getDataById($status, $id = null)
@@ -72,11 +75,104 @@ class Dashboard extends BaseController
         $data['listKategori']= $this->dashboard->getOptionalList('kategori');
         $data['allUsers']    = $this->user->allUsers();
 
-        echo view('partial/header', $header);
-        echo view('partial/top_menu');
-        echo view('partial/side_menu');
-        echo view('form_input', $data);
-        echo view('partial/footer');
+        return view('partial/header', $header)
+            .view('partial/top_menu')
+            .view('partial/side_menu')
+            .view('form_input', $data)
+            .view('partial/footer');
+    }
+
+    public function upload()
+    {
+        //get mime types
+        $mimeType = $this->main->getResultData('filetypes', array('active' => 1));
+        $strType = '';
+        foreach ($mimeType as $val) $strType .= $val['type'] . ',';
+        $strType = substr($strType, 0, -1);
+        
+        //get settings
+        $maxSize = $this->main->getRowData('settings', array('name' => 'max_filesize'))['value'];
+        $dataDir = $this->main->getRowData('settings', array('name' => 'dataDir'))['value'];
+        $authorization = $this->main->getRowData('settings', array('name' => 'authorization'))['value'];
+        // die($authorization);
+
+        //size in kb
+        $validationRule = [
+            'filename' => [
+                'label' => 'Document File',
+                'rules' => 'uploaded[filename]'
+                    . '|mime_in[filename,'.$strType.']'
+                    . '|max_size[filename,'.$maxSize.']'
+            ],
+        ];
+
+        //validate
+        if (!$this->validate($validationRule)) {
+            $_SESSION['info_error'] = '<b>Gagal!</b> '.$this->validator->getErrors()["filename"];
+            return $this->update();
+        }
+
+        $file = $this->request->getFile('filename');
+        //check is file has been moved
+        if ($file->hasMoved()) {
+            $_SESSION['info_error'] = '<b>Gagal!</b> The file has already been moved.';
+            return $this->update();
+        }
+
+        // init user nya, cek usernya admin ato ngga, kalo admin save datanya pake departement & owner yang dipilih di form
+        // kalo ngga, pake data sesuai dengan usernya.
+        $newDoc = array(
+            'status' => 0,
+            'category' => $_POST['kategori'],
+            'owner' => $_SESSION['is_admin'] ? $_POST['pemilik'] : $_SESSION['id'],
+            'realname' => $_FILES['filename']['name'],
+            'created' => date('Y-m-d H:i:s T'),
+            'description' => $_POST['deskripsi'],
+            'department' => $_SESSION['is_admin'] ? $_POST['bidang'] : $_SESSION['department'],
+            'comment' => $_POST['komentar'],
+            'default_rights' => 0,
+            'publishable' => $authorization == "True" ? '0' : '1',
+        );
+
+        //insert data ke tabel data dan get id nya
+        $newDocId = $this->main->insertData("data", $newDoc, true);
+
+        //insert ke db log dengan note 'Initial import' dan revision 'current'
+        $historyLog = array(
+            'id' => $newDocId,
+            'modified_on' => date('Y-m-d H:i:s T'),
+            'modified_by' => $_SESSION['username'],
+            'note' => 'Initial import',
+            'revision' => 'current',
+        );
+        $this->main->insertData("log", $historyLog);
+
+        //insert ke db dept_perms
+        foreach ($_POST['bidang_perms'] as $dept_id=>$dept_perm) {
+            $deptPerms = array(
+                'fid' => $newDocId,
+                'rights' => $dept_perm,
+                'dept_id' => $dept_id,
+            );
+            $this->main->insertData("dept_perms", $deptPerms);
+        }
+
+        //insert ke db user_perms
+        foreach ($_POST['user_perms'] as $user_id=>$permission) {
+            $userPerms = array(
+                'fid' => $newDocId,
+                'rights' => $permission,
+                'uid' => $user_id,
+            );
+            $this->main->insertData("user_perms", $userPerms);
+        }
+
+        //ganti nama file jadi id.dat
+        $newFileName = $newDocId . '.dat';
+        $filepath = WRITEPATH . $file->store($dataDir, $newFileName);
+        
+        $_SESSION['info_success'] = '<b>Sukses!</b> Dokumen berhasil ditambahkan [Nama dok: '.$_FILES['filename']['name'].']';
+        return redirect()->to('dashboard/approval/onreview');
     }
 
     public function loadAjaxTables($status)
