@@ -89,7 +89,7 @@ class Admin extends BaseController
                       'action'   => '<div class="btn-group btn-group-sm"><button type="button" class="btn btn-info btn-edit" id="'.$val->id.'"><i class="fas fa-pencil-alt"></i></button><button type="button" id="'.$val->id.'" class="btn btn-danger" data-toggle="modal" data-href="'.site_url('admin/deleteKategori/').$val->id.'" data-target="#confirmDelete"><i class="fas fa-trash"></i></button></div>'
                   );
                 }
-            }  elseif ($table == 'filetypes') {
+            } elseif ($table == 'filetypes') {
                 foreach ($files as $key => $val) {
                     $status = $val->active == 1 ? 'checked' : '';
 
@@ -98,6 +98,30 @@ class Admin extends BaseController
                         'type'    => $val->type,
                         'active'  => '<div class="form-check"><input class="form-check-input status-active" id="'.$val->id.'" type="checkbox" '.$status.'></div>',
                         'action'  => '<button type="button" id="'.$val->id.'" class="btn btn-sm btn-danger" data-toggle="modal" data-href="'.site_url('admin/deleteFileType/').$val->id.'" data-target="#confirmDelete"><i class="fas fa-trash"></i></button>'
+                    );
+                }
+            } elseif ($table == 'accesslog') {
+                foreach ($files as $key => $val) {
+                    $data[] = array(
+                        'file_id'   => $val->file_id,
+                        'realname'  => $val->realname,
+                        'username'  => $val->username,
+                        'action'    => actionParam($val->action),
+                        'date'      => $val->timestamp
+                    );
+                }
+            } elseif ($table == 'filelistexport') {
+                foreach ($files as $key => $val) {
+                    $data[] = array(
+                        'realname'      => $val->realname,
+                        'description'   => $val->description,
+                        'publishable'   => $val->publishable,
+                        'status'        => $val->status,
+                        'username'      => $val->username,
+                        'id'            => $val->id,
+                        'revision'      => $val->revision,
+                        'publishing_status' => $val->publishing_status,
+                        'checkout_status'   => $val->checkout_status
                     );
                 }
             }
@@ -730,6 +754,51 @@ class Admin extends BaseController
             $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
             return redirect()->to('admin/filetypes');
         }
+    }
+
+    public function accesslog()
+    {
+        $header['title'] = 'Access Log';
+
+        $data['submenu'] = array('active' => 'accesslog');
+        
+        echo view('partial/header', $header);
+        echo view('partial/top_menu');
+        echo view('partial/side_menu');
+        echo view('admin/manage_access_log', $data);
+        echo view('partial/footer');
+    }
+
+    public function filelistexport()
+    {
+        $header['title'] = 'File List Export';
+
+        $data['submenu'] = array('active' => 'filelistexport');
+        
+        echo view('partial/header', $header);
+        echo view('partial/top_menu');
+        echo view('partial/side_menu');
+        echo view('admin/manage_filelist_export', $data);
+        echo view('partial/footer');
+    }
+
+    public function documents($status)
+    {
+        $header['title'] = '';
+        switch ($status) {
+            case 'deleted': $header['title'] = 'Dokumen Deleted/Undeleted'; break;
+            case 'onreview': $header['title'] = 'Dokumen Waiting to be Reviewed'; break;
+            case 'rejected': $header['title'] = 'Dokumen Rejected'; break;
+        }
+        
+        $data['status'] = $status;
+        $data['admin_mode'] = true;
+
+        echo view('partial/header', $header);
+        echo view('partial/top_menu');
+        echo view('partial/side_menu');
+        echo view('approval', $data);
+        echo view('partial/footer');
     }
 
 }

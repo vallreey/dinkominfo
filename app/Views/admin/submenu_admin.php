@@ -26,7 +26,7 @@
       </li>
       <li class="nav-item">
         <a href="<?=site_url('admin/bidang')?>" class="nav-link <?=$active == 'bidang' ? 'active' : ''?>">
-          <i class="nav-icon far fa-list-alt"></i>
+          <i class="nav-icon fas fa-table"></i>
           <p>
             Bidang
           </p>
@@ -34,7 +34,7 @@
       </li>
       <li class="nav-item">
         <a href="<?=site_url('admin/kategori')?>" class="nav-link <?=$active == 'kategori' ? 'active' : ''?>">
-          <i class="nav-icon far fa-envelope"></i>
+          <i class="nav-icon fas fa-tree"></i>
           <p>
             Kategori
           </p>
@@ -50,28 +50,28 @@
         </a>
         <ul class="nav nav-treeview">
           <li class="nav-item">
-            <a href="<?=site_url('dashboard/approval/onreview')?>" class="nav-link <?=$active == 'file_deleted' ? 'active' : ''?>">
+            <a href="<?=site_url('admin/documents/deleted')?>" class="nav-link <?=$active == 'file_deleted' ? 'active' : ''?>">
               <i class="far fa-circle nav-icon"></i>
               <p>Deleted/Undeleted</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="<?=site_url('dashboard/approval/rejected')?>" class="nav-link <?=$active == 'file_review' ? 'active' : ''?>">
+            <a href="<?=site_url('admin/documents/onreview')?>" class="nav-link <?=$active == 'file_review' ? 'active' : ''?>">
               <i class="far fa-circle nav-icon"></i>
               <p>Reviews</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="<?=site_url('dashboard/approval/rejected')?>" class="nav-link <?=$active == 'file_reject' ? 'active' : ''?>">
+            <a href="<?=site_url('admin/documents/rejected')?>" class="nav-link <?=$active == 'file_reject' ? 'active' : ''?>">
               <i class="far fa-circle nav-icon"></i>
               <p>Rejections</p>
             </a>
           </li>
         </ul>
       </li>
-      <li class="nav-item">
-        <a href="#" class="nav-link">
-          <i class="nav-icon far fa-file-alt"></i>
+      <li class="nav-item <?=$active == 'accesslog' || $active == 'filelistexport' ? 'menu-open' : ''?>">
+        <a href="#" class="nav-link <?=$active == 'accesslog' || $active == 'filelistexport' ? 'active' : ''?>">
+          <i class="nav-icon far fa-list-alt"></i>
           <p>
             Reports
             <i class="fas fa-angle-left right"></i>
@@ -79,13 +79,13 @@
         </a>
         <ul class="nav nav-treeview">
           <li class="nav-item">
-            <a href="<?=site_url('dashboard/approval/onreview')?>" class="nav-link <?=$active == 'file_deleted' ? 'active' : ''?>">
+            <a href="<?=site_url('admin/accesslog')?>" class="nav-link <?=$active == 'accesslog' ? 'active' : ''?>">
               <i class="far fa-circle nav-icon"></i>
               <p>Access Log</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="<?=site_url('dashboard/approval/rejected')?>" class="nav-link <?=$active == 'file_review' ? 'active' : ''?>">
+            <a href="<?=site_url('admin/filelistexport')?>" class="nav-link <?=$active == 'filelistexport' ? 'active' : ''?>">
               <i class="far fa-circle nav-icon"></i>
               <p>File List Export</p>
             </a>
@@ -94,7 +94,7 @@
       </li>
       <li class="nav-item <?=$active == 'filetypes' ? 'menu-open' : ''?>">
         <a href="#" class="nav-link <?=$active == 'filetypes' ? 'active' : ''?>">
-          <i class="nav-icon far fa-file-alt"></i>
+          <i class="nav-icon far fa-plus-square"></i>
           <p>
             Settings
             <i class="fas fa-angle-left right"></i>

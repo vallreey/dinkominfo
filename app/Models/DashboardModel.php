@@ -28,42 +28,38 @@ class DashboardModel extends Model
         
         if (isset($wheres['searchValue']) && $wheres['searchValue'] != '') {
             // search values  
-            $key = strval(array_key_first($wheres['searchValue']));
-            switch ($key) {
-                case 'id':
-                    $query = $builder->where('d.id', $wheres['searchValue'][$key]);
-                    break;
-                case 'pemilik':
-                case 'bidang':
-                case 'kategori':
-                    $as_table = array('pemilik' => 'u', 'bidang' => 'dept', 'kategori' => 'c');
-                    $query = $builder->whereIn($as_table[$key].'.id', $wheres['searchValue'][$key]);
-                    break;
-                case 'deskripsi':
-                case 'nama_file':
-                case 'comment':
-                case 'file_id':
-                    $field_table = array('deskripsi' => 'description', 'nama_file' => 'realname', 'comment' => 'comment', 'file_id' => 'id');
-                    $query = $builder->like('d.'.$field_table[$key], $wheres['searchValue'][$key]); 
-                    break;
-                default: break;
+            if ($wheres['status'] == 'approved') {
+                $key = strval(array_key_first($wheres['searchValue']));
+                switch ($key) {
+                    case 'id':
+                        $query = $builder->where('d.id', $wheres['searchValue'][$key]);
+                        break;
+                    case 'pemilik':
+                    case 'bidang':
+                    case 'kategori':
+                        $as_table = array('pemilik' => 'u', 'bidang' => 'dept', 'kategori' => 'c');
+                        $query = $builder->whereIn($as_table[$key].'.id', $wheres['searchValue'][$key]);
+                        break;
+                    case 'deskripsi':
+                    case 'nama_file':
+                    case 'comment':
+                    case 'file_id':
+                        $field_table = array('deskripsi' => 'description', 'nama_file' => 'realname', 'comment' => 'comment', 'file_id' => 'id');
+                        $query = $builder->like('d.'.$field_table[$key], $wheres['searchValue'][$key]); 
+                        break;
+                    default: break;
+                }
+            } else {
+                $query = $builder->groupStart()
+                                ->orLike('d.id', $wheres['searchValue'])
+                                ->orLike('d.realname', $wheres['searchValue'])
+                                ->orLike('d.description', $wheres['searchValue'])
+                                ->orLike('d.created', $wheres['searchValue'])
+                                ->orLike('u.last_name', $wheres['searchValue'])
+                                ->orLike('u.first_name', $wheres['searchValue'])
+                                ->orLike('dept.name', $wheres['searchValue'])
+                                ->groupEnd();
             }
-        }
-
-        if (isset($wheres['columnName']) && isset($wheres['columnSortOrder'])) {
-            // orderby
-            $fieldOrder = array(
-                'id'        => 'id',
-                'nama_file' => 'realname',
-                'deskripsi' => 'description',
-                'created'   => 'created',
-                'changed'   => 'created',
-                'pemilik'   => 'last_name',
-                'bidang'    => 'dept_name',
-                'status'    => 'status'
-            );
-            
-            $query = $builder->orderBy($fieldOrder[$wheres['columnName']], $wheres['columnSortOrder']);
         }
         
         if (isset($wheres['rowperpage']) && isset($wheres['start'])) {

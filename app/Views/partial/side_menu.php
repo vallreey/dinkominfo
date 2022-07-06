@@ -84,30 +84,99 @@
         </li>
         <?php if ($_SESSION['is_admin']) { ?>
         <li class="nav-header">ADMINISTRASI</li>
-        <li class="nav-item">
-          <a href="<?=site_url('admin/user')?>" class="nav-link">
-            <i class="nav-icon far fa-calendar-alt"></i>
-            <p>
-              Users
-              <span class="badge badge-info right">2</span>
-            </p>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="<?=site_url('admin/bidang')?>" class="nav-link">
-            <i class="nav-icon far fa-image"></i>
-            <p>
-              Bidang
-            </p>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="<?=site_url('admin/kategori')?>" class="nav-link">
-            <i class="nav-icon far fa-image"></i>
-            <p>
-              Kategori
-            </p>
-          </a>
+          <li class="nav-item">
+            <a href="<?=site_url('admin/user')?>" class="nav-link">
+              <i class="nav-icon far fa-user"></i>
+              <p>
+                User
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?=site_url('admin/bidang')?>" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+                Bidang
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?=site_url('admin/kategori')?>" class="nav-link">
+              <i class="nav-icon fas fa-tree"></i>
+              <p>
+                Kategori
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon far fa-file-alt"></i>
+              <p>
+                File
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="<?=site_url('admin/documents/deleted/')?>" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Deleted/Undeleted</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="<?=site_url('admin/documents/onreview/1')?>" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Reviews</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="<?=site_url('admin/documents/rejected/1')?>" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Rejections</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon far fa-list-alt"></i>
+              <p>
+                Reports
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="<?=site_url('admin/accesslog')?>" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Access Log</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="<?=site_url('admin/filelistexport')?>" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>File List Export</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon far fa-plus-square"></i>
+              <p>
+                Settings
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="<?=site_url('admin/filetypes')?>" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>File Types</p>
+                </a>
+              </li>
+            </ul>
+          </li>
         </li>
         <?php } ?>
       </ul>

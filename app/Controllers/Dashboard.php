@@ -88,18 +88,24 @@ class Dashboard extends BaseController
         $wheres['columnIndex']      = $_POST['order'][0]['column']; // Column index
         $wheres['columnName']       = $_POST['columns'][$wheres['columnIndex']]['data']; // Column name
         $wheres['columnSortOrder']  = $_POST['order'][0]['dir']; // asc or desc
-        $wheres['searchValue']      = isset($_POST['filterParam']) ? $_POST['filterParam'][0] : '';
+        if ($status == 'approved')
+            $wheres['searchValue'] = isset($_POST['filterParam']) ? $_POST['filterParam'][0] : '';
+        else
+            $wheres['searchValue'] = $_POST['search']['value'];
         $wheres['publishable']      = $wheresRecordTotal['publishable'] = $publishable;
+        $wheres['status']           = $status;
         
         $files = $this->dashboard->getData($wheres, true);
         
         $data = array();
 
+        $arrStatus = array('deleted', 'onreview', 'rejected');
+
         if (count($files) > 0) {
             foreach ($files as $key => $val) {
                 $data[] = array(
                     'id'        => $val->id,
-                    'check'     => $status == 'onreview' || $status == 'rejected' ? '<input type="checkbox" value="'.$val->id.'" id="check'.$val->id.'">' : '',
+                    'check'     => in_array($status, $arrStatus) ? '<input type="checkbox" value="'.$val->id.'" id="check'.$val->id.'">' : '',
                     'detail'    => '<div class="btn-group" role="group"><button type="button" class="btn btn-default btn-sm btn-detail" id="'.$val->id.'"><i class="fas fa-folder"></i></button><a href="'.site_url('dashboard/update').'/'.$status.'/'.$val->id.'" class="btn btn-default btn-sm"><i class="fas fa-pencil-alt"></i></a><button type="button" class="btn btn-default btn-sm btn-delete" data-toogle="modal" data-target="#confirmDelete" data-href="'.site_url('dashboard/delete?id='.$val->id).'"><i class="fas fa-trash"></i></button></div>',
                     'nama_file' => $val->realname,
                     'deskripsi' => $val->description,
@@ -121,7 +127,10 @@ class Dashboard extends BaseController
                         'data'          => $data
                     );
 
-        if ($status == 'onreview' || $status == 'rejected') {
+        if (in_array($status, $arrStatus)) {
+            // total need to be deleted
+            $wheresDeleted['publishable'] = publishableByStatus('deleted');
+            $dataset['totDeleted'] = $this->dashboard->getData($wheresDeleted);
             // total need to be reviewed
             $wheresReviewed['publishable'] = publishableByStatus('onreview');
             $dataset['totReviewed'] = $this->dashboard->getData($wheresReviewed);
@@ -177,9 +186,15 @@ class Dashboard extends BaseController
 
     public function approval($status)
     {
-        $header['title'] = 'Approval Dokumen';
+        $header['title'] = '';
+        switch ($status) {
+            case 'deleted': $header['title'] = 'Dokumen Deleted/Undeleted'; break;
+            case 'onreview': $header['title'] = 'Dokumen Waiting to be Reviewed'; break;
+            case 'rejected': $header['title'] = 'Dokumen Rejected'; break;
+        }
         
         $data['status'] = $status;
+        $data['admin_mode'] = false;
 
         echo view('partial/header', $header);
         echo view('partial/top_menu');

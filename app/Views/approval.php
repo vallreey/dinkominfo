@@ -2,10 +2,6 @@
 <link rel="stylesheet" href="<?=base_url('adminLTE/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css')?>">
 <link rel="stylesheet" href="<?=base_url('adminLTE/plugins/datatables-responsive/css/responsive.bootstrap4.min.css')?>">
 <link rel="stylesheet" href="<?=base_url('adminLTE/plugins/datatables-buttons/css/buttons.bootstrap4.min.css')?>">
-<!-- SweetAlert2 -->
-<link rel="stylesheet" href="<?=base_url('adminLTE/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css')?>">
-<!-- Toastr -->
-<link rel="stylesheet" href="<?=base_url('adminLTE/plugins/toastr/toastr.min.css')?>">
 
 <div class="content-wrapper">
   <section class="content-header">
@@ -17,7 +13,10 @@
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="<?=site_url('dashboard')?>">Home</a></li>
-            <li class="breadcrumb-item active">Approval Dokumen</li>
+            <?php if ($admin_mode) { ?>
+            <li class="breadcrumb-item"><a href="<?=site_url('admin/user')?>">Administrasi</a></li>
+            <?php } ?>
+            <li class="breadcrumb-item active">Dokumen</li>
           </ol>
         </div>
       </div>
@@ -34,16 +33,24 @@
           </div>
           <div class="card-footer">
             <div class="row">
-              <div class="col-sm-6 col-12">
+              <?php if ($admin_mode) { ?>
+              <div class="col-sm-4 col-12">
                 <div class="description-block border-right">
-                  <h2><span class="description-percentage text-success"><i class="fas fa-caret-up">&nbsp;<span id="totReviewed"></span></i></span></h2>
-                  <span class="description-text"><a href="<?=site_url('dashboard/approval/onreview')?>">DOCUMENTS WAITING TO BE REVIEWED</a></span>
+                  <h2><span class="description-percentage text-warning"><i class="fas fa-caret-down">&nbsp;<span id="totDeleted"></span></i></span></h2>
+                  <span class="description-text"><a href="<?=site_url('admin/documents/deleted')?>">DOCUMENTS DELETED/UNDELETED</a></span>
                 </div>
               </div>
-              <div class="col-sm-6 col-12">
+              <?php } ?>
+              <div class="<?=$admin_mode ? 'col-sm-4 col-12' : 'col-sm-6 col-12'?>">
+                <div class="description-block border-right">
+                  <h2><span class="description-percentage text-success"><i class="fas fa-caret-up">&nbsp;<span id="totReviewed"></span></i></span></h2>
+                  <span class="description-text"><a href="<?=$admin_mode ? site_url('admin/documents/onreview') : site_url('dashboard/approval/onreview')?>">DOCUMENTS WAITING TO BE REVIEWED</a></span>
+                </div>
+              </div>
+              <div class="<?=$admin_mode ? 'col-sm-4 col-12' : 'col-sm-6 col-12'?>">
                 <div class="description-block">
                   <h2><span class="description-percentage text-danger"><i class="fas fa-caret-down">&nbsp;<span id="totRejected"></span></i></span></h2>
-                  <span class="description-text"><a href="<?=site_url('dashboard/approval/rejected')?>">DOCUMENTS REJECTED</a></span>
+                  <span class="description-text"><a href="<?=$admin_mode ? site_url('admin/documents/rejected') : site_url('dashboard/approval/rejected')?>">DOCUMENTS REJECTED</a></span>
                 </div>
               </div>
             </div>
@@ -202,34 +209,35 @@
 
 <!-- jQuery -->
 <script src="<?=base_url('adminLTE/plugins/jquery/jquery.min.js')?>"></script>
-<!-- SweetAlert2 -->
-<script src="<?=base_url('adminLTE/plugins/sweetalert2/sweetalert2.min.js')?>"></script>
-<!-- Toastr -->
-<script src="<?=base_url('adminLTE/plugins/toastr/toastr.min.js')?>"></script>
 
 <script>
   $(function () {
     fill_datatable();
 
-    function fill_datatable(filterId = '', filterVal = '') {
+    function fill_datatable() {
       var status = $('#hidStatus').val();
-      var publishable = 1;
       var listDataTable = $('#example1').DataTable({
-        'dom': 'Blfrtip',
+        'dom': '<"d-flex justify-content-between align-items-end"Blf>rt<"d-flex justify-content-between"ip><"clear">', 
         'responsive': true, 
         'autoWidth': false,
-        'buttons': ["copy", "csv", "excel", "pdf", "print", "colvis"],
+        'buttons': [
+            {
+                extend: 'collection',
+                text: 'Export',
+                buttons: [
+                    'copy',
+                    'excel',
+                    'csv',
+                    'pdf',
+                    'print'
+                ]
+            }
+        ],
         'processing': true,
         'serverSide': true,
-        'searching': false, // Remove default Search Control
         'ajax': {
           'url': '<?=site_url('dashboard/loadAjaxTables/')?>' + status,
-          'type': 'POST',
-          'data': {filterParam: [
-            {
-              [filterId]:filterVal,
-            }
-          ], publishable: publishable}
+          'type': 'POST'
         },
         'columns': [
           { data: 'id' },
@@ -247,6 +255,7 @@
         ],
         'drawCallback': function (settings) { 
           var response = settings.json;
+          $('#totDeleted').html(response.totDeleted);
           $('#totReviewed').html(response.totReviewed);
           $('#totRejected').html(response.totRejected);
         },

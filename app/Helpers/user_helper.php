@@ -122,4 +122,24 @@ if (!function_exists('isReviewerForFile')) {
   }
 }
 
+if (!function_exists('actionParam')) {
+  function actionParam($action) {
+      switch ($action) {
+          case 'A': $accesslog = 'File Added'; break;
+          case 'B': 
+          case 'C': $accesslog = 'Reserved'; break;
+          case 'V': $accesslog = 'File Viewed'; break;
+          case 'D': $accesslog = 'File Downloaded'; break;
+          case 'M': $accesslog = 'File Modified'; break;
+          case 'I': $accesslog = 'File Checked-in'; break;
+          case 'O': $accesslog = 'File Checked-out'; break;
+          case 'X': $accesslog = 'File Deleted'; break;
+          case 'Y': $accesslog = 'File Authorized'; break;
+          case 'R': $accesslog = 'File Rejected'; break;
+          default: $accesslog = ''; break;
+      }
+      return $accesslog;
+  }
+}
+
 ?>
