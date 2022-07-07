@@ -41,7 +41,7 @@
           <div class="card-header">
             <h3 class="card-title"><?=$title?></h3>
           </div>
-          <form id="form-input" action="<?=site_url('dashboard/upload')?>" enctype="multipart/form-data" method="POST">
+          <form id="form-input" action="<?=isset($fileExist) ? site_url('dashboard/edit') : site_url('dashboard/add') ?>" enctype="multipart/form-data" method="POST">
             <div class="card-body">
               <div class="bs-stepper">
                 <div class="bs-stepper-header" role="tablist" style="margin-top: 20px; margin-bottom: 50px">

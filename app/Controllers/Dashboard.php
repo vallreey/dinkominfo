@@ -61,7 +61,7 @@ class Dashboard extends BaseController
             echo json_encode($dataById[0]);
     }
 
-    public function update($status = null, $id = null)
+    public function document($status = null, $id = null)
     {
         $header['title'] = !is_null($id) ? 'Update File' : 'Tambah File';
 
@@ -83,7 +83,7 @@ class Dashboard extends BaseController
             .view('partial/footer');
     }
 
-    public function upload()
+    public function add()
     {
         //get mime types
         $mimeType = $this->main->getResultData('filetypes', array('active' => 1));
@@ -110,70 +110,86 @@ class Dashboard extends BaseController
         //validate
         if (!$this->validate($validationRule)) {
             $_SESSION['info_error'] = '<b>Gagal!</b> '.$this->validator->getErrors()["filename"];
-            return $this->update();
+            return redirect()->to('dashboard/document');
         }
 
         $file = $this->request->getFile('filename');
         //check is file has been moved
         if ($file->hasMoved()) {
             $_SESSION['info_error'] = '<b>Gagal!</b> The file has already been moved.';
-            return $this->update();
+            return redirect()->to('dashboard/document');
         }
 
-        // init user nya, cek usernya admin ato ngga, kalo admin save datanya pake departement & owner yang dipilih di form
-        // kalo ngga, pake data sesuai dengan usernya.
-        $newDoc = array(
-            'status' => 0,
-            'category' => $_POST['kategori'],
-            'owner' => $_SESSION['is_admin'] ? $_POST['pemilik'] : $_SESSION['id'],
-            'realname' => $_FILES['filename']['name'],
-            'created' => date('Y-m-d H:i:s T'),
-            'description' => $_POST['deskripsi'],
-            'department' => $_SESSION['is_admin'] ? $_POST['bidang'] : $_SESSION['department'],
-            'comment' => $_POST['komentar'],
-            'default_rights' => 0,
-            'publishable' => $authorization == "True" ? '0' : '1',
-        );
-
-        //insert data ke tabel data dan get id nya
-        $newDocId = $this->main->insertData("data", $newDoc, true);
-
-        //insert ke db log dengan note 'Initial import' dan revision 'current'
-        $historyLog = array(
-            'id' => $newDocId,
-            'modified_on' => date('Y-m-d H:i:s T'),
-            'modified_by' => $_SESSION['username'],
-            'note' => 'Initial import',
-            'revision' => 'current',
-        );
-        $this->main->insertData("log", $historyLog);
-
-        //insert ke db dept_perms
-        foreach ($_POST['bidang_perms'] as $dept_id=>$dept_perm) {
-            $deptPerms = array(
-                'fid' => $newDocId,
-                'rights' => $dept_perm,
-                'dept_id' => $dept_id,
+        $this->db->transBegin();
+        try {   
+            // init user nya, cek usernya admin ato ngga, kalo admin save datanya pake departement & owner yang dipilih di form
+            // kalo ngga, pake data sesuai dengan usernya.
+            $newDoc = array(
+                'status' => 0,
+                'category' => $_POST['kategori'],
+                'owner' => $_SESSION['is_admin'] ? $_POST['pemilik'] : $_SESSION['id'],
+                'realname' => $_FILES['filename']['name'],
+                'created' => date('Y-m-d H:i:s T'),
+                'description' => $_POST['deskripsi'],
+                'department' => $_SESSION['is_admin'] ? $_POST['bidang'] : $_SESSION['department'],
+                'comment' => $_POST['komentar'],
+                'default_rights' => 0,
+                'publishable' => $authorization == "True" ? '0' : '1',
             );
-            $this->main->insertData("dept_perms", $deptPerms);
-        }
 
-        //insert ke db user_perms
-        foreach ($_POST['user_perms'] as $user_id=>$permission) {
-            $userPerms = array(
-                'fid' => $newDocId,
-                'rights' => $permission,
-                'uid' => $user_id,
+            //insert data ke tabel data dan get id nya
+            $newDocId = $this->main->insertData("data", $newDoc, true);
+            if (!$newDocId) throw new \Exception('Gagal menyimpan data ke database, mohon coba lagi!');
+
+            //insert ke db log dengan note 'Initial import' dan revision 'current'
+            $historyLog = array(
+                'id' => $newDocId,
+                'modified_on' => date('Y-m-d H:i:s T'),
+                'modified_by' => $_SESSION['username'],
+                'note' => 'Initial import',
+                'revision' => 'current',
             );
-            $this->main->insertData("user_perms", $userPerms);
-        }
+            $successInsert = $this->main->insertData("log", $historyLog);
+            if (!$successInsert) throw new \Exception('Gagal menyimpan log ke database, mohon coba lagi!');
 
-        //ganti nama file jadi id.dat
-        $newFileName = $newDocId . '.dat';
-        $filepath = WRITEPATH . $file->store($dataDir, $newFileName);
+            //insert ke db dept_perms
+            foreach ($_POST['bidang_perms'] as $dept_id=>$dept_perm) {
+                $deptPerms = array(
+                    'fid' => $newDocId,
+                    'rights' => $dept_perm,
+                    'dept_id' => $dept_id,
+                );
+                $successInsert = $this->main->insertData("dept_perms", $deptPerms);
+                if (!$successInsert) throw new \Exception('Gagal menyimpan izin bidang ke database, mohon coba lagi!');
+            }
+
+            //insert ke db user_perms
+            foreach ($_POST['user_perms'] as $user_id=>$permission) {
+                $userPerms = array(
+                    'fid' => $newDocId,
+                    'rights' => $permission,
+                    'uid' => $user_id,
+                );
+                $successInsert = $this->main->insertData("user_perms", $userPerms);
+                if (!$successInsert) throw new \Exception('Gagal menyimpan izin user ke database, mohon coba lagi!');
+            }
+
+            //ganti nama file jadi id.dat
+            $newFileName = $newDocId . '.dat';
+            $filepath = WRITEPATH . $file->store($dataDir, $newFileName);
+            
+            $this->db->transCommit();
+            $_SESSION['info_success'] = '<b>Sukses!</b> Dokumen berhasil ditambahkan [Nama dok: '.$_FILES['filename']['name'].']';
+            return redirect()->to('dashboard/approval/onreview');
+        } catch (\Exception $e) {
+            $this->db->transRollback();
+            $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
+            return redirect()->to('dashboard/document');
+        }
+    }
+
+    public function edit() {
         
-        $_SESSION['info_success'] = '<b>Sukses!</b> Dokumen berhasil ditambahkan [Nama dok: '.$_FILES['filename']['name'].']';
-        return redirect()->to('dashboard/approval/onreview');
     }
 
     public function loadAjaxTables($status)
@@ -218,7 +234,7 @@ class Dashboard extends BaseController
                 $detail = '<div class="btn-group" role="group"><button type="button" class="btn btn-default btn-sm btn-detail" id="'.$val->id.'"><i class="fas fa-folder"></i></button>';
 
                 if ($status == 'deleted') $data[$i]['detail'] = $detail . '</div>';
-                else $data[$i]['detail'] = $detail . '<a href="'.site_url('dashboard/update').'/'.$status.'/'.$val->id.'" class="btn btn-default btn-sm"><i class="fas fa-pencil-alt"></i></a><button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-href="'.site_url('dashboard/tempDeleteFile/').$val->id.'" data-target="#confirmDelete"><i class="fas fa-trash"></i></button></div>';
+                else $data[$i]['detail'] = $detail . '<a href="'.site_url('dashboard/document').'/'.$status.'/'.$val->id.'" class="btn btn-default btn-sm"><i class="fas fa-pencil-alt"></i></a><button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-href="'.site_url('dashboard/tempDeleteFile/').$val->id.'" data-target="#confirmDelete"><i class="fas fa-trash"></i></button></div>';
                 
                 $i++;
             }

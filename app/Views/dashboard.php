@@ -54,7 +54,7 @@
             <div class="inner text-center" style="padding: 2em 0 2em 0">
               <img src="<?=base_url('asset/add-file.png')?>">
             </div>
-            <a href="<?=site_url('dashboard/update')?>" class="small-box-footer">Tambah Dokumen <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?=site_url('dashboard/document')?>" class="small-box-footer">Tambah Dokumen <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
