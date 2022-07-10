@@ -58,6 +58,10 @@ class Dashboard extends BaseController
 
         $return = array('data' => $dataById[0], 'history' => $history);
         
+        foreach ($dataById as $d) {
+            $d->file_size = getFileSizeByFileId($d->id, $status == 'deleted' ? 'archiveDir' : 'dataDir');
+        }
+        
         if (!is_null($id))
             return $dataById;
         else 
@@ -86,6 +90,63 @@ class Dashboard extends BaseController
             .view('partial/footer');
     }
 
+    public function file($id = null, $action = "download")
+    {
+        if($id == null) {
+            $_SESSION['info_error'] = '<b>Gagal!</b> Request tidak valid!';
+            return redirect()->to('dashboard/approval/onreview');
+        }
+
+        $doc = $this->main->getRowData('data', array('id' => $id));
+    
+        if($doc == null) {
+            $_SESSION['info_error'] = '<b>Gagal!</b> Data tidak ditemukan.';
+            return redirect()->to('dashboard/approval/onreview');
+        }
+
+        //TODO: check permission
+
+        $filename = getFilePathByFileId($doc['id']);
+
+        if (!file_exists($filename)) {
+            $_SESSION['info_error'] = '<b>Gagal!</b> File tidak ditemukan.';
+            return redirect()->to('dashboard/approval/onreview');
+        }
+
+        //TODO: handle revision
+        if (isset($revision_id)) $filename = getFilePathByFileId($doc['id'], "revisionDir");
+        else if($doc['publishable'] == publishableByStatus('deleted')) $filename = getFilePathByFileId($doc['id'], "archiveDir");
+    
+        $realname = $doc["realname"];
+        $filemime = getMimeTypeByFileRealName($realname);
+        // return $this->response->download($path, $realname);
+        
+        if($action == "view") {
+            // $_SESSION['mimetype'] = $filemime;
+            // send headers to browser to initiate file download
+            header('Content-Length: '.filesize($filename));
+            // Pass the mimetype so the browser can open it
+            header('Cache-control: private');
+            header('Content-Type: ' . $filemime);
+            header('Content-Disposition: inline; filename="' . rawurlencode($realname) . '"');
+            // Apache is sending Last Modified header, so we'll do it, too
+            $modified=filemtime($filename);
+            header('Last-Modified: '. date('D, j M Y G:i:s T', $modified));   // something like Thu, 03 Oct 2002 18:01:08 GMT
+            readfile($filename);
+            // AccessLog::addLogEntry($_REQUEST['id'], 'V', $pdo);
+        }
+        else {
+            // send headers to browser to initiate file download
+            header('Cache-control: private');
+            header('Content-Type: ' . $filemime);
+            header('Content-Disposition: attachment; filename="' . $realname . '"');
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Pragma: public');
+            readfile($filename);
+            // AccessLog::addLogEntry($_REQUEST['id'], 'D', $pdo);
+        }
+    }
+
     public function add()
     {
         //get mime types
@@ -95,10 +156,9 @@ class Dashboard extends BaseController
         $strType = substr($strType, 0, -1);
         
         //get settings
-        $maxSize = $this->main->getRowData('settings', array('name' => 'max_filesize'))['value'];
-        $dataDir = $this->main->getRowData('settings', array('name' => 'dataDir'))['value'];
-        $authorization = $this->main->getRowData('settings', array('name' => 'authorization'))['value'];
-        // die($authorization);
+        $maxSize = config('MyConfig')->settings['max_filesize'];
+        $dataDir = config('MyConfig')->settings['dataDir'];
+        $authorization = config('MyConfig')->settings['authorization'];
 
         //size in kb
         $validationRule = [
@@ -180,10 +240,10 @@ class Dashboard extends BaseController
                 if (!$successAddUserPerms) throw new \Exception('Gagal menyimpan izin user ke database, mohon coba lagi!');
             }
 
-            //ganti nama file jadi id.dat
+            //set nama file jadi id.dat
             $newFileName = $newDocId . '.dat';
-            $filepath = WRITEPATH . $file->store($dataDir, $newFileName);
-
+            $file->move($dataDir, $newFileName);
+            
             //TODO
             // AccessLog::addLogEntry($fileId, 'A', $pdo);
             
@@ -441,16 +501,16 @@ class Dashboard extends BaseController
             if (!$updData)
                     throw new \Exception('Status publishable gagal terupdate.');
             
-            // PR LANJUTAN MOVE FILE (IVAN) 
-            // if (!is_dir($GLOBALS['CONFIG']['archiveDir'])) {
-            //     // Make sure directory is writable
-            //     if (!mkdir($GLOBALS['CONFIG']['archiveDir'], 0775)) {
-            //         $last_message='Could not create ' . $GLOBALS['CONFIG']['archiveDir'];
-            //         header('Location:error.php?ec=23&last_message=' . urlencode($last_message));
-            //         exit;
-            //     }
-            // }
-            // fmove($GLOBALS['CONFIG']['dataDir'] . $val . '.dat', $GLOBALS['CONFIG']['archiveDir'] . $val . '.dat');
+            // PR LANJUTAN MOVE FILE
+            if (!is_dir(config('MyConfig')->settings['archiveDir'])) {
+                // Make sure directory is writable
+                if (!mkdir(config('MyConfig')->settings['archiveDir'], 0775)) {
+                    $last_message='Could not create ' . config('MyConfig')->settings['archiveDir'];
+                    header('Location:error.php?ec=23&last_message=' . urlencode($last_message));
+                    exit;
+                }
+            }
+            fmove(config('MyConfig')->settings['dataDir'] . $fid . '.dat', config('MyConfig')->settings['archiveDir'] . $fid . '.dat');
 
             // aceess log
             $logs['file_id'] = $fid;

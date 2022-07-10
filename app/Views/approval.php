@@ -194,10 +194,10 @@
                     <td>
                       <span class="mailbox-attachment-icon"><i class="far fa-file-pdf"></i></span>
                       <div class="mailbox-attachment-info">
-                        <a href="#" class="mailbox-attachment-name"><i class="fas fa-paperclip"></i> <span id="pFileName"></span></a>
+                        <a href="#" class="mailbox-attachment-name" id="downloadFileButton"><i class="fas fa-paperclip"></i> <span id="pFileName"></span></a>
                             <span class="mailbox-attachment-size clearfix mt-1">
-                              <span>1,245 KB</span>
-                              <a href="#" class="btn btn-default btn-sm float-right"><i class="fas fa-cloud-download-alt"></i></a>
+                            <span id="filepUkuran">-</span>
+                              <a href="#" id="downloadFileButton" class="btn btn-default btn-sm float-right"><i class="fas fa-cloud-download-alt"></i></a>
                             </span>
                       </div>
                     </td>
@@ -478,13 +478,14 @@
           const obj = JSON.parse(response);
           
           $('#pKategori').html(obj.data.cat_name);
-          $('#pUkuran').html("-");
+          $('#pUkuran').html(obj.file_size);
           $('#pCreated').html(obj.data.created);
           $('#pPemilik').html(obj.data.last_name + ', ' + obj.data.first_name);
           $('#pDeskripsi').html(obj.data.description);
           $('#pComment').html(obj.data.comment);
           $('#pRevision').html(obj.data.revision);
           $('#pFileName').html(obj.data.realname);
+          $("#downloadFileButton").attr("href", "<?=site_url('dashboard/file/')?>" + id)
 
           var str = '';
           var arr = obj.history;

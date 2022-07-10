@@ -1,5 +1,28 @@
 <?php
 
+
+include_once('mimetypes.php');
+
+if(!function_exists('getFileSuffix')){
+    function getFileSufix($realname) {
+        // Get the suffix of the file so we can look it up
+        // in the $mimetypes array
+        if (strchr($realname, '.')) {
+            // Fix by blackwes
+            $prefix = (substr($realname, 0, (strrpos($realname, "."))));
+            $suffix = strtolower((substr($realname, ((strrpos($realname, ".")+1)))));
+            return $suffix;
+        }
+        return '';
+    } 
+}
+
+if(!function_exists('getMimeTypeByFileRealName')){
+    function getMimeTypeByFileRealName($realname) {
+        return $GLOBALS['mimetypes'][getFileSufix($realname)][0];
+    } 
+}
+
 if (!function_exists('getDeptRights')) {
 	function getDeptRights($fid, $dept_id) {	
         $db = \Config\Database::connect();
@@ -43,7 +66,7 @@ if (!function_exists('settingVal')) {
 }
 
 if (!function_exists('displayFileSize')) {
-    function display_filesize($file) {
+    function displayFileSize($file) {
         // Does the file exist?
         if (is_file($file)) {
 
@@ -75,6 +98,20 @@ if (!function_exists('displayFileSize')) {
     }
 }
 
+if (!function_exists('getFilePathByFileId')) {
+    function getFilePathByFileId($fid, $dir = "dataDir") {
+        if(!in_array($dir, array("dataDir", "archiveDir", "revisionDir"))) return '';
+
+        return config('MyConfig')->settings[$dir] . $fid . '.dat';
+    }
+}
+
+if (!function_exists('getFileSizeByFileId')) {
+    function getFileSizeByFileId($fid, $dir = "dataDir") {
+        return displayFileSize(getFilePathByFileId($fid, $dir));
+    }
+}
+
 if (!function_exists('userRights')) {
     function userRights($rights) {
         switch ($rights) {
@@ -99,6 +136,22 @@ if (!function_exists('userRights')) {
         }
         return $arrPermission;
     }
+}
+
+if (!function_exists('fmove')) {
+    function fmove($source_file, $destination_file)
+    {
+        //read and close
+        $fhandler = fopen($source_file, "r");
+        $fcontent = fread($fhandler, filesize($source_file));
+        fclose($fhandler);
+        //write and close
+        $fhandler = fopen($destination_file, "w");
+        fwrite($fhandler, $fcontent);
+        fclose($fhandler);
+        //delete source file
+        unlink($source_file);
+}
 }
 
 if (!function_exists('publishableByStatus')) {

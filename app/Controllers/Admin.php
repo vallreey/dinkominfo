@@ -7,7 +7,7 @@ use App\Models\GeneralModel;
 class Admin extends BaseController
 {
     public function __construct()
-	  {
+    {
         $this->session = \Config\Services::session();
         if (!isset($_SESSION['login_state'])) {
             $message = 'Session Anda telah Habis';
@@ -25,8 +25,8 @@ class Admin extends BaseController
         $this->dashboard = new DashboardModel();
         $this->main = new GeneralModel;
 
-        helper(['user']);
-	  }
+        helper(['user', 'permission']);
+    }
 
     public function user()
     {
@@ -242,15 +242,15 @@ class Admin extends BaseController
                     // $mail_subject = msg('message_account_created_add_user');
                     // $mail_greeting = e::h($new_user_full_name) . ":" . PHP_EOL . msg('email_i_would_like_to_inform');
                     // $mail_body = msg('email_your_account_created') . ' ' . $date . '.  ' . msg('email_you_can_now_login') . ':' . PHP_EOL . PHP_EOL;
-                    // $mail_body .= $GLOBALS['CONFIG']['base_url'] . PHP_EOL . PHP_EOL;
+                    // $mail_body .= config('MyConfig')->settings['base_url'] . PHP_EOL . PHP_EOL;
                     // $mail_body .= msg('username') . ': ' . $new_user_obj->getName() . PHP_EOL . PHP_EOL;
-                    // if ($GLOBALS['CONFIG']['authen'] == 'mysql') {
+                    // if (config('MyConfig')->settings['authen'] == 'mysql') {
                     //     $mail_body .= msg('password') . ': ' . e::h($_POST['password']) . PHP_EOL . PHP_EOL;
                     // }
                     // $mail_salute =  msg('email_salute') . ",". PHP_EOL . e::h($full_name);
                     // $mail_to = $new_user_obj->getEmailAddress();
                     // $mail_flags = "-f".$user_obj->getEmailAddress();
-                    // if ($GLOBALS['CONFIG']['demo'] == 'False') {
+                    // if (config('MyConfig')->settings['demo'] == 'False') {
                     //     mail($mail_to, $mail_subject, ($mail_greeting . ' ' . $mail_body . $mail_salute), $mail_headers,
                     //         $mail_flags);
                     // }
@@ -817,9 +817,9 @@ class Admin extends BaseController
                     if (!$updData)
                             throw new \Exception('Status publishable gagal terupdate.');
 
-                    // PR LANJUTAN MOVE FILE (IVAN) 
-                    // fmove($GLOBALS['CONFIG']['archiveDir'] . $val . '.dat', $GLOBALS['CONFIG']['dataDir'] . $val . '.dat');
-                    
+                    // PR LANJUTAN MOVE FILE
+                    fmove(config('MyConfig')->settings['archiveDir'] . $val . '.dat', config('MyConfig')->settings['dataDir'] . $val . '.dat');
+
                     // aceess log
                     $logs['file_id'] = $val;
                     $logs['user_id'] = $_SESSION['username'];
@@ -868,21 +868,21 @@ class Admin extends BaseController
                     if (!$delLog)
                         throw new \Exception('Data log dokumen gagal dihapus.');
 
-                    // PR LANJUTAN MOVE FILE (IVAN)
-                    // $filename = $val . ".dat";
-                    // unlink($GLOBALS['CONFIG']['archiveDir'] . $filename);
-                    // if (is_dir($GLOBALS['CONFIG']['revisionDir'] . $val . '/')) {
-                    //     $dir = opendir($GLOBALS['CONFIG']['revisionDir'] . $val . '/');
-                    //     if (is_dir($GLOBALS['CONFIG']['revisionDir'] . $val . '/')) {
-                    //         $dir = opendir($GLOBALS['CONFIG']['revisionDir'] . $val . '/');
-                    //         while ($lreadfile = readdir($dir)) {
-                    //             if (is_file($GLOBALS['CONFIG']['revisionDir'] . "$val/$lreadfile")) {
-                    //                 unlink($GLOBALS['CONFIG']['revisionDir'] . "$val/$lreadfile");
-                    //             }
-                    //         }
-                    //         rmdir($GLOBALS['CONFIG']['revisionDir'] . $val);
-                    //     }
-                    // }
+                    // PR LANJUTAN MOVE FILE
+                    $filename = $val . ".dat";
+                    unlink(config('MyConfig')->settings['archiveDir'] . $filename);
+                    if (config('MyConfig')->settings['revisionDir'] . $val . '/') {
+                        $dir = opendir(config('MyConfig')->settings['revisionDir'] . $val . '/');
+                        if (is_dir(config('MyConfig')->settings['revisionDir'] . $val . '/')) {
+                            $dir = opendir(config('MyConfig')->settings['revisionDir'] . $val . '/');
+                            while ($lreadfile = readdir($dir)) {
+                                if (is_file(config('MyConfig')->settings['revisionDir'] . "$val/$lreadfile")) {
+                                    unlink(config('MyConfig')->settings['revisionDir'] . "$val/$lreadfile");
+                                }
+                            }
+                            rmdir(config('MyConfig')->settings['revisionDir'] . $val);
+                        }
+                    }
 
                     // aceess log
                     $logs['file_id'] = $val;
