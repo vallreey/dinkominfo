@@ -18,6 +18,10 @@
             $tempSettings = $main->getResultData('settings');
             foreach ($tempSettings as $s) $this->settings[$s['name']] = $s['value'];
             
+            // Define dataDir base path 
+            $dataDir = $this->settings["dataDir"];
+            $this->settings["dataDir"] = WRITEPATH . 'uploads/' . $dataDir;
+
             // Define revision and archive dir 
             $this->settings["revisionDir"] = $this->settings["dataDir"] . 'revisionDir/';
             $this->settings["archiveDir"] = $this->settings["dataDir"] . 'archiveDir/';

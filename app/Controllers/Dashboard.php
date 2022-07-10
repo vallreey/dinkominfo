@@ -56,7 +56,7 @@ class Dashboard extends BaseController
         $dataById = $this->dashboard->getData($wheres, true);
         
         foreach ($dataById as $d) {
-            $d->file_size = getFileSizeByFileId($d->id);
+            $d->file_size = getFileSizeByFileId($d->id, $status == 'deleted' ? 'archiveDir' : 'dataDir');
         }
         
         if (!is_null($id))
@@ -85,6 +85,42 @@ class Dashboard extends BaseController
             .view('partial/side_menu')
             .view('form_input', $data)
             .view('partial/footer');
+    }
+
+    public function download($id = null)
+    {
+        if($id == null) {
+            $_SESSION['info_error'] = '<b>Gagal!</b> Request tidak valid!';
+            return redirect()->to('dashboard/approval/onreview');
+        }
+
+        $doc = $this->main->getRowData('data', array('id' => $id));
+    
+        if($doc == null) {
+            $_SESSION['info_error'] = '<b>Gagal!</b> Data tidak ditemukan.';
+            return redirect()->to('dashboard/approval/onreview');
+        }
+
+        //TODO: check permission
+
+        $filename = getFilePathByFileId($doc['id']);
+
+        //TODO: handle revision
+        if (isset($revision_id)) {
+            $filename = getFilePathByFileId($doc['id'], "revisionDir");
+        }
+        else if($doc['publishable'] == publishableByStatus('deleted')) {
+            $filename = getFilePathByFileId($doc['id'], "archiveDir");
+        }
+        $realname = $doc["realname"];
+        // return $this->response->download($path, $realname);
+
+        // send headers to browser to initiate file download
+        header('Cache-control: private');
+        header('Content-Disposition: attachment; filename="' . $realname . '"');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Pragma: public');
+        readfile($filename);
     }
 
     public function add()
@@ -180,10 +216,10 @@ class Dashboard extends BaseController
                 if (!$successAddUserPerms) throw new \Exception('Gagal menyimpan izin user ke database, mohon coba lagi!');
             }
 
-            //ganti nama file jadi id.dat
+            //set nama file jadi id.dat
             $newFileName = $newDocId . '.dat';
-            $filepath = WRITEPATH . $file->store($dataDir, $newFileName);
-
+            $file->move($dataDir, $newFileName);
+            
             //TODO
             // AccessLog::addLogEntry($fileId, 'A', $pdo);
             
@@ -436,16 +472,16 @@ class Dashboard extends BaseController
             if (!$updData)
                     throw new \Exception('Status publishable gagal terupdate.');
             
-            // PR LANJUTAN MOVE FILE (IVAN) 
-            // if (!is_dir($GLOBALS['CONFIG']['archiveDir'])) {
-            //     // Make sure directory is writable
-            //     if (!mkdir($GLOBALS['CONFIG']['archiveDir'], 0775)) {
-            //         $last_message='Could not create ' . $GLOBALS['CONFIG']['archiveDir'];
-            //         header('Location:error.php?ec=23&last_message=' . urlencode($last_message));
-            //         exit;
-            //     }
-            // }
-            // fmove($GLOBALS['CONFIG']['dataDir'] . $val . '.dat', $GLOBALS['CONFIG']['archiveDir'] . $val . '.dat');
+            // PR LANJUTAN MOVE FILE
+            if (!is_dir(config('MyConfig')->settings['archiveDir'])) {
+                // Make sure directory is writable
+                if (!mkdir(config('MyConfig')->settings['archiveDir'], 0775)) {
+                    $last_message='Could not create ' . config('MyConfig')->settings['archiveDir'];
+                    header('Location:error.php?ec=23&last_message=' . urlencode($last_message));
+                    exit;
+                }
+            }
+            fmove(config('MyConfig')->settings['dataDir'] . $fid . '.dat', config('MyConfig')->settings['archiveDir'] . $fid . '.dat');
 
             // audit trail
             $logs['file_id'] = $fid;

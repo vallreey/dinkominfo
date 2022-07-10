@@ -75,11 +75,17 @@ if (!function_exists('displayFileSize')) {
     }
 }
 
+if (!function_exists('getFilePathByFileId')) {
+    function getFilePathByFileId($fid, $dir = "dataDir") {
+        if(!in_array($dir, array("dataDir", "archiveDir", "revisionDir"))) return '';
+
+        return config('MyConfig')->settings[$dir] . $fid . '.dat';
+    }
+}
+
 if (!function_exists('getFileSizeByFileId')) {
     function getFileSizeByFileId($fid, $dir = "dataDir") {
-        if(!in_array($dir, array("dataDir", "archiveDir", "revisionDir"))) return 'X';
-
-        return displayFileSize(WRITEPATH . 'uploads/' . config('MyConfig')->settings[$dir] . $fid . '.dat');
+        return displayFileSize(getFilePathByFileId($fid, $dir));
     }
 }
 
@@ -107,6 +113,22 @@ if (!function_exists('userRights')) {
         }
         return $arrPermission;
     }
+}
+
+if (!function_exists('fmove')) {
+    function fmove($source_file, $destination_file)
+    {
+        //read and close
+        $fhandler = fopen($source_file, "r");
+        $fcontent = fread($fhandler, filesize($source_file));
+        fclose($fhandler);
+        //write and close
+        $fhandler = fopen($destination_file, "w");
+        fwrite($fhandler, $fcontent);
+        fclose($fhandler);
+        //delete source file
+        unlink($source_file);
+}
 }
 
 if (!function_exists('publishableByStatus')) {

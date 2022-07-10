@@ -194,10 +194,10 @@
                     <td>
                       <span class="mailbox-attachment-icon"><i class="far fa-file-pdf"></i></span>
                       <div class="mailbox-attachment-info">
-                        <a href="#" class="mailbox-attachment-name"><i class="fas fa-paperclip"></i> <span id="pFileName"></span></a>
+                        <a href="#" class="mailbox-attachment-name" id="downloadFileButton"><i class="fas fa-paperclip"></i> <span id="pFileName"></span></a>
                             <span class="mailbox-attachment-size clearfix mt-1">
                             <span id="filepUkuran">-</span>
-                              <a href="#" class="btn btn-default btn-sm float-right"><i class="fas fa-cloud-download-alt"></i></a>
+                              <a href="#" id="downloadFileButton" class="btn btn-default btn-sm float-right"><i class="fas fa-cloud-download-alt"></i></a>
                             </span>
                       </div>
                     </td>
@@ -500,6 +500,7 @@
           $('#pComment').html(obj.comment);
           $('#pRevision').html(obj.revision);
           $('#pFileName').html(obj.realname);
+          $("#downloadFileButton").attr("href", "<?=site_url('dashboard/download/')?>" + id)
           $('#detailModal').modal('show');
         }
       });
