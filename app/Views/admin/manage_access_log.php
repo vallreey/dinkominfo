@@ -198,7 +198,7 @@
           $('#pComment').html(obj.comment);
           $('#pRevision').html(obj.revision);
           $('#pFileName').html(obj.realname);
-          $("#downloadFileButton").attr("href", "<?=site_url('dashboard/download/')?>" + id)
+          $("#downloadFileButton").attr("href", "<?=site_url('dashboard/file/')?>" + id)
           $('#detailModal').modal('show');
         }
       });

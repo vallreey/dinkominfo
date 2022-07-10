@@ -87,7 +87,7 @@ class Dashboard extends BaseController
             .view('partial/footer');
     }
 
-    public function download($id = null)
+    public function file($id = null, $action = "download")
     {
         if($id == null) {
             $_SESSION['info_error'] = '<b>Gagal!</b> Request tidak valid!';
@@ -105,22 +105,43 @@ class Dashboard extends BaseController
 
         $filename = getFilePathByFileId($doc['id']);
 
-        //TODO: handle revision
-        if (isset($revision_id)) {
-            $filename = getFilePathByFileId($doc['id'], "revisionDir");
+        if (!file_exists($filename)) {
+            $_SESSION['info_error'] = '<b>Gagal!</b> File tidak ditemukan.';
+            return redirect()->to('dashboard/approval/onreview');
         }
-        else if($doc['publishable'] == publishableByStatus('deleted')) {
-            $filename = getFilePathByFileId($doc['id'], "archiveDir");
-        }
-        $realname = $doc["realname"];
-        // return $this->response->download($path, $realname);
 
-        // send headers to browser to initiate file download
-        header('Cache-control: private');
-        header('Content-Disposition: attachment; filename="' . $realname . '"');
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-        header('Pragma: public');
-        readfile($filename);
+        //TODO: handle revision
+        if (isset($revision_id)) $filename = getFilePathByFileId($doc['id'], "revisionDir");
+        else if($doc['publishable'] == publishableByStatus('deleted')) $filename = getFilePathByFileId($doc['id'], "archiveDir");
+    
+        $realname = $doc["realname"];
+        $filemime = getMimeTypeByFileRealName($realname);
+        // return $this->response->download($path, $realname);
+        
+        if($action == "view") {
+            // $_SESSION['mimetype'] = $filemime;
+            // send headers to browser to initiate file download
+            header('Content-Length: '.filesize($filename));
+            // Pass the mimetype so the browser can open it
+            header('Cache-control: private');
+            header('Content-Type: ' . $filemime);
+            header('Content-Disposition: inline; filename="' . rawurlencode($realname) . '"');
+            // Apache is sending Last Modified header, so we'll do it, too
+            $modified=filemtime($filename);
+            header('Last-Modified: '. date('D, j M Y G:i:s T', $modified));   // something like Thu, 03 Oct 2002 18:01:08 GMT
+            readfile($filename);
+            // AccessLog::addLogEntry($_REQUEST['id'], 'V', $pdo);
+        }
+        else {
+            // send headers to browser to initiate file download
+            header('Cache-control: private');
+            header('Content-Type: ' . $filemime);
+            header('Content-Disposition: attachment; filename="' . $realname . '"');
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Pragma: public');
+            readfile($filename);
+            // AccessLog::addLogEntry($_REQUEST['id'], 'D', $pdo);
+        }
     }
 
     public function add()

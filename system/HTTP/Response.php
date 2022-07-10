@@ -183,7 +183,14 @@ class Response extends Message implements MessageInterface, ResponseInterface
         ]);
 
         // Default to an HTML Content-Type. Devs can override if needed.
-        $this->setContentType('text/html');
+        // $this->setContentType('text/html');
+
+        // TODO
+        // if(!isset($_SESSION['mimetype'])) $this->setContentType('text/html');
+        // else {
+        //     $this->setContentType($_SESSION['mimetype']);
+        //     unset($_SESSION['mimetype']);
+        // }
     }
 
     /**
