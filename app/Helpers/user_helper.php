@@ -133,7 +133,9 @@ if (!function_exists('actionParam')) {
           case 'M': $accesslog = 'File Modified'; break;
           case 'I': $accesslog = 'File Checked-in'; break;
           case 'O': $accesslog = 'File Checked-out'; break;
-          case 'X': $accesslog = 'File Deleted'; break;
+          case 'X': $accesslog = 'File Temporary Deleted'; break;
+          case 'P': $accesslog = 'File Permanently Deleted'; break;
+          case 'U': $accesslog = 'File Undeleted'; break;
           case 'Y': $accesslog = 'File Authorized'; break;
           case 'R': $accesslog = 'File Rejected'; break;
           default: $accesslog = ''; break;

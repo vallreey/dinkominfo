@@ -14,6 +14,8 @@ class DashboardModel extends Model
         $db = \Config\Database::connect();
         $builder = $db->table('odm_data');
         // OR $this->db = db_connect();
+
+        $this->main = new GeneralModel();
     }
 
     public function getData($wheres = array(), $returnData = false)
@@ -25,6 +27,30 @@ class DashboardModel extends Model
                     ->join('odm_department dept', 'd.department = dept.id')
                     ->join('odm_category c', 'd.category = c.id')
                     ->where('d.publishable', $wheres['publishable']);
+
+        if (!$_SESSION['is_admin']) {
+            if (isset($wheres['status'])) {
+                // status rejected | is reviewer | is not admin
+                if ($wheres['status'] == 'rejected')
+                    $query = $builder->where('owner', $_SESSION['id']);
+                // status on review
+                else if ($wheres['status'] == 'onreview') {
+                    // is reviewer or not
+                    if ($_SESSION['is_reviewer']) {
+                        $arrRevIds = $this->main->getResultData('dept_reviewer', array('user_id' => $_SESSION['id']));
+                        if ($arrRevIds !== false) {
+                            $arrIds = array();
+                            foreach ($arrRevIds as $val) {
+                                $arrIds[] = $val['dept_id'];
+                            }
+                            $query = $builder->whereIn('d.department', $arrIds);
+                        }
+                    } else {
+                        $query = $builder->where('owner', $_SESSION['id']);
+                    }
+                }
+            }
+        }
 
         if (isset($wheres['id']) && $wheres['id'] != '') $query = $builder->where('d.id', $wheres['id']);
 
@@ -90,6 +116,19 @@ class DashboardModel extends Model
         $query = $builder->orderBy($orderBy, 'asc')->get();
 
         return $query->getResult();
+    }
+
+    public function getLogModification($uid)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('odm_log l');
+        
+        $query = $builder->select('u.last_name, u.first_name, DATE_FORMAT(l.modified_on, "%Y-%m-%d") AS date_modified, DATE_FORMAT(l.modified_on, "%H:%i:%s") AS time_modified, l.note, l.revision')
+                    ->join('odm_user u', 'l.id = u.id')
+                    ->where('l.id', $uid)
+                    ->orderBy('l.modified_on', 'desc')->get();
+
+        return $query->getResultArray();
     }
 
     // SELECT d.id FROM odm_data as d, odm_user as u, odm_department dept, odm_category as c WHERE d.owner = u.id AND d.department = dept.id AND d.category = c.id AND ( u.first_name LIKE :author_first_name AND u.last_name LIKE :author_last_name ) ORDER BY d.id ASC

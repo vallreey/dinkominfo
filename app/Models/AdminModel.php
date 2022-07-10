@@ -89,8 +89,9 @@ class AdminModel extends Model
                 'nama'      => 'last_name',
                 'bidang'    => 'name',
                 'kategori'  => 'name',
+                'date'      => 'timestamp',
             );
-            $field = in_array($wheres['columnName'], $fieldOrder) ? $fieldOrder[$wheres['columnName']] : $wheres['columnName'];
+            $field = array_key_exists($wheres['columnName'], $fieldOrder) ? $fieldOrder[$wheres['columnName']] : $wheres['columnName'];
             $query = $builder->orderBy($field, $wheres['columnSortOrder']);
         }
         

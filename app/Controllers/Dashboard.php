@@ -52,13 +52,16 @@ class Dashboard extends BaseController
         $wheres['id'] = isset($id) && !is_null($id) ? $id : $_GET['id'];
         $wheres['publishable'] = publishableByStatus($status);
         $wheres['status'] = $status;
-
+        
         $dataById = $this->dashboard->getData($wheres, true);
+        $history  = $this->dashboard->getLogModification($wheres['id']);
+
+        $return = array('data' => $dataById[0], 'history' => $history);
         
         if (!is_null($id))
             return $dataById;
         else 
-            echo json_encode($dataById[0]);
+            echo json_encode($return);
     }
 
     public function document($status = null, $id = null)
@@ -287,8 +290,6 @@ class Dashboard extends BaseController
             $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
             return redirect()->to('dashboard/document');
         }
-
-
     }
 
     public function loadAjaxTables($status)
@@ -304,11 +305,12 @@ class Dashboard extends BaseController
             $wheres['searchValue'] = isset($_POST['filterParam']) ? $_POST['filterParam'][0] : '';
         else
             $wheres['searchValue'] = $_POST['search']['value'];
-        $wheres['publishable']      = $wheresRecordTotal['publishable'] = $publishable;
-        $wheres['status']           = $status;
+        $wheres['publishable'] = $wheresRecordTotal['publishable'] = $publishable;
+        
+        $wheres['status'] = $wheresRecordTotal['status'] = $status;
         
         $files = $this->dashboard->getData($wheres, true);
-        
+
         $data = array();
 
         $arrStatus = array('deleted', 'onreview', 'rejected');
@@ -329,12 +331,15 @@ class Dashboard extends BaseController
                     'ukuran'    => '-',
                     'status'    => $val->status
                 );
-
+                
                 $detail = '<div class="btn-group" role="group"><button type="button" class="btn btn-default btn-sm btn-detail" id="'.$val->id.'"><i class="fas fa-folder"></i></button>';
 
-                if ($status == 'deleted') $data[$i]['detail'] = $detail . '</div>';
-                else $data[$i]['detail'] = $detail . '<a href="'.site_url('dashboard/document').'/'.$status.'/'.$val->id.'" class="btn btn-default btn-sm"><i class="fas fa-pencil-alt"></i></a><button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-href="'.site_url('dashboard/tempDeleteFile/').$val->id.'" data-target="#confirmDelete"><i class="fas fa-trash"></i></button></div>';
-                
+                if ($_SESSION['is_admin'] || $_SESSION['is_reviewer']) {
+                    if ($status == 'deleted') $data[$i]['detail'] = $detail . '</div>';
+                    else $data[$i]['detail'] = $detail . '<a href="'.site_url('dashboard/document').'/'.$status.'/'.$val->id.'" class="btn btn-default btn-sm"><i class="fas fa-pencil-alt"></i></a><button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-href="'.site_url('dashboard/tempDeleteFile/').$val->id.'" data-target="#confirmDelete"><i class="fas fa-trash"></i></button></div>';
+                } else {
+                    $data[$i]['detail'] = $detail . '</div>';
+                }
                 $i++;
             }
         }
@@ -348,12 +353,15 @@ class Dashboard extends BaseController
 
         if (in_array($status, $arrStatus)) {
             // total need to be deleted
+            $wheresDeleted['status'] = 'deleted';
             $wheresDeleted['publishable'] = publishableByStatus('deleted');
             $dataset['totDeleted'] = $this->dashboard->getData($wheresDeleted);
             // total need to be reviewed
+            $wheresReviewed['status'] = 'onreview';
             $wheresReviewed['publishable'] = publishableByStatus('onreview');
             $dataset['totReviewed'] = $this->dashboard->getData($wheresReviewed);
             // total rejected
+            $wheresRejected['status'] = 'rejected';
             $wheresRejected['publishable'] = publishableByStatus('rejected');
             $dataset['totRejected'] = $this->dashboard->getData($wheresRejected);
         }
@@ -444,7 +452,7 @@ class Dashboard extends BaseController
             // }
             // fmove($GLOBALS['CONFIG']['dataDir'] . $val . '.dat', $GLOBALS['CONFIG']['archiveDir'] . $val . '.dat');
 
-            // audit trail
+            // aceess log
             $logs['file_id'] = $fid;
             $logs['user_id'] = $_SESSION['username'];
             $logs['timestamp'] = date('Y-m-d H:i:s');

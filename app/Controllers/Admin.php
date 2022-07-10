@@ -209,7 +209,7 @@ class Admin extends BaseController
                     }
 
                     // insert into _dept_reviewer
-                    if ($dept_rev != '') {
+                    if ($dept_rev !== '') {
                         $deptr = array();
                         foreach ($dept_rev as $key => $val) {
                             $deptr[$key]['dept_id'] = $val;
@@ -274,18 +274,18 @@ class Admin extends BaseController
                 if (!$insertAdmin)
                     throw new \Exception('User admin gagal terupdate.');
 
+                // delete exist _dept_reviewer
+                $deleteDeptReviewer = $this->main->deleteData('dept_reviewer', array('user_id' => $uid));
+                if (!$deleteDeptReviewer)
+                    throw new \Exception('Department reviewer gagal diupdate. [act: delete]');
+
                 // update _dept_reviewer
-                if ($dept_rev != '') {
+                if ($dept_rev !== '') {
                     $deptr = array();
                     foreach ($dept_rev as $key => $val) {
                         $deptr[$key]['dept_id'] = $val;
                         $deptr[$key]['user_id'] = $uid;
                     }
-
-                    // delete exist data
-                    $deleteDeptReviewer = $this->main->deleteData('dept_reviewer', array('user_id' => $uid));
-                    if (!$deleteDeptReviewer)
-                        throw new \Exception('Department reviewer gagal diupdate. [act: delete]');
 
                     // insert new data
                     $insertDeptReviewer = $this->main->insertBatchData('dept_reviewer', $deptr);
@@ -805,23 +805,36 @@ class Admin extends BaseController
     {
         $ids = $_POST['ids'];
 
-        $datas['publishable'] = 0;
-        $this->db->transBegin();
-        try {
-            foreach ($ids as $val) {
-                // update _data
-                $updData = $this->main->updateData('data', array('id' => $val), $datas);
-                if (!$updData)
-                        throw new \Exception('Status publishable gagal terupdate.');
+        if (!$ids) {
+            $_SESSION['info_error'] = '<b>Error!</b> File ID tidak dikenal.';
+        } else {
+            $datas['publishable'] = 0;
+            $this->db->transBegin();
+            try {
+                foreach ($ids as $val) {
+                    // update _data
+                    $updData = $this->main->updateData('data', array('id' => $val), $datas);
+                    if (!$updData)
+                            throw new \Exception('Status publishable gagal terupdate.');
 
-                // PR LANJUTAN MOVE FILE (IVAN) 
-                // fmove($GLOBALS['CONFIG']['archiveDir'] . $val . '.dat', $GLOBALS['CONFIG']['dataDir'] . $val . '.dat');  
+                    // PR LANJUTAN MOVE FILE (IVAN) 
+                    // fmove($GLOBALS['CONFIG']['archiveDir'] . $val . '.dat', $GLOBALS['CONFIG']['dataDir'] . $val . '.dat');
+                    
+                    // aceess log
+                    $logs['file_id'] = $val;
+                    $logs['user_id'] = $_SESSION['username'];
+                    $logs['timestamp'] = date('Y-m-d H:i:s');
+                    $logs['action'] = 'U';
+                    $insLogs = $this->main->insertData('access_log', $logs);
+                    if (!$insLogs)
+                        throw new \Exception('Log entry gagal tersimpan.');
+                }
+                $this->db->transCommit();
+                $_SESSION['info_success'] = '<b>Sukses!</b> Dokumen berhasil tersubmit ulang.';
+            } catch (\Exception $e) {
+                $this->db->transRollback();
+                $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
             }
-            $this->db->transCommit();
-            $_SESSION['info_success'] = '<b>Sukses!</b> Dokumen berhasil tersubmit ulang.';
-        } catch (\Exception $e) {
-            $this->db->transRollback();
-            $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
         }
     }
 
@@ -829,50 +842,64 @@ class Admin extends BaseController
     {
         $ids = $_POST['ids'];
 
-        $this->db->transBegin();
-        try {
-            foreach ($ids as $val) {
-                // delete from _data
-                $delData = $this->main->deleteData('data', array('id' => $val));
-                if (!$delData)
-                    throw new \Exception('Data dokumen gagal dihapus.');
+        if (!$ids) {
+            $_SESSION['info_error'] = '<b>Error!</b> File ID tidak dikenal.';
+        } else {
+            $this->db->transBegin();
+            try {
+                foreach ($ids as $val) {
+                    // delete from _data
+                    $delData = $this->main->deleteData('data', array('id' => $val));
+                    if (!$delData)
+                        throw new \Exception('Data dokumen gagal dihapus.');
 
-                // delete from _dept_perms
-                $delDept = $this->main->deleteData('dept_perms', array('fid' => $val));
-                if (!$delDept)
-                    throw new \Exception('Data department permission gagal dihapus.');
-                
-                // delete from _user_perms
-                $delUser = $this->main->deleteData('user_perms', array('fid' => $val));
-                if (!$delUser)
-                    throw new \Exception('Data user permission gagal dihapus.');
-                
-                // delete from _log
-                $delLog = $this->main->deleteData('log', array('id' => $val));
-                if (!$delLog)
-                    throw new \Exception('Data log dokumen gagal dihapus.');
+                    // delete from _dept_perms
+                    $delDept = $this->main->deleteData('dept_perms', array('fid' => $val));
+                    if (!$delDept)
+                        throw new \Exception('Data department permission gagal dihapus.');
+                    
+                    // delete from _user_perms
+                    $delUser = $this->main->deleteData('user_perms', array('fid' => $val));
+                    if (!$delUser)
+                        throw new \Exception('Data user permission gagal dihapus.');
+                    
+                    // delete from _log
+                    $delLog = $this->main->deleteData('log', array('id' => $val));
+                    if (!$delLog)
+                        throw new \Exception('Data log dokumen gagal dihapus.');
 
-                // PR LANJUTAN MOVE FILE (IVAN)
-                // $filename = $val . ".dat";
-                // unlink($GLOBALS['CONFIG']['archiveDir'] . $filename);
-                // if (is_dir($GLOBALS['CONFIG']['revisionDir'] . $val . '/')) {
-                //     $dir = opendir($GLOBALS['CONFIG']['revisionDir'] . $val . '/');
-                //     if (is_dir($GLOBALS['CONFIG']['revisionDir'] . $val . '/')) {
-                //         $dir = opendir($GLOBALS['CONFIG']['revisionDir'] . $val . '/');
-                //         while ($lreadfile = readdir($dir)) {
-                //             if (is_file($GLOBALS['CONFIG']['revisionDir'] . "$val/$lreadfile")) {
-                //                 unlink($GLOBALS['CONFIG']['revisionDir'] . "$val/$lreadfile");
-                //             }
-                //         }
-                //         rmdir($GLOBALS['CONFIG']['revisionDir'] . $val);
-                //     }
-                // }
+                    // PR LANJUTAN MOVE FILE (IVAN)
+                    // $filename = $val . ".dat";
+                    // unlink($GLOBALS['CONFIG']['archiveDir'] . $filename);
+                    // if (is_dir($GLOBALS['CONFIG']['revisionDir'] . $val . '/')) {
+                    //     $dir = opendir($GLOBALS['CONFIG']['revisionDir'] . $val . '/');
+                    //     if (is_dir($GLOBALS['CONFIG']['revisionDir'] . $val . '/')) {
+                    //         $dir = opendir($GLOBALS['CONFIG']['revisionDir'] . $val . '/');
+                    //         while ($lreadfile = readdir($dir)) {
+                    //             if (is_file($GLOBALS['CONFIG']['revisionDir'] . "$val/$lreadfile")) {
+                    //                 unlink($GLOBALS['CONFIG']['revisionDir'] . "$val/$lreadfile");
+                    //             }
+                    //         }
+                    //         rmdir($GLOBALS['CONFIG']['revisionDir'] . $val);
+                    //     }
+                    // }
+
+                    // aceess log
+                    $logs['file_id'] = $val;
+                    $logs['user_id'] = $_SESSION['username'];
+                    $logs['timestamp'] = date('Y-m-d H:i:s');
+                    $logs['action'] = 'P';
+                    $insLogs = $this->main->insertData('access_log', $logs);
+                    if (!$insLogs)
+                        throw new \Exception('Log entry gagal tersimpan.');
+                }
+                    
+                $this->db->transCommit();
+                $_SESSION['info_success'] = '<b>Sukses!</b> Dokumen berhasil terhapus secara permanen.';
+            } catch (\Exception $e) {
+                $this->db->transRollback();
+                $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
             }
-            $this->db->transCommit();
-            $_SESSION['info_success'] = '<b>Sukses!</b> Dokumen berhasil terhapus secara permanen.';
-        } catch (\Exception $e) {
-            $this->db->transRollback();
-            $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
         }
     }
 
