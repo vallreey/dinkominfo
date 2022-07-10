@@ -141,6 +141,9 @@ class Dashboard extends BaseController
             $newDocId = $this->main->insertData("data", $newDoc, true);
             if (!$newDocId) throw new \Exception('Gagal menyimpan data ke database, mohon coba lagi!');
 
+            //TODO
+            // udf_add_file_insert($fileId);
+
             //insert ke db log dengan note 'Initial import' dan revision 'current'
             $historyLog = array(
                 'id' => $newDocId,
@@ -149,8 +152,8 @@ class Dashboard extends BaseController
                 'note' => 'Initial import',
                 'revision' => 'current',
             );
-            $successInsert = $this->main->insertData("log", $historyLog);
-            if (!$successInsert) throw new \Exception('Gagal menyimpan log ke database, mohon coba lagi!');
+            $successAddHistoryLog = $this->main->insertData("log", $historyLog);
+            if (!$successAddHistoryLog) throw new \Exception('Gagal menyimpan log ke database, mohon coba lagi!');
 
             //insert ke db dept_perms
             foreach ($_POST['bidang_perms'] as $dept_id=>$dept_perm) {
@@ -159,8 +162,8 @@ class Dashboard extends BaseController
                     'rights' => $dept_perm,
                     'dept_id' => $dept_id,
                 );
-                $successInsert = $this->main->insertData("dept_perms", $deptPerms);
-                if (!$successInsert) throw new \Exception('Gagal menyimpan izin bidang ke database, mohon coba lagi!');
+                $successAddDeptPerms = $this->main->insertData("dept_perms", $deptPerms);
+                if (!$successAddDeptPerms) throw new \Exception('Gagal menyimpan izin bidang ke database, mohon coba lagi!');
             }
 
             //insert ke db user_perms
@@ -170,13 +173,16 @@ class Dashboard extends BaseController
                     'rights' => $permission,
                     'uid' => $user_id,
                 );
-                $successInsert = $this->main->insertData("user_perms", $userPerms);
-                if (!$successInsert) throw new \Exception('Gagal menyimpan izin user ke database, mohon coba lagi!');
+                $successAddUserPerms = $this->main->insertData("user_perms", $userPerms);
+                if (!$successAddUserPerms) throw new \Exception('Gagal menyimpan izin user ke database, mohon coba lagi!');
             }
 
             //ganti nama file jadi id.dat
             $newFileName = $newDocId . '.dat';
             $filepath = WRITEPATH . $file->store($dataDir, $newFileName);
+
+            //TODO
+            // AccessLog::addLogEntry($fileId, 'A', $pdo);
             
             $this->db->transCommit();
             $_SESSION['info_success'] = '<b>Sukses!</b> Dokumen berhasil ditambahkan [Nama dok: '.$_FILES['filename']['name'].']';
@@ -188,8 +194,101 @@ class Dashboard extends BaseController
         }
     }
 
-    public function edit() {
+    public function edit($id = null) {
+        if ($id == null || $_POST == null) {
+            $_SESSION['info_error'] = '<b>Gagal!</b> Request tidak valid.';
+            return redirect()->to('dashboard/document');
+        }
+
+        if (!isset($_POST['user_perms'])) {
+            $_SESSION['info_error'] = '<b>Gagal!</b> Minimal harus ada 1 permission user';
+            return redirect()->to('dashboard/document/onreview/'.$id);
+        }
+
+        $doc = $this->main->getRowData('data', array('id' => $id));
+    
+        if ($doc == null) {
+            $_SESSION['info_error'] = '<b>Gagal!</b> Data tidak ditemukan.';
+            return redirect()->to('dashboard/document');
+        }
+
+        // minimal harus ada 1 user dengan perms lihat atau edit
+        $permsOk = false;
+        foreach ($_POST['user_perms'] as $permission) {
+            if ($permission > 2) {
+                $permsOk = true;
+                break;
+            }
+        }
+        if(!$permsOk) {
+            $_SESSION['info_error'] = '<b>Gagal!</b> Harus ada minimal 1 user dengan permission lihat atau edit';
+            return redirect()->to('dashboard/document/onreview/'.$id);
+        }
+
+        // Check to make sure the file is available
+        if ($doc['status'] != 0) {
+            $_SESSION['info_error'] = '<b>Gagal!</b> Status file tidak available';
+            return redirect()->to('dashboard/document/approved/'.$id);
+        }
+
+        $this->db->transBegin();
+        try {  
+            // update category
+            $doc['category'] = $_POST['kategori'];
+            $doc['description'] = $_POST['deskripsi'];
+            $doc['comment'] = $_POST['komentar'];
+            if (isset($_POST['pemilik'])) $doc['owner'] = $_POST['pemilik'];
+            if (isset($_POST['bidang'])) $doc['department'] = $_POST['bidang'];
+
+            // Update the file with the new values
+            $isSuccess = $this->main->updateData('data', array('id' => $id), $doc);
+
+            //TODO
+            //udf_edit_file_update();
+
+            // clean out old permissions
+            $delUserPerms = $this->main->deleteData('user_perms', array('fid' => $doc['id']));
+            if (!$delUserPerms) throw new \Exception('Gagal hapus permission user');
+
+            // clean out old permissions
+            $delDeptPerms = $this->main->deleteData('dept_perms', array('fid' => $doc['id']));
+            if (!$delDeptPerms) throw new \Exception('Gagal hapus permission bidang');
+            
+            //insert ke db dept_perms
+            foreach ($_POST['bidang_perms'] as $dept_id=>$dept_perm) {
+                $deptPerms = array(
+                    'fid' => $doc['id'],
+                    'rights' => $dept_perm,
+                    'dept_id' => $dept_id,
+                );
+                $successAddDeptPerms = $this->main->insertData("dept_perms", $deptPerms);
+                if (!$successAddDeptPerms) throw new \Exception('Gagal menyimpan izin bidang ke database, mohon coba lagi!');
+            }
+
+            //insert ke db user_perms
+            foreach ($_POST['user_perms'] as $user_id=>$permission) {
+                $userPerms = array(
+                    'fid' => $doc['id'],
+                    'rights' => $permission,
+                    'uid' => $user_id,
+                );
+                $successAddUserPerms = $this->main->insertData("user_perms", $userPerms);
+                if (!$successAddUserPerms) throw new \Exception('Gagal menyimpan izin user ke database, mohon coba lagi!');
+            }
+
+            //TODO
+            // AccessLog::addLogEntry($fileId, 'M', $pdo);
+            $this->db->transCommit();
+            $_SESSION['info_success'] = '<b>Sukses!</b> Dokumen berhasil diubah [Nama dok: '.$doc['realname'].']';
+            return redirect()->to('dashboard/approval/onreview');
         
+        } catch (\Exception $e) {
+            $this->db->transRollback();
+            $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
+            return redirect()->to('dashboard/document');
+        }
+
+
     }
 
     public function loadAjaxTables($status)
