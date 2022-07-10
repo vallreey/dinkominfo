@@ -92,10 +92,9 @@ class Dashboard extends BaseController
         $strType = substr($strType, 0, -1);
         
         //get settings
-        $maxSize = $this->main->getRowData('settings', array('name' => 'max_filesize'))['value'];
-        $dataDir = $this->main->getRowData('settings', array('name' => 'dataDir'))['value'];
-        $authorization = $this->main->getRowData('settings', array('name' => 'authorization'))['value'];
-        // die($authorization);
+        $maxSize = config('MyConfig')->setting('max_filesize');
+        $dataDir = config('MyConfig')->setting('dataDir');
+        $authorization = config('MyConfig')->setting('authorization');
 
         //size in kb
         $validationRule = [

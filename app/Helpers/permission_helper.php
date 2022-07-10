@@ -43,7 +43,7 @@ if (!function_exists('settingVal')) {
 }
 
 if (!function_exists('displayFileSize')) {
-    function display_filesize($file) {
+    function displayFileSize($file) {
         // Does the file exist?
         if (is_file($file)) {
 
@@ -72,6 +72,12 @@ if (!function_exists('displayFileSize')) {
         } else {
             return "X";
         }
+    }
+}
+
+if (!function_exists('getFileSizeByFileId')) {
+    function getFileSizeByFileId($fid) {
+        return displayFileSize(WRITEPATH . 'uploads/' . config('MyConfig')->setting('dataDir') . '/' . $fid . '.dat');
     }
 }
 
