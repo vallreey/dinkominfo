@@ -55,6 +55,10 @@ class Dashboard extends BaseController
 
         $dataById = $this->dashboard->getData($wheres, true);
         
+        foreach ($dataById as $d) {
+            $d->file_size = getFileSizeByFileId($d->id);
+        }
+        
         if (!is_null($id))
             return $dataById;
         else 
@@ -92,9 +96,9 @@ class Dashboard extends BaseController
         $strType = substr($strType, 0, -1);
         
         //get settings
-        $maxSize = config('MyConfig')->setting('max_filesize');
-        $dataDir = config('MyConfig')->setting('dataDir');
-        $authorization = config('MyConfig')->setting('authorization');
+        $maxSize = config('MyConfig')->settings['max_filesize'];
+        $dataDir = config('MyConfig')->settings['dataDir'];
+        $authorization = config('MyConfig')->settings['authorization'];
 
         //size in kb
         $validationRule = [

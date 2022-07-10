@@ -76,14 +76,10 @@ if (!function_exists('displayFileSize')) {
 }
 
 if (!function_exists('getFileSizeByFileId')) {
-    function getFileSizeByFileId($fid, $dirType = null) {
-        $path = WRITEPATH . 'uploads/' . config('MyConfig')->setting('dataDir');
-        switch ($dirType) {
-            case "archive": $path = $path .= '/archiveDir/' . $fid . '.dat'; break;
-            case "revision": $path = $path .= '/revisionDir/' . $fid . '.dat'; break;
-            default: $path = $path .= '/' . $fid . '.dat';
-        }
-        return displayFileSize($path);
+    function getFileSizeByFileId($fid, $dir = "dataDir") {
+        if(!in_array($dir, array("dataDir", "archiveDir", "revisionDir"))) return 'X';
+
+        return displayFileSize(WRITEPATH . 'uploads/' . config('MyConfig')->settings[$dir] . $fid . '.dat');
     }
 }
 

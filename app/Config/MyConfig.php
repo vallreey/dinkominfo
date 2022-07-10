@@ -7,18 +7,19 @@
     class MyConfig extends BaseConfig
     {
         public $ada_site_name = 'Site name';
-        private $settings;
+        public $settings = array();
 
         public function __construct ()
         {
             parent::__construct();
             $main = new GeneralModel();
 
-            $this->settings = $main->getResultData('settings');
-        }
-
-        public function setting($name){
-            foreach ($this->settings as $s) if($s['name'] == $name) return $s['value'];
-            return "";
+            // Load all settings from db to variable settings
+            $tempSettings = $main->getResultData('settings');
+            foreach ($tempSettings as $s) $this->settings[$s['name']] = $s['value'];
+            
+            // Define revision and archive dir 
+            $this->settings["revisionDir"] = $this->settings["dataDir"] . 'revisionDir/';
+            $this->settings["archiveDir"] = $this->settings["dataDir"] . 'archiveDir/';
         }
     }

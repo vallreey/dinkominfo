@@ -196,7 +196,7 @@
                       <div class="mailbox-attachment-info">
                         <a href="#" class="mailbox-attachment-name"><i class="fas fa-paperclip"></i> <span id="pFileName"></span></a>
                             <span class="mailbox-attachment-size clearfix mt-1">
-                              <span>1,245 KB</span>
+                            <span id="filepUkuran">-</span>
                               <a href="#" class="btn btn-default btn-sm float-right"><i class="fas fa-cloud-download-alt"></i></a>
                             </span>
                       </div>
@@ -492,7 +492,8 @@
         success: function(response) {
           const obj = JSON.parse(response);
           $('#pKategori').html(obj.cat_name);
-          $('#pUkuran').html("-");
+          $('#pUkuran').html(obj.file_size);
+          $('#filepUkuran').text(obj.file_size);
           $('#pCreated').html(obj.created);
           $('#pPemilik').html(obj.last_name + ', ' + obj.first_name);
           $('#pDeskripsi').html(obj.description);
