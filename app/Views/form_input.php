@@ -89,7 +89,7 @@
                           echo '<a id="existingFile" href="#">'.$fileExist[0]->realname.'</a>';
                         } else {
                           echo '<div class="custom-file">
-                                  <input type="file" class="custom-file-input" id="customFile" name="filename">
+                                  <input type="file" class="custom-file-input" id="customFile" name="filename" accept="'.$AllowedMimeTypes.'">
                                   <label class="custom-file-label" for="customFile">Pilih file</label>
                                 </div>';
                         } ?>
