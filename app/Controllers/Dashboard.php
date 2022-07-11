@@ -56,6 +56,9 @@ class Dashboard extends BaseController
         $dataById = $this->dashboard->getData($wheres, true);
         $history  = $this->dashboard->getLogModification($wheres['id']);
 
+        // data tidak ditemukan
+        if(!$dataById) return false;
+
         $return = array('data' => $dataById[0], 'history' => $history);
         
         foreach ($dataById as $d) {
@@ -86,6 +89,10 @@ class Dashboard extends BaseController
         $data['file_id'] = $id;
         if (!is_null($id)) {
             $data['fileExist'] = $this->getDataById($status, $id);
+            if(!$data['fileExist']) {
+                $_SESSION['info_error'] = '<b>Gagal!</b> Data tidak ditemukan.';
+                return redirect()->to('dashboard/approval/onreview');
+            }
         }
 
         $data['status']      = $status;
@@ -389,7 +396,7 @@ class Dashboard extends BaseController
                 $data[$i] = array(
                     'id'        => $val->id,
                     'check'     => in_array($status, $arrStatus) ? '<input type="checkbox" name="ids" value="'.$val->id.'" id="check'.$val->id.'">' : '',
-                    'nama_file' => $val->realname,
+                    'nama_file' => '<a target="_blank" href="'.site_url('dashboard/file').'/'.$val->id.'/view">'.$val->realname.'</a>' ,
                     'deskripsi' => $val->description,
                     'hak_akses' => '-',
                     'created'   => $val->created,
