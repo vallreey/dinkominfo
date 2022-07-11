@@ -101,6 +101,7 @@ class Dashboard extends BaseController
         $data['listKategori']= $this->dashboard->getOptionalList('kategori');
         $data['allUsers']    = $this->user->allUsers();
         $data['AllowedMimeTypes'] = $allowedMimes;
+        $data['docUrl'] = site_url('dashboard/file').'/'.$id.'/view"';
 
         return view('partial/header', $header)
             .view('partial/top_menu')

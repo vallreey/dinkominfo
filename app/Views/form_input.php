@@ -86,7 +86,7 @@
                       <label for="inputFile" class="col-sm-2 col-form-label">File</label>
                       <div class="col-sm-10">
                         <?php if (isset($fileExist)) {
-                          echo '<a id="existingFile" href="#">'.$fileExist[0]->realname.'</a>';
+                          echo '<a id="existingFile" href="'.$docUrl.' target="_blank">'.$fileExist[0]->realname.'</a>';
                         } else {
                           echo '<div class="custom-file">
                                   <input type="file" class="custom-file-input" id="customFile" name="filename" accept="'.$AllowedMimeTypes.'">
