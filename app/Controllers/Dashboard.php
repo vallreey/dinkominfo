@@ -68,8 +68,19 @@ class Dashboard extends BaseController
             echo json_encode($return);
     }
 
+    private function getAllowedMimeTypes() {
+        //get mime types
+        $mimeType = $this->main->getResultData('filetypes', array('active' => 1));
+        $strType = '';
+        foreach ($mimeType as $val) $strType .= $val['type'] . ',';
+        $strType = substr($strType, 0, -1);
+        return $strType;
+    }
+
     public function document($status = null, $id = null)
     {
+        $allowedMimes = $this->getAllowedMimeTypes();
+        
         $header['title'] = !is_null($id) ? 'Update File' : 'Tambah File';
 
         $data['file_id'] = $id;
@@ -82,6 +93,7 @@ class Dashboard extends BaseController
         $data['listBidang']  = $this->dashboard->getOptionalList('bidang');
         $data['listKategori']= $this->dashboard->getOptionalList('kategori');
         $data['allUsers']    = $this->user->allUsers();
+        $data['AllowedMimeTypes'] = $allowedMimes;
 
         return view('partial/header', $header)
             .view('partial/top_menu')
@@ -149,11 +161,7 @@ class Dashboard extends BaseController
 
     public function add()
     {
-        //get mime types
-        $mimeType = $this->main->getResultData('filetypes', array('active' => 1));
-        $strType = '';
-        foreach ($mimeType as $val) $strType .= $val['type'] . ',';
-        $strType = substr($strType, 0, -1);
+        $allowedMimes = getAllowedMimeTypes();
         
         //get settings
         $maxSize = config('MyConfig')->settings['max_filesize'];
@@ -165,7 +173,7 @@ class Dashboard extends BaseController
             'filename' => [
                 'label' => 'Document File',
                 'rules' => 'uploaded[filename]'
-                    . '|mime_in[filename,'.$strType.']'
+                    . '|mime_in[filename,'.$allowedMimes.']'
                     . '|max_size[filename,'.$maxSize.']'
             ],
         ];
