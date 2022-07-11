@@ -51,20 +51,6 @@ if (!function_exists('getUserRights')) {
 	}
 }
 
-if (!function_exists('settingVal')) {
-	function settingVal($name) {	
-        $db = \Config\Database::connect();
-        $builder = $db->table('odm_settings');
-        
-        $query = $builder->where('name', trim($name))->get();
-        
-        if (count($query->getResult()) > 0)
-            return $query->getRow()->value;
-        else 
-            return '';
-	}
-}
-
 if (!function_exists('displayFileSize')) {
     function displayFileSize($file) {
         // Does the file exist?

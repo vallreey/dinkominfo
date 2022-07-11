@@ -34,7 +34,7 @@ class Account extends BaseController
 
     public function logon()
 	{   
-        $_SESSION['title'] = settingVal('title');
+        $_SESSION['title'] = config('MyConfig')->settings['title'];
         if (!$_POST) {
             return view('account/logon');
         } else {
@@ -63,7 +63,7 @@ class Account extends BaseController
                     $_SESSION['can_checkin'] = canCheckIn($_SESSION['id']);
                 }
                 $_SESSION['dept_name'] = getDeptName($_SESSION['id']);
-                $_SESSION['root_id']   = settingVal('root_id');
+                $_SESSION['root_id']   = config('MyConfig')->settings['root_id'];
                     
                 return redirect()->to('dashboard');
             }
