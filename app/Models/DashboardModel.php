@@ -30,11 +30,8 @@ class DashboardModel extends Model
 
         if (!$_SESSION['is_admin']) {
             if (isset($wheres['status'])) {
-                // status rejected | is reviewer | is not admin
-                if ($wheres['status'] == 'rejected')
-                    $query = $builder->where('owner', $_SESSION['id']);
                 // status on review
-                else if ($wheres['status'] == 'onreview') {
+                if ($wheres['status'] == 'onreview') {
                     // is reviewer or not
                     if ($_SESSION['is_reviewer']) {
                         $arrRevIds = $this->main->getResultData('dept_reviewer', array('user_id' => $_SESSION['id']));
@@ -51,6 +48,9 @@ class DashboardModel extends Model
                 }
             }
         }
+
+        // status rejected | admin mode false
+        if (isset($wheres['adminMode']) && $wheres['adminMode'] == 0 && isset($wheres['status']) && $wheres['status'] == 'rejected') $query = $builder->where('owner', $_SESSION['id']);
 
         if (isset($wheres['id']) && $wheres['id'] != '') $query = $builder->where('d.id', $wheres['id']);
 

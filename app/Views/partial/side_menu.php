@@ -118,19 +118,19 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="<?=site_url('admin/documents/deleted/')?>" class="nav-link">
+                <a href="<?=site_url('admin/documents/deleted')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Deleted/Undeleted</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="<?=site_url('admin/documents/onreview/1')?>" class="nav-link">
+                <a href="<?=site_url('admin/documents/onreview')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Reviews</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="<?=site_url('admin/documents/rejected/1')?>" class="nav-link">
+                <a href="<?=site_url('admin/documents/rejected')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Rejections</p>
                 </a>
