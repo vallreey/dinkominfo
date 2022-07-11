@@ -332,10 +332,11 @@
 
 <script>
   $(function () {
+    var ids         = [];
     var status      = $('#hidStatus').val();
     var is_admin    = <?=$_SESSION['is_admin'] ? 1 : 0?>;
     var is_reviewer = <?=$_SESSION['is_reviewer'] ? 1 : 0?>;
-    var ids = [];
+    var admin_mode  = <?=$admin_mode ? 1 : 0?>;
 
     var listDataTable = $('#example1').DataTable({
       'dom': '<"d-flex justify-content-between align-items-end"Blf>rt<"d-flex justify-content-between"ip><"clear">', 
@@ -357,7 +358,7 @@
       'processing': true,
       'serverSide': true,
       'ajax': {
-        'url': '<?=site_url('dashboard/loadAjaxTables/')?>' + status,
+        'url': '<?=site_url('dashboard/loadAjaxTables/')?>' + status + '/' + admin_mode,
         'type': 'POST'
       },
       'columns': [
@@ -437,13 +438,29 @@
     } else if (status == 'onreview' && (is_admin == 1 || is_reviewer == 1)) {
       listDataTable.button().add( 0, {
         action: function ( e, dt, button, config ) {
-            // dt.ajax.reload();
+          var isChecked =  $('input:checkbox').is(':checked');
+          if (!isChecked) {
+            alert('Tidak ada data yang dipilih !');
+            return false;
+          } else {
+            $('input:checkbox[name=ids]:checked').each(function(){
+              ids.push($(this).val());
+            });
+          }
         },
         text: 'Authorize',
         className: 'btn-default btns'
       } ).add( 1, {
         action: function ( e, dt, button, config ) {
-            // dt.ajax.reload();
+          var isChecked =  $('input:checkbox').is(':checked');
+          if (!isChecked) {
+            alert('Tidak ada data yang dipilih !');
+            return false;
+          } else {
+            $('input:checkbox[name=ids]:checked').each(function(){
+              ids.push($(this).val());
+            });
+          }
         },
         text: 'Reject',
         className: 'btn-default btns'
@@ -451,13 +468,29 @@
     } else if (status == 'rejected') {
       listDataTable.button().add( 0, {
         action: function ( e, dt, button, config ) {
-          
+          var isChecked =  $('input:checkbox').is(':checked');
+          if (!isChecked) {
+            alert('Tidak ada data yang dipilih !');
+            return false;
+          } else {
+            $('input:checkbox[name=ids]:checked').each(function(){
+              ids.push($(this).val());
+            });
+          }
         },
         text: 'Re-submit for Review',
         className: 'btn-default btns'
       } ).add( 1, {
         action: function ( e, dt, button, config ) {
-            // dt.ajax.reload();
+          var isChecked =  $('input:checkbox').is(':checked');
+          if (!isChecked) {
+            alert('Tidak ada data yang dipilih !');
+            return false;
+          } else {
+            $('input:checkbox[name=ids]:checked').each(function(){
+              ids.push($(this).val());
+            });
+          }
         },
         text: 'Delete',
         className: 'btn-default btns'

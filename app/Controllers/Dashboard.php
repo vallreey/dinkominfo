@@ -360,7 +360,7 @@ class Dashboard extends BaseController
         }
     }
 
-    public function loadAjaxTables($status)
+    public function loadAjaxTables($status, $adminMode = 0)
     {   
         $publishable = publishableByStatus($status);
 
@@ -373,9 +373,9 @@ class Dashboard extends BaseController
             $wheres['searchValue'] = isset($_POST['filterParam']) ? $_POST['filterParam'][0] : '';
         else
             $wheres['searchValue'] = $_POST['search']['value'];
-        $wheres['publishable'] = $wheresRecordTotal['publishable'] = $publishable;
-        
-        $wheres['status'] = $wheresRecordTotal['status'] = $status;
+        $wheres['publishable']  = $wheresRecordTotal['publishable'] = $publishable;
+        $wheres['status']       = $wheresRecordTotal['status'] = $status;
+        $wheres['adminMode']    = $wheresRecordTotal['adminMode'] = $wheresRejected['adminMode'] = $adminMode;
         
         $files = $this->dashboard->getData($wheres, true);
 
