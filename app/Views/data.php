@@ -185,10 +185,10 @@
                     <td>
                       <span class="mailbox-attachment-icon"><i class="far fa-file-pdf"></i></span>
                       <div class="mailbox-attachment-info">
-                        <a href="#" id="downloadFileButton" class="mailbox-attachment-name"><i class="fas fa-paperclip"></i> <span id="pFileName"></span></a>
+                        <a href="#" class="mailbox-attachment-name downloadFileButton"><i class="fas fa-paperclip"></i> <span id="pFileName"></span></a>
                             <span class="mailbox-attachment-size clearfix mt-1">
                             <span id="filepUkuran">-</span>
-                              <a href="#" id="downloadFileButton" class="btn btn-default btn-sm float-right"><i class="fas fa-cloud-download-alt"></i></a>
+                              <a href="#" class="btn btn-default btn-sm float-right downloadFileButton"><i class="fas fa-cloud-download-alt"></i></a>
                             </span>
                       </div>
                     </td>
@@ -196,31 +196,7 @@
                 </table>
               </div>
               <div class="tab-pane fade" id="custom-tabs-one-history" role="tabpanel" aria-labelledby="custom-tabs-one-history-tab">
-              <div class="timeline timeline-inverse">
-                <div class="time-label">
-                  <span class="bg-danger">
-                    10 Feb. 2014
-                  </span>
-                </div>
-                <div>
-                  <i class="fas fa-envelope bg-primary"></i>
-
-                  <div class="timeline-item">
-                    <span class="time"><i class="far fa-clock"></i> 12:05</span>
-
-                    <h3 class="timeline-header"><a href="#">Support Team</a> sent you an email</h3>
-
-                    <div class="timeline-body">
-                      Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles,
-                      weebly ning heekya handango imeem plugg dopplr jibjab, movity
-                      jajah plickers sifteo edmodo ifttt zimbra. Babblely odeo kaboodle
-                      quora plaxo ideeli hulu weebly balihoo...
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <i class="far fa-clock bg-gray"></i>
-                </div>
+                <span id="pHistory"></span>
               </div>
             </div>
           </div>
@@ -451,16 +427,25 @@
         data:{id: id},
         success: function(response) {
           const obj = JSON.parse(response);
-          $('#pKategori').html(obj.cat_name);
-          $('#pUkuran').html(obj.file_size);
-          $('#filepUkuran').text(obj.file_size);
-          $('#pCreated').html(obj.created);
-          $('#pPemilik').html(obj.last_name + ', ' + obj.first_name);
-          $('#pDeskripsi').html(obj.description);
-          $('#pComment').html(obj.comment);
-          $('#pRevision').html(obj.revision);
-          $('#pFileName').html(obj.realname);
-          $("#downloadFileButton").attr("href", "<?=site_url('dashboard/file/')?>" + id)
+          $('#pKategori').html(obj.data.cat_name);
+          $('#pUkuran').html(obj.data.file_size);
+          $('#filepUkuran').text(obj.data.file_size);
+          $('#pCreated').html(obj.data.created);
+          $('#pPemilik').html(obj.data.last_name + ', ' + obj.data.first_name);
+          $('#pDeskripsi').html(obj.data.description);
+          $('#pComment').html(obj.data.comment);
+          $('#pRevision').html(obj.data.revision);
+          $('#pFileName').html(obj.data.realname);
+          $(".downloadFileButton").attr("href", "<?=site_url('dashboard/file/')?>" + id);
+
+          var str = '';
+          var arr = obj.history;
+          arr.forEach(function(hist, index, myArray) {
+            str += '<div class="timeline timeline-inverse"><div class="time-label"><span class="bg-danger">'+hist.date_modified+'</span></div><div><i class="fas fa-envelope bg-primary"></i><div class="timeline-item"><span class="time"><i class="far fa-clock"></i> '+hist.time_modified+'</span><h3 class="timeline-header"><a href="#">'+hist.last_name+', '+hist.first_name+'</a></h3><div class="timeline-body"><table class="table table-sm"><tr><th>Revision</th><td>'+hist.revision+'</td></tr><tr><th>Note</th><td>'+hist.note+'</td></tr></table></div></div></div>';
+          });
+          str += '<div><i class="far fa-clock bg-gray"></i></div></div>';
+
+          $('#pHistory').html(str);
           $('#detailModal').modal('show');
         }
       });

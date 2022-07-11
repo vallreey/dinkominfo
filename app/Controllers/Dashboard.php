@@ -388,7 +388,7 @@ class Dashboard extends BaseController
                     'changed'   => $val->created,
                     'pemilik'   => $val->last_name.', '.$val->first_name,
                     'bidang'    => $val->dept_name,
-                    'ukuran'    => '-',
+                    'ukuran'    => getFileSizeByFileId($val->id),
                     'status'    => $val->status
                 );
                 

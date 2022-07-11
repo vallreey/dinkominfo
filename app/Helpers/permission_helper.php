@@ -79,7 +79,7 @@ if (!function_exists('displayFileSize')) {
                 return round($size / $tb, 2) . " TB";
             }
         } else {
-            return "X";
+            return "-";
         }
     }
 }
