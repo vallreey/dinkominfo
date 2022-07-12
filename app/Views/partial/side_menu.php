@@ -69,13 +69,17 @@
             <li class="nav-item">
               <a href="<?=site_url('dashboard/approval/onreview')?>" class="nav-link <?=$active == 'onreview' ? 'active' : ''?>">
                 <i class="far fa-circle nav-icon"></i>
-                <p>On Review</p>
+                <p>On Review
+                <span class="badge badge-success right"><?=$_SESSION['notif_review']?></span>
+                </p>
               </a>
             </li>
             <li class="nav-item">
               <a href="<?=site_url('dashboard/approval/rejected')?>" class="nav-link <?=$active == 'rejected' ? 'active' : ''?>">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Rejected</p>
+                <p>Rejected
+                <span class="badge badge-danger right"><?=$_SESSION['notif_rejected']?></span>
+                </p>
               </a>
             </li>
           </ul>
