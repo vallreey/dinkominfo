@@ -35,11 +35,7 @@ class Dashboard extends BaseController
             .view('dashboard')
             .view('partial/footer');
     }
-
-    public function tes() {
-        return $TES;
-    }
-
+    
     public function search()
     {
         $header['title'] = 'Pencarian Dokumen';
