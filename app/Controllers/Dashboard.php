@@ -675,7 +675,7 @@ class Dashboard extends BaseController
     public function reject()
     {
         $ids = json_decode($_POST['ids']);
-        $url = isset($_POST['admin_mode']) && $_POST['admin_mode'] == 0 ? 'dashboard/approval/onreview' : 'admin/approval/onreview';
+        $url = isset($_POST['admin_mode']) && $_POST['admin_mode'] == 0 ? 'dashboard/approval/onreview' : 'admin/documents/onreview';
         
         if (!$ids) {
             $_SESSION['info_error'] = '<b>Error!</b> File ID tidak dikenal.';
@@ -826,7 +826,7 @@ class Dashboard extends BaseController
     public function authorize()
     {
         $ids = json_decode($_POST['ids']);
-        $url = isset($_POST['admin_mode']) && $_POST['admin_mode'] == 0 ? 'dashboard/approval/onreview' : 'admin/approval/onreview';
+        $url = isset($_POST['admin_mode']) && $_POST['admin_mode'] == 0 ? 'dashboard/approval/onreview' : 'admin/documents/onreview';
         
         if (!$ids) {
             $_SESSION['info_error'] = '<b>Error!</b> File ID tidak dikenal.';
