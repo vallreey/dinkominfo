@@ -554,6 +554,15 @@
               ids.push($(this).val());
             });
           }
+
+          $.ajax({
+            url: "<?=site_url('dashboard/resubmit')?>",
+            method: 'POST',
+            data: {ids:ids},
+            success: function(response) {
+              location.reload();
+            }
+          })
         },
         text: 'Re-submit for Review',
         className: 'btn-default btns'
@@ -568,6 +577,15 @@
               ids.push($(this).val());
             });
           }
+
+          $.ajax({
+            url: "<?=site_url('dashboard/tempDeleteRejectedFile')?>",
+            method: 'POST',
+            data: {ids:ids},
+            success: function(response) {
+              location.reload();
+            }
+          })
         },
         text: 'Delete',
         className: 'btn-default btns'

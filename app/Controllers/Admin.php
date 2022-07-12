@@ -106,7 +106,7 @@ class Admin extends BaseController
                 foreach ($files as $key => $val) {
                     $data[] = array(
                         'file_id'   => $val->file_id,
-                        'realname'  => $val->realname,
+                        'realname'  => $val->realname == '' ? '<i>Undefined (File ID <b>'.$val->file_id.'</b> has been deleted)</i>' : $val->realname,
                         'username'  => $val->username,
                         'action'    => actionParam($val->action),
                         'date'      => $val->timestamp
@@ -804,6 +804,7 @@ class Admin extends BaseController
             case 'rejected': $header['title'] = 'Dokumen Rejected'; break;
         }
         
+        $data['listUsers'] = $this->main->getResultData('user', array(), false, 'id, first_name, last_name');
         $data['status'] = $status;
         $data['admin_mode'] = true;
 
@@ -832,17 +833,17 @@ class Admin extends BaseController
                     if (!$updData)
                             throw new \Exception('Status publishable gagal terupdate.');
 
-                    // PR LANJUTAN MOVE FILE
-                    fmove(config('MyConfig')->settings['archiveDir'] . $val . '.dat', config('MyConfig')->settings['dataDir'] . $val . '.dat');
-
                     // aceess log
                     $logs['file_id'] = $val;
-                    $logs['user_id'] = $_SESSION['username'];
+                    $logs['user_id'] = $_SESSION['id'];
                     $logs['timestamp'] = date('Y-m-d H:i:s');
                     $logs['action'] = 'U';
                     $insLogs = $this->main->insertData('access_log', $logs);
                     if (!$insLogs)
                         throw new \Exception('Log entry gagal tersimpan.');
+
+                    // PR LANJUTAN MOVE FILE
+                    fmove(config('MyConfig')->settings['archiveDir'] . $val . '.dat', config('MyConfig')->settings['dataDir'] . $val . '.dat');
                 }
                 $this->db->transCommit();
                 $_SESSION['info_success'] = '<b>Sukses!</b> Dokumen berhasil tersubmit ulang.';
@@ -883,6 +884,15 @@ class Admin extends BaseController
                     if (!$delLog)
                         throw new \Exception('Data log dokumen gagal dihapus.');
 
+                    // access log
+                    $logs['file_id'] = $val;
+                    $logs['user_id'] = $_SESSION['id'];
+                    $logs['timestamp'] = date('Y-m-d H:i:s');
+                    $logs['action'] = 'P';
+                    $insLogs = $this->main->insertData('access_log', $logs);
+                    if (!$insLogs)
+                        throw new \Exception('Log entry gagal tersimpan.');
+
                     // PR LANJUTAN MOVE FILE
                     $filename = $val . ".dat";
                     unlink(config('MyConfig')->settings['archiveDir'] . $filename);
@@ -898,15 +908,6 @@ class Admin extends BaseController
                             rmdir(config('MyConfig')->settings['revisionDir'] . $val);
                         }
                     }
-
-                    // aceess log
-                    $logs['file_id'] = $val;
-                    $logs['user_id'] = $_SESSION['username'];
-                    $logs['timestamp'] = date('Y-m-d H:i:s');
-                    $logs['action'] = 'P';
-                    $insLogs = $this->main->insertData('access_log', $logs);
-                    if (!$insLogs)
-                        throw new \Exception('Log entry gagal tersimpan.');
                 }
                     
                 $this->db->transCommit();

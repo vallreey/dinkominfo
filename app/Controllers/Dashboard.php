@@ -414,12 +414,20 @@ class Dashboard extends BaseController
                 
                 $detail = '<div class="btn-group" role="group"><button type="button" class="btn btn-default btn-sm btn-detail" id="'.$val->id.'"><i class="fas fa-folder"></i></button>';
 
-                if ($_SESSION['is_admin'] || $_SESSION['is_reviewer']) {
-                    if ($status == 'deleted') $data[$i]['detail'] = $detail . '</div>';
-                    else $data[$i]['detail'] = $detail . '<a href="'.site_url('dashboard/document').'/'.$status.'/'.$val->id.'" class="btn btn-default btn-sm"><i class="fas fa-pencil-alt"></i></a><button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-href="'.site_url('dashboard/tempDeleteFile/').$val->id.'" data-target="#confirmDelete"><i class="fas fa-trash"></i></button></div>';
+                if (!$_SESSION['is_admin'] && !$_SESSION['is_reviewer']) {
+                    if ($status == 'onreview') {
+                        $data[$i]['detail'] = $detail . '</div>';
+                    } else {
+                        $data[$i]['detail'] = $detail . '<a href="'.site_url('dashboard/document').'/'.$status.'/'.$val->id.'" class="btn btn-default btn-sm"><i class="fas fa-pencil-alt"></i></a><button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-href="'.site_url('dashboard/tempDeleteFile/').$val->id.'" data-target="#confirmDelete"><i class="fas fa-trash"></i></button></div>';
+                    }
                 } else {
-                    $data[$i]['detail'] = $detail . '</div>';
+                    if ($status == 'deleted') {
+                        $data[$i]['detail'] = $detail . '</div>';
+                    } else {
+                        $data[$i]['detail'] = $detail . '<a href="'.site_url('dashboard/document').'/'.$status.'/'.$val->id.'" class="btn btn-default btn-sm"><i class="fas fa-pencil-alt"></i></a><button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-href="'.site_url('dashboard/tempDeleteFile/').$val->id.'" data-target="#confirmDelete"><i class="fas fa-trash"></i></button></div>';
+                    }
                 }
+
                 $i++;
             }
         }
@@ -440,10 +448,18 @@ class Dashboard extends BaseController
             $wheresReviewed['status'] = 'onreview';
             $wheresReviewed['publishable'] = publishableByStatus('onreview');
             $dataset['totReviewed'] = $this->dashboard->getData($wheresReviewed);
+            if ($adminMode == 0) {
+                unset($_SESSION['notif_review']);
+                $_SESSION['notif_review'] = $dataset['totReviewed'];
+            }
             // total rejected
             $wheresRejected['status'] = 'rejected';
             $wheresRejected['publishable'] = publishableByStatus('rejected');
             $dataset['totRejected'] = $this->dashboard->getData($wheresRejected);
+            if ($adminMode == 0) { 
+                unset($_SESSION['notif_rejected']);
+                $_SESSION['notif_rejected'] = $dataset['totRejected'];
+            }
         }
 
         echo json_encode($dataset);
@@ -511,8 +527,8 @@ class Dashboard extends BaseController
         echo view('partial/footer');
     }
 
-    // User has requested a deletion from the file detail page
-    public function tempDeleteFile($fid)
+    // User has requested a deletion from the file detail page or rejected page
+    public function tempDeleteFile($fid, $rejected = false)
     {
         $datas['publishable'] = 2;
         $this->db->transBegin();
@@ -522,6 +538,15 @@ class Dashboard extends BaseController
             if (!$updData)
                     throw new \Exception('Status publishable gagal terupdate.');
             
+            // aceess log
+            $logs['file_id'] = $fid;
+            $logs['user_id'] = $_SESSION['id'];
+            $logs['timestamp'] = date('Y-m-d H:i:s');
+            $logs['action'] = 'X';
+            $insLogs = $this->main->insertData('access_log', $logs);
+            if (!$insLogs)
+                throw new \Exception('Log entry gagal tersimpan.');
+
             // PR LANJUTAN MOVE FILE
             if (!is_dir(config('MyConfig')->settings['archiveDir'])) {
                 // Make sure directory is writable
@@ -533,22 +558,62 @@ class Dashboard extends BaseController
             }
             fmove(config('MyConfig')->settings['dataDir'] . $fid . '.dat', config('MyConfig')->settings['archiveDir'] . $fid . '.dat');
 
-            // aceess log
-            $logs['file_id'] = $fid;
-            $logs['user_id'] = $_SESSION['username'];
-            $logs['timestamp'] = date('Y-m-d H:i:s');
-            $logs['action'] = 'X';
-            $insLogs = $this->main->insertData('access_log', $logs);
-            if (!$insLogs)
-                throw new \Exception('Log entry gagal tersimpan.');
-
             $this->db->transCommit();
             $_SESSION['info_success'] = '<b>Sukses!</b> Dokumen berhasil dipindahkan ke archive.';
-            return redirect()->to('dashboard/approval/onreview');   
+            
+            if ($rejected)
+                return redirect()->to('dashboard/approval/onreview');   
+            else 
+                return redirect()->to('dashboard/approval/rejected');   
         } catch (\Exception $e) {
             $this->db->transRollback();
             $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
-            return redirect()->to('dashboard/approval/onreview');   
+            
+            if ($rejected)
+                return redirect()->to('dashboard/approval/onreview');   
+            else 
+                return redirect()->to('dashboard/approval/rejected');  
+        }
+    }
+
+    public function resubmit()
+    {
+        $ids = $_POST['ids'];
+
+        if (!$ids) {
+            $_SESSION['info_error'] = '<b>Error!</b> File ID tidak dikenal.';
+        } else {
+            $this->db->transBegin();
+            try {
+                $datas['publishable'] = 0;
+                $datas['reviewer']    = $_SESSION['id'];
+
+                foreach ($ids as $val) {
+                    // update _data
+                    $updData = $this->main->updateData('data', array('id' => $val), $datas);
+                    if (!$updData)
+                        throw new \Exception('Dokumen gagal di-submit ulang. [ID: '.$val.']');
+                }
+                    
+                $this->db->transCommit();
+                $_SESSION['info_success'] = '<b>Sukses!</b> Dokumen berhasil di-submit ulang.';
+            } catch (\Exception $e) {
+                $this->db->transRollback();
+                $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
+            }
+        }
+    }
+
+    public function tempDeleteRejectedFile()
+    {
+        $ids = $_POST['ids'];
+
+        if (!$ids) {
+            $_SESSION['info_error'] = '<b>Error!</b> File ID tidak dikenal.';
+        } else {
+            foreach ($ids as $val) {
+                $this->tempDeleteFile($val, true);
+            }
         }
     }
 }
