@@ -517,8 +517,8 @@
             });
           }
 
-          $('#btn-approval').text('Authorize').addClass('btn-info');
-          $('#bg-header').addClass('bg-info');
+          $('#btn-approval').text('Authorize').attr('class', 'btn btn-info');
+          $('#bg-header').attr('class', 'modal-header bg-info');
           $('#approval-confirmation-modal').modal('show');
         },
         text: 'Authorize',
@@ -535,8 +535,8 @@
             });
           }
           
-          $('#btn-approval').text('Rejecct').addClass('btn-danger');
-          $('#bg-header').addClass('bg-danger');
+          $('#btn-approval').text('Authorize').attr('class', 'btn btn-danger');
+          $('#bg-header').attr('class', 'modal-header bg-danger');
           $('#approval-confirmation-modal').modal('show');
         },
         text: 'Reject',
@@ -631,5 +631,15 @@
     $('#confirmDelete').on('show.bs.modal', function(e) {
         $(this).find('#form-delete').attr('action', $(e.relatedTarget).data('href'));
     });
+
+    $('#approval-confirmation-modal').on('hidden.bs.modal', function (e) {
+      $(this)
+        .find("input,textarea,select")
+          .val('')
+          .end()
+        .find("input[type=checkbox], input[type=radio]")
+          .prop("checked", "")
+          .end();
+    })
   });
 </script>
