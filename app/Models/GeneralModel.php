@@ -34,12 +34,15 @@ class GeneralModel extends Model
         } else return '';
     }
 
-    public function getResultData($table, $wheres = array(), $obj = false, $select = null)
+    public function getResultData($table, $wheres = array(), $obj = false, $select = null, $distinct = false)
     {
         $db = \Config\Database::connect();
         $builder = $db->table('odm_'.$table);
         
-        if (!is_null($select))
+        if ($distinct)
+            $query = $builder->distinct();
+        
+            if (!is_null($select))
             $query = $builder->select($select);
 
         if (count($wheres) > 0)

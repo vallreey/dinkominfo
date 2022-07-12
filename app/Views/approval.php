@@ -251,7 +251,7 @@
             <label class="col-sm-4 col-form-label">E-mail All Users</label>
             <div class="col-sm-8">
               <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="inputEmailAllUser">
+                <input type="checkbox" class="form-check-input" name="send_to_dept" name="send_to_all" id="inputEmailAllUser">
               </div>
             </div>
           </div>
@@ -266,7 +266,7 @@
           <div class="form-group row">
             <label class="col-sm-4 col-form-label">E-mail These Users</label>
             <div class="col-sm-8">
-              <select class="form-control select2" id="inputEmailUser" style="width: 100%;" data-placeholder="Select one">
+              <select class="form-control select2" id="inputEmailUser" name="send_to_users[]" multiple style="width: 100%;" data-placeholder="Select one">
                 <option value="0">No one</option>
                 <option value="owner">File Owners</option>
                 <?php

@@ -663,27 +663,27 @@ class Dashboard extends BaseController
             $_SESSION['info_error'] = '<b>Error!</b> File ID tidak dikenal.';
             return redirect()->to('dashboard/approval/onreview');
         } else {
+            $uid = $_SESSION['id'];
+
             // TODO
             $to      = isset($_POST['to']) ? trim($_POST['to']) : '';
-            $subject = isset($_POST['subject']) ? trim($_POST['subject']) : '';
+            $subject = isset($_POST['subject']) ? trim($_POST['subject']) : 'Review status for document';
             $comments= isset($_REQUEST['comments']) ? stripslashes($_REQUEST['comments']) : '';
             
-            // $mail_break = '--------------------------------------------------'.PHP_EOL;
+            $mail_break = '--------------------------------------------------'.PHP_EOL;
             $reviewer_comments = "To=$to;Subject=$subject;Comments=$comments;";
-            // $user_obj = new user($_SESSION['uid'], $pdo);
-            // $date = date('Y-m-d H:i:s T'); //locale insensitive
-            // $full_name = $user_obj->getFullName();
-            // $full_name = e::h($get_full_name[0]) .' '. e::h($get_full_name[1]);
-            // $mail_from= $full_name.' <'.$user_obj->getEmailAddress().'>';
-            // $mail_headers = "From: " . e::h($mail_from) . PHP_EOL;
-            // $mail_headers .="Content-Type: text/plain; charset=UTF-8".PHP_EOL;
-            // $mail_subject= (!empty($_REQUEST['subject']) ? stripslashes(e::h($_REQUEST['subject'])) : msg('email_subject_review_status'));
-            // $mail_greeting=msg('email_greeting'). ":" . PHP_EOL . "\t" . msg('email_i_would_like_to_inform');
-            // $mail_body = $comments . PHP_EOL . PHP_EOL;
-            // $mail_body .= msg('email_was_declined_for_publishing_at') . ' ' .$date. ' ' . msg('email_for_the_following_reasons') . ':'. PHP_EOL . PHP_EOL . $mail_break . e::h($_REQUEST['comments']) . PHP_EOL . $mail_break;
-            // $mail_salute=PHP_EOL . PHP_EOL . msg('email_salute') . ",". PHP_EOL . $full_name;
+            $user_obj = $this->main->getRowData('user', array('id' => $uid));
+            $date = date('Y-m-d H:i:s T'); //locale insensitive
+            $full_name = $user_obj['first_name'] . ' ' . $user_obj['last_name'];
+            $mail_from= $full_name.' <'.$user_obj['Email'].'>';
+            $mail_headers = "From: " . $mail_from . PHP_EOL;
+            $mail_headers .="Content-Type: text/plain; charset=UTF-8".PHP_EOL;
+            $mail_subject= $subject;
+            $mail_greeting='Yth Pemilik file'. ":" . PHP_EOL . "\t" . 'Saya ingin menyampaikan bahwa';
+            $mail_body = $comments . PHP_EOL . PHP_EOL;
+            $mail_body .= 'telah ditolak untuk publish pada tanggal ' .$date. ' karena alasan berikut :'. PHP_EOL . PHP_EOL . $mail_break . $comments . PHP_EOL . $mail_break;
+            $mail_salute=PHP_EOL . PHP_EOL . "Terima kasih, ". PHP_EOL . $full_name;
 
-            $uid = $_SESSION['id'];
             if (isAdmin($uid)) {
                 $arr = $this->main->getResultData('data', array('publishable' => 0), false, 'id');
             } else if (isReviewer($_SESSION['id'])) {
@@ -698,29 +698,29 @@ class Dashboard extends BaseController
             foreach ($ids as $val) {
                 if (in_array($val, $id_array)) {
                     // TODO
-                    // $fileid = $value;
-                    // $file_obj = new FileData($fileid, $pdo);
-                    // $user_obj = new User($file_obj->getOwner(), $pdo);
-                    // $mail_to = $user_obj->getEmailAddress();
-                    // $dept_id = $file_obj->getDepartment();
-                    // // Build email for author notification
-                    // if (isset($_POST['send_to_users'][0]) && in_array('owner', $_POST['send_to_users'])) {
-                    //     // Lets unset this now so the new array will just be user_id's
-                    //     $_POST['send_to_users'] = array_slice($_POST['send_to_users'], 1);
-                    //     $mail_body1 = e::h($comments) . PHP_EOL . PHP_EOL;
-                    //     $mail_body1.=msg('email_was_rejected_from_repository') . PHP_EOL . PHP_EOL;
-                    //     $mail_body1.=msg('label_filename') . ':  ' . $file_obj->getName() . PHP_EOL . PHP_EOL;
-                    //     $mail_body1.=msg('label_status') . ': ' . msg('message_authorized') . PHP_EOL . PHP_EOL;
-                    //     $mail_body1.=msg('date') . ': ' . $date . PHP_EOL . PHP_EOL;
-                    //     $mail_body1.=msg('label_reviewer') . ': ' . e::h($full_name) . PHP_EOL . PHP_EOL;
-                    //     $mail_body1.=msg('email_thank_you') . ',' . PHP_EOL . PHP_EOL;
-                    //     $mail_body1.=msg('email_automated_document_messenger') . PHP_EOL . PHP_EOL;
-                    //     $mail_body1.=$GLOBALS['CONFIG']['base_url'] . PHP_EOL . PHP_EOL;
+                    $fileid = $val;
+                    $file_obj = $this->main->getRowData('data', array('id' => $fileid));
+                    $u_obj = $this->main->getRowData('user', array('id' => $file_obj['owner']));
+                    $mail_to = $u_obj['Email'];
+                    $dept_id = $file_obj['department'];
+                    // Build email for author notification
+                    if (isset($_POST['send_to_users'][0]) && in_array('owner', $_POST['send_to_users'])) {
+                        // Lets unset this now so the new array will just be user_id's
+                        $_POST['send_to_users'] = array_slice($_POST['send_to_users'], 1);
+                        $mail_body1 = $comments . PHP_EOL . PHP_EOL;
+                        $mail_body1.="Was rejected from repository" . PHP_EOL . PHP_EOL;
+                        $mail_body1.='Nama File :  ' . $file_obj['realname'] . PHP_EOL . PHP_EOL;
+                        $mail_body1.='Status    : ' . msg('message_authorized') . PHP_EOL . PHP_EOL;
+                        $mail_body1.='Tanggal   : ' . $date . PHP_EOL . PHP_EOL;
+                        $mail_body1.='Reviewer  : ' . $full_name . PHP_EOL . PHP_EOL;
+                        $mail_body1.='Terima Kasih,' . PHP_EOL . PHP_EOL;
+                        $mail_body1.='Automated Document Messenger' . PHP_EOL . PHP_EOL;
+                        $mail_body1.=site_url() . PHP_EOL . PHP_EOL;
 
-                    //     if ($GLOBALS['CONFIG']['demo'] == 'False') {
-                    //         mail($mail_to, $mail_subject . ' ' . $file_obj->getName(), ($mail_greeting . $file_obj->getName() . ' ' . $mail_body1 . $mail_salute), $mail_headers);
-                    //     }
-                    // }
+                        if (config('MyConfig')->settings['demo'] == 'False') {
+                            $this->sendEmail($mail_to, $mail_subject . ' ' . $file_obj['realname'], $mail_greeting . $file_obj['realname'] . ' ' . $mail_body1 . $mail_salute);
+                        }
+                    }
 
                     $this->db->transBegin();
                     try {
@@ -750,33 +750,61 @@ class Dashboard extends BaseController
 
                     // TODO
                     // Set up rejected email message to sent out
-                    // $mail_subject = (!empty($_REQUEST['subject']) ? stripslashes(e::h($_REQUEST['subject'])) : msg('email_a_new_file_has_been_rejected'));
-                    // $mail_body = e::h($comments) . PHP_EOL . PHP_EOL;
-                    // $mail_body.=msg('email_a_new_file_has_been_rejected').PHP_EOL . PHP_EOL;
-                    // $mail_body.=msg('label_filename'). ':  ' .$file_obj->getName() . PHP_EOL . PHP_EOL;
-                    // $mail_body.=msg('label_status').': ' .msg('message_rejected'). PHP_EOL . PHP_EOL;
-                    // $mail_body.=msg('date'). ': ' .$date. PHP_EOL . PHP_EOL;
-                    // $mail_body.=msg('label_reviewer'). ': ' . e::h($full_name) . PHP_EOL . PHP_EOL;
-                    // $mail_body.=msg('email_thank_you'). ','. PHP_EOL . PHP_EOL;
-                    // $mail_body.=msg('email_automated_document_messenger'). PHP_EOL . PHP_EOL;
-                    // $mail_body.=$GLOBALS['CONFIG']['base_url'] . PHP_EOL . PHP_EOL;
+                    $mail_subject = (!empty($_REQUEST['subject']) ? stripslashes($_REQUEST['subject']) : "File telah ditolak");
+                    $mail_body = $comments . PHP_EOL . PHP_EOL;
+                    $mail_body.='File telah ditolak'.PHP_EOL . PHP_EOL;
+                    $mail_body.='Nama File :  ' .$file_obj['realname'] . PHP_EOL . PHP_EOL;
+                    $mail_body.='Status    : Rejected'. PHP_EOL . PHP_EOL;
+                    $mail_body.='Tanggal   : ' .$date. PHP_EOL . PHP_EOL;
+                    $mail_body.='Reviewer  : ' . $full_name . PHP_EOL . PHP_EOL;
+                    $mail_body.='Terima Kasih,'. PHP_EOL . PHP_EOL;
+                    $mail_body.='Automated Document Messenger'. PHP_EOL . PHP_EOL;
+                    $mail_body.=site_url() . PHP_EOL . PHP_EOL;
 
-                    // if (isset($_POST['send_to_all'])) {
-                    //     email_all($mail_subject, $mail_body, $mail_headers);
-                    // }
+                    if (isset($_POST['send_to_all'])) {
+                        $emails = $this->main->getResultData('user', array(), false, 'Email', true);
+                        foreach ($emails as $e) $this->sendEmail( 
+                            $e['Email'], 
+                            $mail_subject . ' ' . $file_obj['realname'], 
+                            $mail_greeting . $file_obj['realname'] . ' ' . $mail_body . $mail_salute);
+                    }
 
-                    // if (isset($_POST['send_to_dept'])) {
-                    //     email_dept($dept_id, $mail_subject, $mail_body, $mail_headers);
-                    // }
+                    if (isset($_POST['send_to_dept'])) {
+                        $emails = $this->main->getResultData('user', array('department' => $file_obj['department']), false, 'Email', true);
+                        foreach ($emails as $e) $this->sendEmail(
+                            $e['Email'], 
+                            $mail_subject . ' ' . $file_obj['realname'], 
+                            $mail_greeting . $file_obj['realname'] . ' ' . $mail_body . $mail_salute);
+                    }
 
-                    // if (isset($_POST['send_to_users']) && is_array($_POST['send_to_users']) && isset($_POST['send_to_users'][0])) {
-                    //     email_users_id($_POST['send_to_users'], $mail_subject, $mail_body, $mail_headers);
-                    // }
+                    if (isset($_POST['send_to_users']) && is_array($_POST['send_to_users']) && isset($_POST['send_to_users'][0])) {
+                        $this->emailUserIds($_POST['send_to_users'], $mail_subject, $mail_body);
+                    }
                 } else {
                     $_SESSION['info_error'] = '<b>Error!</b> You are not authorized to reject this file [File ID: '.$val.']';
                 }
             }
             return redirect()->to('dashboard/approval/onreview');
+        }
+    }
+    
+    private function emailUserIds($user_ID_array, $mail_subject, $mail_body) {
+        for ($i = 0; $i < sizeof($user_ID_array); $i++) {
+            if ($user_ID_array[$i] > 0) {
+                $user = $this->main->getRowData('user', array('id' => $user_ID_array[$i]));
+                $this->sendEmail($user['Email'], $mail_subject, $mail_body);
+            }
+        }
+    }
+
+    private function sendEmail($to, $subject, $message) {
+        if (config('MyConfig')->settings['demo'] == 'False') {
+            $email = \Config\Services::email();
+            $email->setFrom('oneplex.id@gmail.com', $_SESSION["first_name"] . ' ' . $_SESSION["last_name"]);
+            $email->setTo($to);
+            $email->setSubject($subject);
+            $email->setMessage($message);
+            $email->send();
         }
     }
 
@@ -790,19 +818,14 @@ class Dashboard extends BaseController
         } else {
             // TODO
             $to      = isset($_POST['to']) ? trim($_POST['to']) : '';
-            $subject = isset($_POST['subject']) ? trim($_POST['subject']) : '';
-            $comments= isset($_REQUEST['comments']) ? stripslashes($_REQUEST['comments']) : '';
+            $subject = isset($_POST['subject']) ? trim($_POST['subject']) : 'Review status for document ';
+            $comments= isset($_POST['comments']) ? stripslashes($_POST['comments']) : '';
 
-            // $checkbox = isset($_REQUEST['checkbox']) ? e::h($_REQUEST['checkbox']) : '';
             $reviewer_comments = "To=$to;Subject=$subject;Comments=$comments;";
-            // $user_obj = new User($_SESSION['uid'], $pdo);
-            // $date = date('Y-m-d H:i:s T'); //locale insensitive
-            // $get_full_name = $user_obj->getFullName();
-            // $full_name = $get_full_name[0].' '.$get_full_name[1];
-            // $mail_subject = (!empty($_REQUEST['subject']) ? stripslashes(e::h($_REQUEST['subject'])) : msg('email_subject_review_status'));
-            // $mail_from= e::h($full_name) . ' <'.$user_obj->getEmailAddress().'>';
-            // $mail_headers = "From: ". e::h($mail_from) .PHP_EOL.PHP_EOL;
-            // $mail_headers .="Content-Type: text/plain; charset=UTF-8".PHP_EOL . PHP_EOL;
+            $user_obj = $this->main->getRowData('user', array('id' => $_SESSION['id']));
+            $date = date('Y-m-d H:i:s T'); //locale insensitive
+            $full_name = $user_obj['first_name'] . ' ' . $user_obj['last_name'];
+            $mail_subject = $subject;
 
             $uid = $_SESSION['id'];
             if (isAdmin($uid)) {
@@ -818,31 +841,30 @@ class Dashboard extends BaseController
             
             foreach ($ids as $val) {
                 if (in_array($val, $id_array)) {
-                    // $fileid = $value;
-                    // $file_obj = new FileData($fileid, $pdo);
-                    // $user_obj = new User($file_obj->getOwner(), $pdo);
-                    // $mail_to = $user_obj->getEmailAddress();
-                    // $dept_id = $file_obj->getDepartment();
-                    
-                    // // Build email for author notification
-                    // if (isset($_POST['send_to_users'][0]) && in_array('owner', $_POST['send_to_users'])) {
-                    //     // Lets unset this now so the new array will just be user_id's
-                    //     $_POST['send_to_users'] = array_slice($_POST['send_to_users'], 1);
+                    // TODO
+                    $fileid = $val;
+                    $file_obj = $this->main->getRowData('data', array('id' => $fileid));
+                    $u_obj = $this->main->getRowData('user', array('id' => $file_obj['owner']));
+                    $mail_to = $u_obj['Email'];
+                    $dept_id = $file_obj['department'];
+                    // Build email for author notification
+                    if (isset($_POST['send_to_users'][0]) && in_array('owner', $_POST['send_to_users'])) {
+                        // Lets unset this now so the new array will just be user_id's
+                        $_POST['send_to_users'] = array_slice($_POST['send_to_users'], 1);
+                        $mail_body1 = $comments . PHP_EOL . PHP_EOL;
+                        $mail_body1.="File anda telah di authorize untuk dipublikasi" . PHP_EOL . PHP_EOL;
+                        $mail_body1.='Nama File :  ' . $file_obj['realname'] . PHP_EOL . PHP_EOL;
+                        $mail_body1.='Status    : Authorized' . PHP_EOL . PHP_EOL;
+                        $mail_body1.='Tanggal   : ' . $date . PHP_EOL . PHP_EOL;
+                        $mail_body1.='Reviewer  : ' . $full_name . PHP_EOL . PHP_EOL;
+                        $mail_body1.='Terima Kasih,' . PHP_EOL . PHP_EOL;
+                        $mail_body1.='Automated Document Messenger' . PHP_EOL . PHP_EOL;
+                        $mail_body1.=site_url() . PHP_EOL . PHP_EOL;
 
-                    //     $mail_body1 = e::h($comments) . PHP_EOL . PHP_EOL;
-                    //     $mail_body1.=msg('email_your_file_has_been_authorized') . PHP_EOL . PHP_EOL;
-                    //     $mail_body1.=msg('label_filename') . ':  ' . $file_obj->getName() . PHP_EOL . PHP_EOL;
-                    //     $mail_body1.=msg('label_status') . ': ' . msg('message_authorized') . PHP_EOL . PHP_EOL;
-                    //     $mail_body1.=msg('date') . ': ' . $date . PHP_EOL . PHP_EOL;
-                    //     $mail_body1.=msg('label_reviewer') . ': ' . e::h($full_name) . PHP_EOL . PHP_EOL;
-                    //     $mail_body1.=msg('email_thank_you') . ',' . PHP_EOL . PHP_EOL;
-                    //     $mail_body1.=msg('email_automated_document_messenger') . PHP_EOL . PHP_EOL;
-                    //     $mail_body1.=$GLOBALS['CONFIG']['base_url'] . PHP_EOL . PHP_EOL;
-                    //     if ($GLOBALS['CONFIG']['demo'] == 'False')
-                    //     {
-                    //         mail($mail_to, $mail_subject . " " . $file_obj->getName(), $mail_body1, $mail_headers);
-                    //     }
-                    // }
+                        if (config('MyConfig')->settings['demo'] == 'False') {
+                            $this->sendEmail($mail_to, $mail_subject . ' ' . $file_obj['realname'], $mail_greeting . $file_obj['realname'] . ' ' . $mail_body1 . $mail_salute);
+                        }
+                    }
                     
                     $this->db->transBegin();
                     try {
@@ -872,27 +894,36 @@ class Dashboard extends BaseController
 
                     
                     // Build email for general notices
-                    // $mail_subject = (!empty($_REQUEST['subject']) ? stripslashes(e::h($_REQUEST['subject'])) : $file_obj->getName().' ' .msg('email_added_to_repository'));
-                    // $mail_body2=$comments . PHP_EOL . PHP_EOL;
-                    // $mail_body2.=msg('email_a_new_file_has_been_added'). PHP_EOL . PHP_EOL;
-                    // $mail_body2.=msg('label_filename'). ':  ' . $file_obj->getName() . PHP_EOL . PHP_EOL;
-                    // $mail_body2.=msg('label_status'). ': New'. PHP_EOL . PHP_EOL;
-                    // $mail_body2.=msg('date'). ': ' . $date . PHP_EOL . PHP_EOL;
-                    // $mail_body2.=msg('label_reviewer'). ': ' . e::h($full_name) . PHP_EOL . PHP_EOL;
-                    // $mail_body2.=msg('email_thank_you'). ','. PHP_EOL . PHP_EOL;
-                    // $mail_body2.=msg('email_automated_document_messenger'). PHP_EOL . PHP_EOL;
-                    // $mail_body2.=$GLOBALS['CONFIG']['base_url'] . PHP_EOL . PHP_EOL;
+                    $mail_subject = (!empty($_REQUEST['subject']) ? stripslashes($_REQUEST['subject']) : "Telah ditambah di repository");
+                    $mail_body2 = $comments . PHP_EOL . PHP_EOL;
+                    $mail_body2.='File baru telah di authorize'.PHP_EOL . PHP_EOL;
+                    $mail_body2.='Nama File :  ' .$file_obj['realname'] . PHP_EOL . PHP_EOL;
+                    $mail_body2.='Status    : New'. PHP_EOL . PHP_EOL;
+                    $mail_body2.='Tanggal   : ' .$date. PHP_EOL . PHP_EOL;
+                    $mail_body2.='Reviewer  : ' . $full_name . PHP_EOL . PHP_EOL;
+                    $mail_body2.='Terima Kasih,'. PHP_EOL . PHP_EOL;
+                    $mail_body2.='Automated Document Messenger'. PHP_EOL . PHP_EOL;
+                    $mail_body2.=site_url() . PHP_EOL . PHP_EOL;
 
-                    // if (isset($_POST['send_to_all'])) {
-                    //     email_all($mail_subject, $mail_body2, $mail_headers);
-                    // }
-                    
-                    // if (isset($_POST['send_to_dept'])) {
-                    //     email_dept($dept_id, $mail_subject, $mail_body2, $mail_headers);
-                    // }
-                    // if (!empty($_POST['send_to_users'][0]) && is_array($_POST['send_to_users']) && $_POST['send_to_users'][0] > 0) {
-                    //     email_users_id($_POST['send_to_users'], $mail_subject, $mail_body2, $mail_headers);
-                    // }
+                    if (isset($_POST['send_to_all'])) {
+                        $emails = $this->main->getResultData('user', array(), false, 'Email', true);
+                        foreach ($emails as $e) $this->sendEmail(
+                            $e['Email'], 
+                            $mail_subject . ' ' . $file_obj['realname'], 
+                            $mail_greeting . $file_obj['realname'] . ' ' . $mail_body2 . $mail_salute);
+                    }
+
+                    if (isset($_POST['send_to_dept'])) {
+                        $emails = $this->main->getResultData('user', array('department' => $file_obj['department']), false, 'Email', true);
+                        foreach ($emails as $e) $this->sendEmail(
+                            $e['Email'], 
+                            $mail_subject . ' ' . $file_obj['realname'], 
+                            $mail_greeting . $file_obj['realname'] . ' ' . $mail_body2 . $mail_salute);
+                    }
+
+                    if (isset($_POST['send_to_users']) && is_array($_POST['send_to_users']) && isset($_POST['send_to_users'][0])) {
+                        $this->emailUserIds($_POST['send_to_users'], $mail_subject, $mail_body2);
+                    }
                 } else {
                     $_SESSION['info_error'] = '<b>Error!</b> You are not authorized to authorize this file [File ID: '.$val.']';
                 }
