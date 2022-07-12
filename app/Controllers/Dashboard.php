@@ -616,4 +616,39 @@ class Dashboard extends BaseController
             }
         }
     }
+
+    public function reject()
+    {
+        $ids = $_POST['ids'];
+
+        if (!$ids) {
+            $_SESSION['info_error'] = '<b>Error!</b> File ID tidak dikenal.';
+            return redirect()->to('dashboard/approval/onreview');
+        } else {
+            // TODO
+            // $to      = isset($_POST['to']) ? trim($_POST['to']) : '';
+            // $subject = isset($_POST['subject']) ? trim($_POST['subject']) : '';
+            // $comments= isset($_REQUEST['comments']) ? stripslashes($_REQUEST['comments']) : '';
+            
+            // $mail_break = '--------------------------------------------------'.PHP_EOL;
+            // $reviewer_comments = "To=$to;Subject=$subject;Comments=$comments;";
+            // $user_obj = new user($_SESSION['uid'], $pdo);
+            // $date = date('Y-m-d H:i:s T'); //locale insensitive
+            // $full_name = $user_obj->getFullName();
+            // $full_name = e::h($get_full_name[0]) .' '. e::h($get_full_name[1]);
+            // $mail_from= $full_name.' <'.$user_obj->getEmailAddress().'>';
+            // $mail_headers = "From: " . e::h($mail_from) . PHP_EOL;
+            // $mail_headers .="Content-Type: text/plain; charset=UTF-8".PHP_EOL;
+            // $mail_subject= (!empty($_REQUEST['subject']) ? stripslashes(e::h($_REQUEST['subject'])) : msg('email_subject_review_status'));
+            // $mail_greeting=msg('email_greeting'). ":" . PHP_EOL . "\t" . msg('email_i_would_like_to_inform');
+            // $mail_body = $comments . PHP_EOL . PHP_EOL;
+            // $mail_body .= msg('email_was_declined_for_publishing_at') . ' ' .$date. ' ' . msg('email_for_the_following_reasons') . ':'. PHP_EOL . PHP_EOL . $mail_break . e::h($_REQUEST['comments']) . PHP_EOL . $mail_break;
+            // $mail_salute=PHP_EOL . PHP_EOL . msg('email_salute') . ",". PHP_EOL . $full_name;
+
+            foreach ($ids as $val) {
+                $this->tempDeleteFile($val, true);
+            }
+
+        }
+    }
 }
