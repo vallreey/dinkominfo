@@ -378,7 +378,17 @@
           { data: 'bidang' },
           { data: 'ukuran' },
           { data: 'status' },
-        ]
+        ],
+        'columnDefs': [
+          {
+              targets: [-1, 0, 1, 4],
+              className: 'dt-center'
+          },
+          {
+              targets: [-2],
+              className: 'dt-body-right'
+          }
+        ],
       });
 
       // listDataTable.buttons().container().prependTo('#button_pdf');

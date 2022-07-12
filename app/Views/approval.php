@@ -444,6 +444,16 @@
         { data: 'ukuran' },
         { data: 'status' },
       ],
+      'columnDefs': [
+        {
+            targets: [-1, 0, 1, 2, 5],
+            className: 'dt-center'
+        },
+        {
+            targets: [-2],
+            className: 'dt-head-center dt-body-right'
+        }
+      ],
       'drawCallback': function (settings) { 
         var response = settings.json;
         $('#totDeleted').html(response.totDeleted);

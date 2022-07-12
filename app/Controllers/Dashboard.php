@@ -21,7 +21,7 @@ class Dashboard extends BaseController
 		$this->user = new UserModel();
 		$this->main = new GeneralModel();
 
-        helper(['permission']);
+        helper(['user', 'permission']);
 	}
 
     public function index()
@@ -34,6 +34,10 @@ class Dashboard extends BaseController
             .view('partial/side_menu', $side)
             .view('dashboard')
             .view('partial/footer');
+    }
+
+    public function tes() {
+        return $TES;
     }
 
     public function search()
@@ -398,18 +402,24 @@ class Dashboard extends BaseController
         if (count($files) > 0) {
             $i = 0;
             foreach ($files as $key => $val) {
+                $userAccessLevel = getAuthority($_SESSION['id'], $val->id, $_SESSION['department']);
+
+                $lock = true;
+                $VIEW_RIGHT = 1;
+                if ($val->status == 0 and $userAccessLevel >= $VIEW_RIGHT) $lock = false;
+                
                 $data[$i] = array(
                     'id'        => $val->id,
                     'check'     => in_array($status, $arrStatus) ? '<input type="checkbox" name="ids" value="'.$val->id.'" id="check'.$val->id.'">' : '',
                     'nama_file' => '<a target="_blank" href="'.site_url('dashboard/file').'/'.$val->id.'/view">'.$val->realname.'</a>' ,
-                    'deskripsi' => $val->description,
-                    'hak_akses' => '-',
+                    'deskripsi' => $val->description == null ? '-' : $val->description,
+                    'hak_akses' => $this->getRights($userAccessLevel),
                     'created'   => $val->created,
                     'changed'   => $val->created,
                     'pemilik'   => $val->last_name.', '.$val->first_name,
                     'bidang'    => $val->dept_name,
                     'ukuran'    => getFileSizeByFileId($val->id),
-                    'status'    => $val->status
+                    'status'    => $lock ? '<i class="text-danger fa fa-times"></i>' : '<i class="text-success fa fa-check"></i>',
                 );
                 
                 $detail = '<div class="btn-group" role="group"><button type="button" class="btn btn-default btn-sm btn-detail" id="'.$val->id.'"><i class="fas fa-folder"></i></button>';
@@ -506,6 +516,38 @@ class Dashboard extends BaseController
         }
         return $html;
     } 
+
+    private function getRights($userAccessLevel){
+        $READ_RIGHT = 2;
+        $WRITE_RIGHT = 3;
+        $ADMIN_RIGHT = 4;
+
+        $read = array($READ_RIGHT, 'r');
+        $write = array($WRITE_RIGHT, 'w');
+        $admin = array($ADMIN_RIGHT, 'a');
+        $rights = array($read, $write, $admin);
+        $index_found = -1;
+        //$rights[max][0] = admin, $rights[max-1][0]=write, ..., $right[min][0]=view
+        //if $userright matches with $rights[max][0], then this user has all the rights of $rights[max][0]
+        //and everything below it.
+        for ($i = sizeof($rights) - 1; $i >= 0; $i--) {
+            if ($userAccessLevel == $rights[$i][0]) {
+                $index_found = $i;
+                $i = 0;
+            }
+        }
+        //Found the user right, now bold every below it.  For those that matches, make them different.
+        
+        //For everything above it, blank out
+        for ($i = $index_found + 1; $i < sizeof($rights); $i++) {
+            $rights[$i][1] = '-';
+            log_message('error', $rights[$i][1]);
+        }
+
+        $rightsString = $rights[0][1] . ' | ' . $rights[1][1] . ' | ' . $rights[2][1];
+        
+        return $rightsString;
+    }
 
     public function approval($status)
     {
