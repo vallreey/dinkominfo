@@ -234,32 +234,28 @@ class Admin extends BaseController
                     return redirect()->to('admin/user');
 
                     // mail user telling him/her that his/her account has been created.
-                    // $user_obj = new user($_SESSION['uid'], $pdo);
-                    // $new_user_obj = new User($user_id, $pdo);
-                    // $date = date('Y-m-d H:i:s T'); //locale insensitive
-                    // $get_full_name = $user_obj->getFullName();
-                    // $full_name = $get_full_name[0] . ' ' . $get_full_name[1];
-                    // $get_full_name = $new_user_obj->getFullName();
-                    // $new_user_full_name = $get_full_name[0] . ' ' . $get_full_name[1];
-                    // $mail_from = e::h($full_name) . ' <' . $user_obj->getEmailAddress() . '>';
-                    // $mail_headers = "From: " . e::h($mail_from)  . PHP_EOL;
-                    // $mail_headers .= "Content-Type: text/plain; charset=UTF-8" . PHP_EOL;
-                    // $mail_subject = msg('message_account_created_add_user');
-                    // $mail_greeting = e::h($new_user_full_name) . ":" . PHP_EOL . msg('email_i_would_like_to_inform');
-                    // $mail_body = msg('email_your_account_created') . ' ' . $date . '.  ' . msg('email_you_can_now_login') . ':' . PHP_EOL . PHP_EOL;
-                    // $mail_body .= config('MyConfig')->settings['base_url'] . PHP_EOL . PHP_EOL;
-                    // $mail_body .= msg('username') . ': ' . $new_user_obj->getName() . PHP_EOL . PHP_EOL;
-                    // if (config('MyConfig')->settings['authen'] == 'mysql') {
-                    //     $mail_body .= msg('password') . ': ' . e::h($_POST['password']) . PHP_EOL . PHP_EOL;
-                    // }
-                    // $mail_salute =  msg('email_salute') . ",". PHP_EOL . e::h($full_name);
-                    // $mail_to = $new_user_obj->getEmailAddress();
+                    $user_obj = $this->main->getRowData('user', array('id' => $_SESSION['id']));
+                    $new_user_obj = $this->main->getRowData('user', array('id' => $userID));
+                    $date = date('Y-m-d H:i:s T'); //locale insensitive
+                    $full_name = $user_obj['first_name'] . ' ' . $user_obj['last_name'];
+                    $new_user_full_name =  $new_user_obj['first_name'] . ' ' . $new_user_obj['last_name'];
+                    $mail_from = $full_name . ' <' . $user_obj['Email'] . '>';
+                    $mail_subject = 'Akun anda berhasil dibuat.';
+                    $mail_greeting = $new_user_full_name . ":" . PHP_EOL . 'Saya ingin menginformasikan anda bahwa';
+                    $mail_body = 'akun anda telah sukses dibuat pada tanggal ' . $date . '.  Sekarang anda dapat login dengan akun anda pada halaman:' . PHP_EOL . PHP_EOL;
+                    $mail_body .= site_url('/logon') . PHP_EOL . PHP_EOL;
+                    $mail_body .= 'Username : ' . $new_user_obj['username'] . PHP_EOL . PHP_EOL;
+                    if (config('MyConfig')->settings['authen'] == 'mysql') {
+                        $mail_body .= 'Password : ' . $_POST['password'] . PHP_EOL . PHP_EOL;
+                    }
+                    $mail_salute = "Terima Kasih,". PHP_EOL . $full_name;
+                    $mail_to = $new_user_obj['Email'];
                     // $mail_flags = "-f".$user_obj->getEmailAddress();
-                    // if (config('MyConfig')->settings['demo'] == 'False') {
-                    //     mail($mail_to, $mail_subject, ($mail_greeting . ' ' . $mail_body . $mail_salute), $mail_headers,
-                    //         $mail_flags);
-                    // }
-                    // $last_message = urlencode(msg('message_user_successfully_added'));
+                    if (config('MyConfig')->settings['demo'] == 'False') {
+                        $this->sendEmail($mail_to, $mail_subject, ($mail_greeting . ' ' . $mail_body . $mail_salute));
+                    }
+                    // $last_message = urlencode('User berhasil ditambahkan.');
+
                 } catch (\Exception $e) {
                     $this->db->transRollback();
                     $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
@@ -306,6 +302,17 @@ class Admin extends BaseController
                 $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
                 return redirect()->to('admin/user');
             }
+        }
+    }
+    
+    private function sendEmail($to, $subject, $message) {
+        if (config('MyConfig')->settings['demo'] == 'False') {
+            $email = \Config\Services::email();
+            $email->setFrom('oneplex.id@gmail.com', $_SESSION["first_name"] . ' ' . $_SESSION["last_name"]);
+            $email->setTo($to);
+            $email->setSubject($subject);
+            $email->setMessage($message);
+            $email->send();
         }
     }
 

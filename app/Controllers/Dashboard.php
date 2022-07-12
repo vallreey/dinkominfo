@@ -264,8 +264,7 @@ class Dashboard extends BaseController
             $newFileName = $newDocId . '.dat';
             $file->move($dataDir, $newFileName);
             
-            //TODO
-            // AccessLog::addLogEntry($fileId, 'A', $pdo);
+            $this->addLogEntry($newDocId, 'A');
             
             $this->db->transCommit();
             $_SESSION['info_success'] = '<b>Sukses!</b> Dokumen berhasil ditambahkan [Nama dok: '.$_FILES['filename']['name'].']';
@@ -275,6 +274,13 @@ class Dashboard extends BaseController
             $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
             return redirect()->to('dashboard/document');
         }
+    }
+
+    private function addLogEntry($fileId, $action) {
+        $logs['file_id'] = $fileId;
+        $logs['user_id'] = $_SESSION['id'];
+        $logs['timestamp'] = date('Y-m-d H:i:s');
+        $logs['action'] = $action;
     }
 
     public function edit($id = null) {
@@ -359,8 +365,8 @@ class Dashboard extends BaseController
                 if (!$successAddUserPerms) throw new \Exception('Gagal menyimpan izin user ke database, mohon coba lagi!');
             }
 
-            //TODO
-            // AccessLog::addLogEntry($fileId, 'M', $pdo);
+            $this->addLogEntry($id, 'M');
+
             $this->db->transCommit();
             $_SESSION['info_success'] = '<b>Sukses!</b> Dokumen berhasil diubah [Nama dok: '.$doc['realname'].']';
             return redirect()->to('dashboard/approval/onreview');
@@ -665,7 +671,6 @@ class Dashboard extends BaseController
         } else {
             $uid = $_SESSION['id'];
 
-            // TODO
             $to      = isset($_POST['to']) ? trim($_POST['to']) : '';
             $subject = isset($_POST['subject']) ? trim($_POST['subject']) : 'Review status for document';
             $comments= isset($_REQUEST['comments']) ? stripslashes($_REQUEST['comments']) : '';
@@ -697,7 +702,6 @@ class Dashboard extends BaseController
             
             foreach ($ids as $val) {
                 if (in_array($val, $id_array)) {
-                    // TODO
                     $fileid = $val;
                     $file_obj = $this->main->getRowData('data', array('id' => $fileid));
                     $u_obj = $this->main->getRowData('user', array('id' => $file_obj['owner']));
@@ -748,7 +752,6 @@ class Dashboard extends BaseController
                         return redirect()->to('dashboard/approval/onreview');
                     }
 
-                    // TODO
                     // Set up rejected email message to sent out
                     $mail_subject = (!empty($_REQUEST['subject']) ? stripslashes($_REQUEST['subject']) : "File telah ditolak");
                     $mail_body = $comments . PHP_EOL . PHP_EOL;
@@ -816,7 +819,6 @@ class Dashboard extends BaseController
             $_SESSION['info_error'] = '<b>Error!</b> File ID tidak dikenal.';
             return redirect()->to('dashboard/approval/onreview');
         } else {
-            // TODO
             $to      = isset($_POST['to']) ? trim($_POST['to']) : '';
             $subject = isset($_POST['subject']) ? trim($_POST['subject']) : 'Review status for document ';
             $comments= isset($_POST['comments']) ? stripslashes($_POST['comments']) : '';
@@ -841,7 +843,6 @@ class Dashboard extends BaseController
             
             foreach ($ids as $val) {
                 if (in_array($val, $id_array)) {
-                    // TODO
                     $fileid = $val;
                     $file_obj = $this->main->getRowData('data', array('id' => $fileid));
                     $u_obj = $this->main->getRowData('user', array('id' => $file_obj['owner']));
