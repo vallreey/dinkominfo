@@ -169,7 +169,7 @@ class Dashboard extends BaseController
 
     public function add()
     {
-        $allowedMimes = getAllowedMimeTypes();
+        $allowedMimes = $this->getAllowedMimeTypes();
         
         //get settings
         $maxSize = config('MyConfig')->settings['max_filesize'];
