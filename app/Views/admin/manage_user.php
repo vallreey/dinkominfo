@@ -295,7 +295,7 @@
             $('#inputNamaDepan').val(arr.first_name);
             $('#inputNamaBelakang').val(arr.last_name);
             $('#inputUsername').val(arr.username);
-            $('#inputPassword').val(arr.password);
+            $('#inputPassword').val('').attr('placeholder', 'Leave empty if unchanged');
             $('#inputPhoneNumber').val(arr.phone);
             $('#inputEmail').val(arr.Email);
             $('#inputDepartment').val(arr.department).trigger('change');
@@ -343,12 +343,10 @@
           maxlength: 25
         },
         password: {
-          required: true,
           minlength: 5,
           maxlength: 32
         },
         phone: {
-          required: true,
           digits: true,
           maxlength: 20
         },

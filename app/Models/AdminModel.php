@@ -45,7 +45,7 @@ class AdminModel extends Model
             $builder = $db->table('odm_'.$table);
         }
 
-        if (isset($wheres['searchValue']) && $wheres['searchValue'] != '') {
+        if (isset($wheres['searchValue']) && $wheres['searchValue'] !== '') {
             switch ($table) {
                 case 'user':
                   $query = $builder->orLike('id', $wheres['searchValue'])

@@ -13,7 +13,7 @@
       <img src="<?=base_url('adminLTE/dist/img/avatar5.png')?>" class="img-circle elevation-2" alt="User Image">
       </div>
       <div class="info">
-        <a href="#" class="d-block"><?=strtoupper($_SESSION['username'])?></a>
+        <a href="<?=site_url('account/profile')?>" class="d-block"><?=strtoupper($_SESSION['username'])?></a>
       </div>
     </div>
 
@@ -169,6 +169,12 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="<?=site_url('admin/settings')?>" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>General</p>
+                </a>
+              </li>
               <li class="nav-item">
                 <a href="<?=site_url('admin/filetypes')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>

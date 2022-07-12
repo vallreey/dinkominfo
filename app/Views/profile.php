@@ -18,6 +18,15 @@
     <div class="container-fluid">
       <div class="row justify-content-md-center">
         <div class="col-md-6">
+          <?php if (isset($_SESSION['info_success'])) { ?>
+            <div class="alert alert-success alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <h5><i class="icon fas fa-check"></i> Alert!</h5>
+              <?=$_SESSION['info_success']?></div><?php unset($_SESSION['info_success']); } elseif(isset($_SESSION['info_error'])) { ?>
+          <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <h5><i class="icon fas fa-ban"></i> Alert!</h5>
+            <?=$_SESSION['info_error']?></div><?php unset($_SESSION['info_error']); } ?>
           <div class="card card-primary card-outline">
             <div class="card-body box-profile">
               <div class="text-center">
@@ -71,7 +80,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="form-profile">
+      <form id="form-profile" action="<?=site_url('account/updateProfile')?>" method="POST">
         <div class="modal-body">
           <div class="row">
             <div class="col-md-6">
@@ -106,7 +115,7 @@
               </div>
               <div class="form-group">
                 <label>Password</label>
-                <input type="password" class="form-control" id="inputPassword" name="password" value="<?=$password?>">
+                <input type="password" class="form-control" id="inputPassword" name="password" value="" placeholder="Leave empty if unchanged">
               </div>
               <div class="form-group">
                 <label>Email Address</label>
@@ -114,15 +123,15 @@
               </div>
               <div class="form-group">
                 <div class="form-check">
-                  <input class="form-check-input" type="checkbox" <?=isAdmin($id) ? 'checked' : ''?>>
+                  <input class="form-check-input" type="checkbox" name="is_admin" value="1" <?=isAdmin($id) ? 'checked' : ''?>>
                   <label class="form-check-label">Admin</label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="checkbox" name="can_add" <?=$can_add == 1 ? 'checked' : ''?>>
+                  <input class="form-check-input" type="checkbox" name="can_add" value="1" <?=$can_add == 1 ? 'checked' : ''?>>
                   <label class="form-check-label">Can Add Documents</label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="checkbox" name="can_checkin" <?=$can_checkin == 1 ? 'checked' : ''?>>
+                  <input class="form-check-input" type="checkbox" name="can_checkin" value="1" <?=$can_checkin == 1 ? 'checked' : ''?>>
                   <label class="form-check-label">Can Check-In Documents</label>
                 </div>
               </div>
@@ -130,6 +139,7 @@
           </div>
         </div>
         <div class="modal-footer justify-content-between">
+          <input type="hidden" name="uid" value="<?=$id?>">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-info">Save</button>
         </div>
@@ -155,7 +165,6 @@
           minlength: 3,
         },
         password: {
-          required: true,
           minlength: 5
         },
         phone: {

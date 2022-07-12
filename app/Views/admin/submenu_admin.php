@@ -92,8 +92,8 @@
           </li>
         </ul>
       </li>
-      <li class="nav-item <?=$active == 'filetypes' ? 'menu-open' : ''?>">
-        <a href="#" class="nav-link <?=$active == 'filetypes' ? 'active' : ''?>">
+      <li class="nav-item <?=$active == 'filetypes' || $active == 'settings' ? 'menu-open' : ''?>">
+        <a href="#" class="nav-link <?=$active == 'filetypes' || $active == 'settings' ? 'active' : ''?>">
           <i class="nav-icon far fa-plus-square"></i>
           <p>
             Settings
@@ -101,6 +101,12 @@
           </p>
         </a>
         <ul class="nav nav-treeview">
+          <li class="nav-item">
+            <a href="<?=site_url('admin/settings')?>" class="nav-link <?=$active == 'settings' ? 'active' : ''?>">
+              <i class="far fa-circle nav-icon"></i>
+              <p>General</p>
+            </a>
+          </li>
           <li class="nav-item">
             <a href="<?=site_url('admin/filetypes')?>" class="nav-link <?=$active == 'filetypes' ? 'active' : ''?>">
               <i class="far fa-circle nav-icon"></i>

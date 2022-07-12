@@ -164,21 +164,24 @@ class Admin extends BaseController
 
         $uid        = trim($_POST['id']);
         $username   = strtolower(trim($_POST['username']));
+        $password   = isset($_POST['password']) && $_POST['password'] !== '' ? md5(trim($_POST['password'])) : '';
         $dept_rev   = isset($_POST['deptreviewer']) && count($_POST['deptreviewer']) > 0 ? $_POST['deptreviewer'] : '';
         // data user
         $users = array(
             'username'  => $username,
-            'password'  => md5(trim($_POST['password'])),
             'department'=> trim($_POST['department']),
             'first_name'=> ucwords(trim($_POST['first_name'])),
             'last_name' => ucwords(trim($_POST['last_name'])),
             'phone'     => trim($_POST['phone']),
             'Email'     => strtolower(trim($_POST['email'])),
-            'can_add'   => isset($_POST['can_add']) && $_POST['can_add'] != '' ? trim($_POST['can_add']) : 0,
-            'can_checkin'=> isset($_POST['can_checkin']) && $_POST['can_checkin'] != '' ? trim($_POST['can_checkin']) : 0,
+            'can_add'   => isset($_POST['can_add']) && $_POST['can_add'] !== '' ? trim($_POST['can_add']) : 0,
+            'can_checkin'=> isset($_POST['can_checkin']) && $_POST['can_checkin'] !== '' ? trim($_POST['can_checkin']) : 0,
         );
+
+        if ($password !== '') $users['password'] = $password;
+
         // data admin
-        $admins['admin']= isset($_POST['is_admin']) && $_POST['is_admin'] != '' ? trim($_POST['is_admin']) : 0;
+        $admins['admin']= isset($_POST['is_admin']) && $_POST['is_admin'] !== '' ? trim($_POST['is_admin']) : 0;
 
         // ADD NEW USER
         if ($uid == '') {
@@ -706,7 +709,7 @@ class Admin extends BaseController
         }
 
         $type   = strtolower(trim($_POST['type']));
-        $active = isset($_POST['active']) && $_POST['active'] != '' ? trim($_POST['active']) : 0;
+        $active = isset($_POST['active']) && $_POST['active'] !== '' ? trim($_POST['active']) : 0;
         
         // data kategori
         $ftp['type']    = $type;
@@ -901,6 +904,20 @@ class Admin extends BaseController
                 $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
             }
         }
+    }
+
+    public function settings()
+    {
+        $header['title'] = 'General Setting';
+
+        $data['submenu'] = array('active' => 'settings');
+        $data['settings']= $this->main->getResultData('settings');
+        
+        echo view('partial/header', $header);
+        echo view('partial/top_menu');
+        echo view('partial/side_menu');
+        echo view('admin/manage_setting', $data);
+        echo view('partial/footer');
     }
 
 }
