@@ -250,13 +250,17 @@
           <div class="form-group row">
             <label class="col-sm-4 col-form-label">E-mail All Users</label>
             <div class="col-sm-8">
-              <input type="checkbox" class="form-check-input" id="inputEmailAllUser">
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="inputEmailAllUser">
+              </div>
             </div>
           </div>
           <div class="form-group row">
             <label class="col-sm-4 col-form-label">E-mail Whole Department</label>
             <div class="col-sm-8">
-              <input type="checkbox" class="form-check-input" id="inputEmailAllDept">
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="inputEmailAllDept">
+              </div>
             </div>
           </div>
           <div class="form-group row">
