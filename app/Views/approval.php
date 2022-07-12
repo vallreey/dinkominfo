@@ -218,6 +218,71 @@
   </div>
 </div>
 
+<div class="modal fade" id="approval-confirmation-modal">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div id="bg-header" class="modal-header">
+        <h4 class="modal-title"><i><span id="title-modal">Note to Author(s)</span></i></h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form class="form-horizontal" id="form-profile" action="#" method="POST">
+        <div class="modal-body">
+          <div class="form-group row">
+            <label class="col-sm-4 col-form-label">Custom To: Name</label>
+            <div class="col-sm-8">
+              <input class="form-control" id="inputAuthor" placeholder="Author(s)">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-4 col-form-label">Custom Subject</label>
+            <div class="col-sm-8">
+              <input class="form-control" id="inputSubject" placeholder="">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-4 col-form-label">Custom Comment</label>
+            <div class="col-sm-8">
+              <textarea class="form-control" rows="3" id="inputComment"></textarea>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-4 col-form-label">E-mail All Users</label>
+            <div class="col-sm-8">
+              <input type="checkbox" class="form-check-input" id="inputEmailAllUser">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-4 col-form-label">E-mail Whole Department</label>
+            <div class="col-sm-8">
+              <input type="checkbox" class="form-check-input" id="inputEmailAllDept">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-4 col-form-label">E-mail These Users</label>
+            <div class="col-sm-8">
+              <select class="form-control select2" id="inputEmailUser" style="width: 100%;" data-placeholder="Select one">
+                <option value="0">No one</option>
+                <option value="owner">File Owners</option>
+                <?php
+                  foreach ($listUsers as $key => $val) {
+                ?>
+                <option value="<?=$val['id']?>"><?=$val['last_name'].', '.$val['first_name']?></option>
+                <?php } ?>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" id="btn-approval" class="btn">Authorize</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <style>
   div.dt-buttons {
     float: right;
@@ -447,6 +512,10 @@
               ids.push($(this).val());
             });
           }
+
+          $('#btn-approval').text('Authorize').addClass('btn-info');
+          $('#bg-header').addClass('bg-info');
+          $('#approval-confirmation-modal').modal('show');
         },
         text: 'Authorize',
         className: 'btn-default btns'
@@ -461,6 +530,10 @@
               ids.push($(this).val());
             });
           }
+          
+          $('#btn-approval').text('Rejecct').addClass('btn-danger');
+          $('#bg-header').addClass('bg-danger');
+          $('#approval-confirmation-modal').modal('show');
         },
         text: 'Reject',
         className: 'btn-default btns'

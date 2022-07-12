@@ -500,6 +500,7 @@ class Dashboard extends BaseController
             case 'rejected': $header['title'] = 'Dokumen Rejected'; break;
         }
         
+        $data['listUsers'] = $this->main->getResultData('user', array(), false, 'id, first_name, last_name');
         $data['status'] = $side['active'] = $status;
         $data['admin_mode'] = false;
 
