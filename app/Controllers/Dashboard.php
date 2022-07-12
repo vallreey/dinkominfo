@@ -36,6 +36,10 @@ class Dashboard extends BaseController
             .view('partial/footer');
     }
 
+    public function tes() {
+        return $TES;
+    }
+
     public function search()
     {
         $header['title'] = 'Pencarian Dokumen';
@@ -398,7 +402,7 @@ class Dashboard extends BaseController
         if (count($files) > 0) {
             $i = 0;
             foreach ($files as $key => $val) {
-                $userAccessLevel = getAuthority($_SESSION['id'], $val->id, $_SESSION['department'])["rights"];
+                $userAccessLevel = getAuthority($_SESSION['id'], $val->id, $_SESSION['department']);
 
                 $lock = true;
                 $VIEW_RIGHT = 1;
@@ -655,11 +659,10 @@ class Dashboard extends BaseController
         }
     }
 
-    public function submitApproval()
+    public function reject()
     {
         $ids = json_decode($_POST['ids']);
-        $action = $_POST['action'];
-
+        
         if (!$ids) {
             $_SESSION['info_error'] = '<b>Error!</b> File ID tidak dikenal.';
             return redirect()->to('dashboard/approval/onreview');
@@ -746,6 +749,7 @@ class Dashboard extends BaseController
                     } catch (\Exception $e) {
                         $this->db->transRollback();
                         $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
+                        return redirect()->to('dashboard/approval/onreview');
                     }
 
                     // TODO
@@ -772,13 +776,132 @@ class Dashboard extends BaseController
                     // if (isset($_POST['send_to_users']) && is_array($_POST['send_to_users']) && isset($_POST['send_to_users'][0])) {
                     //     email_users_id($_POST['send_to_users'], $mail_subject, $mail_body, $mail_headers);
                     // }
-
-                    return redirect()->to('dashboard/approval/onreview');
                 } else {
                     $_SESSION['info_error'] = '<b>Error!</b> You are not authorized to reject this file [File ID: '.$val.']';
-                    return redirect()->to('dashboard/approval/onreview');
                 }
             }
+            return redirect()->to('dashboard/approval/onreview');
+        }
+    }
+
+    public function authorize()
+    {
+        $ids = json_decode($_POST['ids']);
+        
+        if (!$ids) {
+            $_SESSION['info_error'] = '<b>Error!</b> File ID tidak dikenal.';
+            return redirect()->to('dashboard/approval/onreview');
+        } else {
+            // TODO
+            $to      = isset($_POST['to']) ? trim($_POST['to']) : '';
+            $subject = isset($_POST['subject']) ? trim($_POST['subject']) : '';
+            $comments= isset($_REQUEST['comments']) ? stripslashes($_REQUEST['comments']) : '';
+
+            // $checkbox = isset($_REQUEST['checkbox']) ? e::h($_REQUEST['checkbox']) : '';
+            $reviewer_comments = "To=$to;Subject=$subject;Comments=$comments;";
+            // $user_obj = new User($_SESSION['uid'], $pdo);
+            // $date = date('Y-m-d H:i:s T'); //locale insensitive
+            // $get_full_name = $user_obj->getFullName();
+            // $full_name = $get_full_name[0].' '.$get_full_name[1];
+            // $mail_subject = (!empty($_REQUEST['subject']) ? stripslashes(e::h($_REQUEST['subject'])) : msg('email_subject_review_status'));
+            // $mail_from= e::h($full_name) . ' <'.$user_obj->getEmailAddress().'>';
+            // $mail_headers = "From: ". e::h($mail_from) .PHP_EOL.PHP_EOL;
+            // $mail_headers .="Content-Type: text/plain; charset=UTF-8".PHP_EOL . PHP_EOL;
+
+            $uid = $_SESSION['id'];
+            if (isAdmin($uid)) {
+                $arr = $this->main->getResultData('data', array('publishable' => 0), false, 'id');
+            } else if (isReviewer($_SESSION['id'])) {
+                $arr = $this->dashboard->getRevieweeIds($uid);
+            }
+
+            $id_array = array();
+            foreach($arr as $val) {
+                array_push($id_array, $val['id']);
+            }
+            
+            foreach ($ids as $val) {
+                if (in_array($val, $id_array)) {
+                    // $fileid = $value;
+                    // $file_obj = new FileData($fileid, $pdo);
+                    // $user_obj = new User($file_obj->getOwner(), $pdo);
+                    // $mail_to = $user_obj->getEmailAddress();
+                    // $dept_id = $file_obj->getDepartment();
+                    
+                    // // Build email for author notification
+                    // if (isset($_POST['send_to_users'][0]) && in_array('owner', $_POST['send_to_users'])) {
+                    //     // Lets unset this now so the new array will just be user_id's
+                    //     $_POST['send_to_users'] = array_slice($_POST['send_to_users'], 1);
+
+                    //     $mail_body1 = e::h($comments) . PHP_EOL . PHP_EOL;
+                    //     $mail_body1.=msg('email_your_file_has_been_authorized') . PHP_EOL . PHP_EOL;
+                    //     $mail_body1.=msg('label_filename') . ':  ' . $file_obj->getName() . PHP_EOL . PHP_EOL;
+                    //     $mail_body1.=msg('label_status') . ': ' . msg('message_authorized') . PHP_EOL . PHP_EOL;
+                    //     $mail_body1.=msg('date') . ': ' . $date . PHP_EOL . PHP_EOL;
+                    //     $mail_body1.=msg('label_reviewer') . ': ' . e::h($full_name) . PHP_EOL . PHP_EOL;
+                    //     $mail_body1.=msg('email_thank_you') . ',' . PHP_EOL . PHP_EOL;
+                    //     $mail_body1.=msg('email_automated_document_messenger') . PHP_EOL . PHP_EOL;
+                    //     $mail_body1.=$GLOBALS['CONFIG']['base_url'] . PHP_EOL . PHP_EOL;
+                    //     if ($GLOBALS['CONFIG']['demo'] == 'False')
+                    //     {
+                    //         mail($mail_to, $mail_subject . " " . $file_obj->getName(), $mail_body1, $mail_headers);
+                    //     }
+                    // }
+                    
+                    $this->db->transBegin();
+                    try {
+                        $datas['publishable'] = '1';
+                        $datas['reviewer']    = $uid;
+                        $datas['reviewer_comments'] = $reviewer_comments;
+                        $updateData = $this->main->updateData('data', array('id' => $val), $datas);
+                        if (!$updateData)
+                            throw new \Exception('Status dokumen gagal terupdate.');
+                        
+                        // access log
+                        $logs['file_id'] = $val;
+                        $logs['user_id'] = $uid;
+                        $logs['timestamp'] = date('Y-m-d H:i:s');
+                        $logs['action'] = 'Y';
+                        $insLogs = $this->main->insertData('access_log', $logs);
+                        if (!$insLogs)
+                            throw new \Exception('Log entry gagal tersimpan.');
+                            
+                        $this->db->transCommit();
+                        $_SESSION['info_success'] = '<b>Sukses!</b> Dokumen berhasil di-authorize.';
+                    } catch (\Exception $e) {
+                        $this->db->transRollback();
+                        $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
+                        return redirect()->to('dashboard/approval/onreview');
+                    }
+
+                    
+                    // Build email for general notices
+                    // $mail_subject = (!empty($_REQUEST['subject']) ? stripslashes(e::h($_REQUEST['subject'])) : $file_obj->getName().' ' .msg('email_added_to_repository'));
+                    // $mail_body2=$comments . PHP_EOL . PHP_EOL;
+                    // $mail_body2.=msg('email_a_new_file_has_been_added'). PHP_EOL . PHP_EOL;
+                    // $mail_body2.=msg('label_filename'). ':  ' . $file_obj->getName() . PHP_EOL . PHP_EOL;
+                    // $mail_body2.=msg('label_status'). ': New'. PHP_EOL . PHP_EOL;
+                    // $mail_body2.=msg('date'). ': ' . $date . PHP_EOL . PHP_EOL;
+                    // $mail_body2.=msg('label_reviewer'). ': ' . e::h($full_name) . PHP_EOL . PHP_EOL;
+                    // $mail_body2.=msg('email_thank_you'). ','. PHP_EOL . PHP_EOL;
+                    // $mail_body2.=msg('email_automated_document_messenger'). PHP_EOL . PHP_EOL;
+                    // $mail_body2.=$GLOBALS['CONFIG']['base_url'] . PHP_EOL . PHP_EOL;
+
+                    // if (isset($_POST['send_to_all'])) {
+                    //     email_all($mail_subject, $mail_body2, $mail_headers);
+                    // }
+                    
+                    // if (isset($_POST['send_to_dept'])) {
+                    //     email_dept($dept_id, $mail_subject, $mail_body2, $mail_headers);
+                    // }
+                    // if (!empty($_POST['send_to_users'][0]) && is_array($_POST['send_to_users']) && $_POST['send_to_users'][0] > 0) {
+                    //     email_users_id($_POST['send_to_users'], $mail_subject, $mail_body2, $mail_headers);
+                    // }
+                } else {
+                    $_SESSION['info_error'] = '<b>Error!</b> You are not authorized to authorize this file [File ID: '.$val.']';
+                }
+            }
+            return redirect()->to('dashboard/approval/onreview');
         }
     }
 }

@@ -227,7 +227,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form class="form-horizontal" id="form-approval" action="<?=site_url('dashboard/reject')?>" method="POST">
+      <form class="form-horizontal" id="form-approval" action="#" method="POST">
         <div class="modal-body">
           <div class="form-group row">
             <label class="col-sm-4 col-form-label">Custom To: Name</label>
@@ -528,7 +528,8 @@
             });
           }
 
-          $('#hidIds').val(ids);
+          $('#form-approval').attr('action', '<?=site_url('dashboard/authorize')?>');
+          $('#hidIds').val(JSON.stringify(ids));
           $('#btn-approval').text('Authorize').attr('class', 'btn btn-info');
           $('#bg-header').attr('class', 'modal-header bg-info');
           $('#approval-confirmation-modal').modal('show');
@@ -547,6 +548,7 @@
             });
           }
           
+          $('#form-approval').attr('action', '<?=site_url('dashboard/reject')?>');
           $('#hidIds').val(JSON.stringify(ids));
           $('#btn-approval').text('Reject').attr('class', 'btn btn-danger');
           $('#bg-header').attr('class', 'modal-header bg-danger');
