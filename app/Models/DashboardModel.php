@@ -153,5 +153,22 @@ class DashboardModel extends Model
         return $query->getResultArray();
     }
 
+    public function getLatestLog($fid, $limit)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('odm_access_log l');
+        
+        $query = $builder->select('timestamp, action, DATE_FORMAT(timestamp, "%Y-%m-%d") AS date_modified, DATE_FORMAT(timestamp, "%H:%i:%s") AS time_modified, u.username')
+                         ->join('odm_user u', 'u.id = l.user_id')
+                         ->where('file_id', $fid)
+                         ->orderBy('timestamp', 'desc')
+                         ->get($limit);
+        
+        if ($limit == 1)
+            return $query->getRowArray();
+        else 
+            return $query->getResultArray();
+    }
+
     // SELECT d.id FROM odm_data as d, odm_user as u, odm_department dept, odm_category as c WHERE d.owner = u.id AND d.department = dept.id AND d.category = c.id AND ( u.first_name LIKE :author_first_name AND u.last_name LIKE :author_last_name ) ORDER BY d.id ASC
 }   

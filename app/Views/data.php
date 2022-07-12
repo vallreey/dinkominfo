@@ -144,7 +144,10 @@
                 <a class="nav-link active" id="custom-tabs-one-detail-tab" data-toggle="pill" href="#custom-tabs-one-detail" role="tab" aria-controls="custom-tabs-one-detail" aria-selected="true">Detail</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" id="custom-tabs-one-history-tab" data-toggle="pill" href="#custom-tabs-one-history" role="tab" aria-controls="custom-tabs-one-history" aria-selected="false">History</a>
+                <a class="nav-link" id="custom-tabs-two-history-tab" data-toggle="pill" href="#custom-tabs-two-history" role="tab" aria-controls="custom-tabs-two-history" aria-selected="false">History</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="custom-tabs-three-accesslog-tab" data-toggle="pill" href="#custom-tabs-three-accesslog" role="tab" aria-controls="custom-tabs-three-history" aria-selected="false">Latest Access Log</a>
               </li>
             </ul>
           </div>
@@ -177,10 +180,6 @@
                     <td><p id="pComment"></p></td>
                   </tr>
                   <tr>
-                    <td>Revision</td>
-                    <td><p id="pRevision"></p></td>
-                  </tr>
-                  <tr>
                     <td>File</td>
                     <td>
                       <span class="mailbox-attachment-icon"><i class="far fa-file-pdf"></i></span>
@@ -195,8 +194,11 @@
                   </tr>
                 </table>
               </div>
-              <div class="tab-pane fade" id="custom-tabs-one-history" role="tabpanel" aria-labelledby="custom-tabs-one-history-tab">
+              <div class="tab-pane fade" id="custom-tabs-two-history" role="tabpanel" aria-labelledby="custom-tabs-two-history-tab">
                 <span id="pHistory"></span>
+              </div>
+              <div class="tab-pane fade" id="custom-tabs-three-accesslog" role="tabpanel" aria-labelledby="custom-tabs-three-accesslog-tab">
+                <span id="pAccessLog"></span>
               </div>
             </div>
           </div>
@@ -444,7 +446,6 @@
           $('#pPemilik').html(obj.data.last_name + ', ' + obj.data.first_name);
           $('#pDeskripsi').html(obj.data.description);
           $('#pComment').html(obj.data.comment);
-          $('#pRevision').html(obj.data.revision);
           $('#pFileName').html(obj.data.realname);
           $(".downloadFileButton").attr("href", "<?=site_url('dashboard/file/')?>" + id);
 
@@ -455,7 +456,19 @@
           });
           str += '<div><i class="far fa-clock bg-gray"></i></div></div>';
 
+          var strx = '';
+          var arrx = obj.accesslog;
+          if (Object.keys(arrx).length > 0) {
+            arrx.forEach(function(log, index, myArray) {
+              strx += '<div class="timeline timeline-inverse"><div class="time-label"><span class="bg-danger">'+log.date_modified+'</span></div><div><i class="fas fa-envelope bg-primary"></i><div class="timeline-item"><span class="time"><i class="far fa-clock"></i> '+log.time_modified+'</span><h3 class="timeline-header"><a href="#">'+log.username+'</a></h5><div class="timeline-body">'+log.action+'</h5></div></div></div>';
+            });
+            strx += '<div><i class="far fa-clock bg-gray"></i></div>';
+          } else {
+            strx += '<i>There is no writable log.</i>';
+          }
+
           $('#pHistory').html(str);
+          $('#pAccessLog').html(strx);
           $('#detailModal').modal('show');
         }
       });

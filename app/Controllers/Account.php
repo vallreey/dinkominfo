@@ -132,12 +132,12 @@ class Account extends BaseController
             $users['department'] = trim($_POST['department']);
             $users['can_add']    = isset($_POST['can_add']) && $_POST['can_add'] !== '' ? trim($_POST['can_add']) : 0;
             $users['can_checkin']= isset($_POST['can_checkin']) && $_POST['can_checkin'] !== '' ? trim($_POST['can_checkin']) : 0;
+            
+            // data admin
+            $admins['admin'] = isset($_POST['is_admin']) && $_POST['is_admin'] !== '' ? trim($_POST['is_admin']) : 0;
         }
 
         if ($password !== '') $users['password'] = $password;
-        
-        // data admin
-        $admins['admin']= isset($_POST['is_admin']) && $_POST['is_admin'] !== '' ? trim($_POST['is_admin']) : 0;
 
         $this->db->transBegin();
         try {
@@ -150,6 +150,19 @@ class Account extends BaseController
             $insertAdmin = $this->main->updateData('admin', array('id' => $uid), $admins);
             if (!$insertAdmin)
                 throw new \Exception('User admin gagal terupdate.');
+
+            unset($_SESSION['first_name']); $_SESSION['first_name'] = $users['first_name'];
+            unset($_SESSION['last_name']); $_SESSION['last_name'] = $users['last_name'];
+            unset($_SESSION['phone']); $_SESSION['phone'] = $users['phone'];
+            unset($_SESSION['Email']); $_SESSION['Email'] = $users['Email'];
+
+            if (isAdmin($uid)) {
+                unset($_SESSION['username']); $_SESSION['username'] = $username;
+                unset($_SESSION['department']); $_SESSION['department'] = $users['department'];
+                unset($_SESSION['can_add']); $_SESSION['can_add'] = $users['can_add'];
+                unset($_SESSION['can_checkin']); $_SESSION['can_checkin'] = $users['can_checkin'];
+                unset($_SESSION['is_admin']); $_SESSION['is_admin'] = $admins['admin'];
+            }
 
             $this->db->transCommit();
             $_SESSION['info_success'] = '<b>Sukses!</b> User profile berhasil terupdate [Username: '.$username.']';

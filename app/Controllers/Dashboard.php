@@ -57,11 +57,22 @@ class Dashboard extends BaseController
         
         $dataById = $this->dashboard->getData($wheres, true);
         $history  = $this->dashboard->getLogModification($wheres['id']);
-
+        $logs     = $this->dashboard->getLatestLog($wheres['id'], 5);
+        
+        $accesslog = array();
+        if (count($logs) > 0) {
+            for ($i=0; $i < count($logs); $i++) { 
+                $accesslog[$i]['date_modified'] = $logs[$i]['date_modified'];
+                $accesslog[$i]['time_modified'] = $logs[$i]['time_modified'];
+                $accesslog[$i]['username'] = $logs[$i]['username'];
+                $accesslog[$i]['action'] = actionParam($logs[$i]['action']);
+            }
+        }
+       
         // data tidak ditemukan
         if(!$dataById) return false;
 
-        $return = array('data' => $dataById[0], 'history' => $history);
+        $return = array('data' => $dataById[0], 'history' => $history, 'accesslog' => $accesslog);
         
         foreach ($dataById as $d) {
             $d->file_size = getFileSizeByFileId($d->id, $status == 'deleted' ? 'archiveDir' : 'dataDir');
@@ -411,7 +422,7 @@ class Dashboard extends BaseController
                     'deskripsi' => $val->description == null ? '-' : $val->description,
                     'hak_akses' => $this->getRights($userAccessLevel),
                     'created'   => $val->created,
-                    'changed'   => $val->created,
+                    'changed'   => $this->dashboard->getLatestLog($val->id, 1)['timestamp'],
                     'pemilik'   => $val->last_name.', '.$val->first_name,
                     'bidang'    => $val->dept_name,
                     'ukuran'    => getFileSizeByFileId($val->id),
@@ -658,10 +669,11 @@ class Dashboard extends BaseController
     public function reject()
     {
         $ids = json_decode($_POST['ids']);
+        $url = isset($_POST['admin_mode']) && $_POST['admin_mode'] == 0 ? 'dashboard/approval/onreview' : 'admin/approval/onreview';
         
         if (!$ids) {
             $_SESSION['info_error'] = '<b>Error!</b> File ID tidak dikenal.';
-            return redirect()->to('dashboard/approval/onreview');
+            return redirect()->to($url);
         } else {
             $uid = $_SESSION['id'];
 
@@ -745,7 +757,7 @@ class Dashboard extends BaseController
                     } catch (\Exception $e) {
                         $this->db->transRollback();
                         $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
-                        return redirect()->to('dashboard/approval/onreview');
+                        return redirect()->to($url);
                     }
 
                     // TODO
@@ -784,7 +796,7 @@ class Dashboard extends BaseController
                     $_SESSION['info_error'] = '<b>Error!</b> You are not authorized to reject this file [File ID: '.$val.']';
                 }
             }
-            return redirect()->to('dashboard/approval/onreview');
+            return redirect()->to($url);
         }
     }
     
@@ -811,10 +823,11 @@ class Dashboard extends BaseController
     public function authorize()
     {
         $ids = json_decode($_POST['ids']);
+        $url = isset($_POST['admin_mode']) && $_POST['admin_mode'] == 0 ? 'dashboard/approval/onreview' : 'admin/approval/onreview';
         
         if (!$ids) {
             $_SESSION['info_error'] = '<b>Error!</b> File ID tidak dikenal.';
-            return redirect()->to('dashboard/approval/onreview');
+            return redirect()->to($url);
         } else {
             // TODO
             $to      = isset($_POST['to']) ? trim($_POST['to']) : '';
@@ -889,7 +902,7 @@ class Dashboard extends BaseController
                     } catch (\Exception $e) {
                         $this->db->transRollback();
                         $_SESSION['info_error'] = '<b>Error!</b> '.$e->getMessage();
-                        return redirect()->to('dashboard/approval/onreview');
+                        return redirect()->to($url);
                     }
 
                     
@@ -922,7 +935,7 @@ class Dashboard extends BaseController
                     $_SESSION['info_error'] = '<b>Error!</b> You are not authorized to authorize this file [File ID: '.$val.']';
                 }
             }
-            return redirect()->to('dashboard/approval/onreview');
+            return redirect()->to($url);
         }
     }
 }
