@@ -34,10 +34,12 @@ class Admin extends BaseController
 
         $data['listBidang'] = $this->dashboard->getOptionalList('bidang');
         $data['submenu']    = array('active' => 'user');
+
+        $side['active'] = 'user';
         
         echo view('partial/header', $header);
         echo view('partial/top_menu');
-        echo view('partial/side_menu');
+        echo view('partial/side_menu', $side);
         echo view('admin/manage_user', $data);
         echo view('partial/footer');
     }
@@ -353,10 +355,12 @@ class Admin extends BaseController
 
         $data['listBidang'] = $this->dashboard->getOptionalList('bidang');
         $data['submenu']    = array('active' => 'bidang');
+
+        $side['active'] = 'bidang';
         
         echo view('partial/header', $header);
         echo view('partial/top_menu');
-        echo view('partial/side_menu');
+        echo view('partial/side_menu', $side);
         echo view('admin/manage_bidang', $data);
         echo view('partial/footer');
     }
@@ -514,10 +518,12 @@ class Admin extends BaseController
         
         $data['listKategori']= $this->dashboard->getOptionalList('kategori');
         $data['submenu']     = array('active' => 'kategori');
+
+        $side['active'] = 'kategori';
         
         echo view('partial/header', $header);
         echo view('partial/top_menu');
-        echo view('partial/side_menu');
+        echo view('partial/side_menu', $side);
         echo view('admin/manage_kategori', $data);
         echo view('partial/footer');
     }
@@ -643,10 +649,11 @@ class Admin extends BaseController
         $header['title'] = 'Administrasi File';
 
         $data['submenu'] = array('active' => 'file');
+        $side['active'] = 'file';
         
         echo view('partial/header', $header);
         echo view('partial/top_menu');
-        echo view('partial/side_menu');
+        echo view('partial/side_menu', $side);
         echo view('admin/manage_file', $data);
         echo view('partial/footer');
     }
@@ -656,10 +663,11 @@ class Admin extends BaseController
         $header['title'] = 'Setting File Types';
 
         $data['submenu'] = array('active' => 'filetypes');
+        $side['active'] = 'filetypes';
         
         echo view('partial/header', $header);
         echo view('partial/top_menu');
-        echo view('partial/side_menu');
+        echo view('partial/side_menu', $side);
         echo view('admin/manage_filetypes', $data);
         echo view('partial/footer');
     }
@@ -764,10 +772,11 @@ class Admin extends BaseController
         $header['title'] = 'Access Log';
 
         $data['submenu'] = array('active' => 'accesslog');
+        $side['active'] = 'accesslog';
         
         echo view('partial/header', $header);
         echo view('partial/top_menu');
-        echo view('partial/side_menu');
+        echo view('partial/side_menu', $side);
         echo view('admin/manage_access_log', $data);
         echo view('partial/footer');
     }
@@ -777,10 +786,11 @@ class Admin extends BaseController
         $header['title'] = 'File List Export';
 
         $data['submenu'] = array('active' => 'filelistexport');
+        $side['active'] = 'filelistexport';
         
         echo view('partial/header', $header);
         echo view('partial/top_menu');
-        echo view('partial/side_menu');
+        echo view('partial/side_menu', $side);
         echo view('admin/manage_filelist_export', $data);
         echo view('partial/footer');
     }
@@ -797,9 +807,11 @@ class Admin extends BaseController
         $data['status'] = $status;
         $data['admin_mode'] = true;
 
+        $side['active'] = 'admin-'.$status;
+
         echo view('partial/header', $header);
         echo view('partial/top_menu');
-        echo view('partial/side_menu');
+        echo view('partial/side_menu', $side);
         echo view('approval', $data);
         echo view('partial/footer');
     }
@@ -912,10 +924,12 @@ class Admin extends BaseController
 
         $data['submenu'] = array('active' => 'settings');
         $data['settings']= $this->main->getResultData('settings');
+
+        $side['active'] = 'settings';
         
         echo view('partial/header', $header);
         echo view('partial/top_menu');
-        echo view('partial/side_menu');
+        echo view('partial/side_menu', $side);
         echo view('admin/manage_setting', $data);
         echo view('partial/footer');
     }

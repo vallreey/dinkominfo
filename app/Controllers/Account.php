@@ -67,6 +67,17 @@ class Account extends BaseController
                 }
                 $_SESSION['dept_name'] = getDeptName($_SESSION['id']);
                 $_SESSION['root_id']   = config('MyConfig')->settings['root_id'];
+
+                // add notification for pending approval
+                // total need to be reviewed
+                $wheresReviewed['status'] = 'onreview';
+                $wheresReviewed['publishable'] = publishableByStatus('onreview');
+                $_SESSION['notif_review'] = $this->dashboard->getData($wheresReviewed);
+                // total rejected
+                $wheresRejected['status'] = 'rejected';
+                $wheresRejected['adminMode'] = 0;
+                $wheresRejected['publishable'] = publishableByStatus('rejected');
+                $_SESSION['notif_rejected'] = $this->dashboard->getData($wheresRejected);
                     
                 return redirect()->to('dashboard');
             }

@@ -27,10 +27,11 @@ class Dashboard extends BaseController
     public function index()
     {
         $header['title'] = 'Dashboard';
+        $side['active']  = 'dashboard';
         
         return view('partial/header', $header)
             .view('partial/top_menu')
-            .view('partial/side_menu')
+            .view('partial/side_menu', $side)
             .view('dashboard')
             .view('partial/footer');
     }
@@ -39,10 +40,11 @@ class Dashboard extends BaseController
     {
         $header['title'] = 'Pencarian Dokumen';
         $data['status'] = 'approved';
+        $side['active']  = 'search';
 
         return view('partial/header', $header)
             .view('partial/top_menu')
-            .view('partial/side_menu')
+            .view('partial/side_menu', $side)
             .view('data', $data)
             .view('partial/footer');
     }
@@ -103,9 +105,11 @@ class Dashboard extends BaseController
         $data['AllowedMimeTypes'] = $allowedMimes;
         $data['docUrl'] = site_url('dashboard/file').'/'.$id.'/view"';
 
+        $side['active']  = 'document';
+
         return view('partial/header', $header)
             .view('partial/top_menu')
-            .view('partial/side_menu')
+            .view('partial/side_menu', $side)
             .view('form_input', $data)
             .view('partial/footer');
     }
@@ -496,12 +500,12 @@ class Dashboard extends BaseController
             case 'rejected': $header['title'] = 'Dokumen Rejected'; break;
         }
         
-        $data['status'] = $status;
+        $data['status'] = $side['active'] = $status;
         $data['admin_mode'] = false;
 
         echo view('partial/header', $header);
         echo view('partial/top_menu');
-        echo view('partial/side_menu');
+        echo view('partial/side_menu', $side);
         echo view('approval', $data);
         echo view('partial/footer');
     }
