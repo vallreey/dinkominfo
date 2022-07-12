@@ -131,5 +131,27 @@ class DashboardModel extends Model
         return $query->getResultArray();
     }
 
+    public function getRevieweeIds($uid)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('odm_dept_reviewer');
+        
+        $query = $builder->select('dept_id')
+                         ->where('user_id', $uid)->get();
+        $resultId = $query->getResultArray();
+        
+        $arrIds = array();
+        foreach ($resultId as $val) {
+            $arrIds[] = $val['dept_id'];
+        }
+
+        $builder = $db->table('odm_data');
+        $query = $builder->select('id')
+                         ->whereIn('department', $arrIds)
+                         ->where('publishable', 0)->get();
+
+        return $query->getResultArray();
+    }
+
     // SELECT d.id FROM odm_data as d, odm_user as u, odm_department dept, odm_category as c WHERE d.owner = u.id AND d.department = dept.id AND d.category = c.id AND ( u.first_name LIKE :author_first_name AND u.last_name LIKE :author_last_name ) ORDER BY d.id ASC
 }   

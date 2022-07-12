@@ -227,24 +227,24 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form class="form-horizontal" id="form-profile" action="#" method="POST">
+      <form class="form-horizontal" id="form-approval" action="<?=site_url('dashboard/reject')?>" method="POST">
         <div class="modal-body">
           <div class="form-group row">
             <label class="col-sm-4 col-form-label">Custom To: Name</label>
             <div class="col-sm-8">
-              <input class="form-control" id="inputAuthor" placeholder="Author(s)">
+              <input class="form-control" id="inputAuthor" name="to" placeholder="Author(s)">
             </div>
           </div>
           <div class="form-group row">
             <label class="col-sm-4 col-form-label">Custom Subject</label>
             <div class="col-sm-8">
-              <input class="form-control" id="inputSubject" placeholder="">
+              <input class="form-control" id="inputSubject" name="subject" placeholder="">
             </div>
           </div>
           <div class="form-group row">
             <label class="col-sm-4 col-form-label">Custom Comment</label>
             <div class="col-sm-8">
-              <textarea class="form-control" rows="3" id="inputComment"></textarea>
+              <textarea class="form-control" rows="3" name="comment" id="inputComment"></textarea>
             </div>
           </div>
           <div class="form-group row">
@@ -279,6 +279,7 @@
           </div>
         </div>
         <div class="modal-footer justify-content-between">
+          <input type="hidden" value="" id="hidIds" name="ids">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="submit" id="btn-approval" class="btn">Authorize</button>
         </div>
@@ -527,6 +528,7 @@
             });
           }
 
+          $('#hidIds').val(ids);
           $('#btn-approval').text('Authorize').attr('class', 'btn btn-info');
           $('#bg-header').attr('class', 'modal-header bg-info');
           $('#approval-confirmation-modal').modal('show');
@@ -545,7 +547,8 @@
             });
           }
           
-          $('#btn-approval').text('Authorize').attr('class', 'btn btn-danger');
+          $('#hidIds').val(JSON.stringify(ids));
+          $('#btn-approval').text('Reject').attr('class', 'btn btn-danger');
           $('#bg-header').attr('class', 'modal-header bg-danger');
           $('#approval-confirmation-modal').modal('show');
         },
