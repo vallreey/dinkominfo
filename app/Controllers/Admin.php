@@ -97,7 +97,7 @@ class Admin extends BaseController
                         'id'      => $val->id,
                         'type'    => $val->type,
                         'active'  => '<div class="form-check"><input class="form-check-input status-active" id="'.$val->id.'" type="checkbox" '.$status.'></div>',
-                        'action'  => '<button type="button" id="'.$val->id.'" class="btn btn-sm btn-danger" data-toggle="modal" data-href="'.site_url('admin/deleteFileType/').$val->id.'" data-target="#confirmDelete"><i class="fas fa-trash"></i></button>'
+                        'action'  => '<button type="button" id="'.$val->id.'" class="btn btn-xs btn-danger" data-toggle="modal" data-href="'.site_url('admin/deleteFileType/').$val->id.'" data-target="#confirmDelete"><i class="fas fa-trash"></i></button>'
                     );
                 }
             } elseif ($table == 'accesslog') {
