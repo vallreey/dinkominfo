@@ -708,9 +708,9 @@ class Dashboard extends BaseController
                         // Lets unset this now so the new array will just be user_id's
                         $_POST['send_to_users'] = array_slice($_POST['send_to_users'], 1);
                         $mail_body1 = $comments . PHP_EOL . PHP_EOL;
-                        $mail_body1.="Was rejected from repository" . PHP_EOL . PHP_EOL;
+                        $mail_body1.="Telah di tolak dari repository" . PHP_EOL . PHP_EOL;
                         $mail_body1.='Nama File :  ' . $file_obj['realname'] . PHP_EOL . PHP_EOL;
-                        $mail_body1.='Status    : ' . msg('message_authorized') . PHP_EOL . PHP_EOL;
+                        $mail_body1.='Status    : Rejected'. PHP_EOL . PHP_EOL;
                         $mail_body1.='Tanggal   : ' . $date . PHP_EOL . PHP_EOL;
                         $mail_body1.='Reviewer  : ' . $full_name . PHP_EOL . PHP_EOL;
                         $mail_body1.='Terima Kasih,' . PHP_EOL . PHP_EOL;
@@ -862,7 +862,7 @@ class Dashboard extends BaseController
                         $mail_body1.=site_url() . PHP_EOL . PHP_EOL;
 
                         if (config('MyConfig')->settings['demo'] == 'False') {
-                            $this->sendEmail($mail_to, $mail_subject . ' ' . $file_obj['realname'], $mail_greeting . $file_obj['realname'] . ' ' . $mail_body1 . $mail_salute);
+                            $this->sendEmail($mail_to, $mail_subject . ' ' . $file_obj['realname'], $mail_body1);
                         }
                     }
                     
@@ -907,18 +907,12 @@ class Dashboard extends BaseController
 
                     if (isset($_POST['send_to_all'])) {
                         $emails = $this->main->getResultData('user', array(), false, 'Email', true);
-                        foreach ($emails as $e) $this->sendEmail(
-                            $e['Email'], 
-                            $mail_subject . ' ' . $file_obj['realname'], 
-                            $mail_greeting . $file_obj['realname'] . ' ' . $mail_body2 . $mail_salute);
+                        foreach ($emails as $e) $this->sendEmail($e['Email'], $mail_subject . ' ' . $file_obj['realname'], $mail_body2);
                     }
 
                     if (isset($_POST['send_to_dept'])) {
                         $emails = $this->main->getResultData('user', array('department' => $file_obj['department']), false, 'Email', true);
-                        foreach ($emails as $e) $this->sendEmail(
-                            $e['Email'], 
-                            $mail_subject . ' ' . $file_obj['realname'], 
-                            $mail_greeting . $file_obj['realname'] . ' ' . $mail_body2 . $mail_salute);
+                        foreach ($emails as $e) $this->sendEmail($e['Email'], $mail_subject . ' ' . $file_obj['realname'],  $mail_body2);
                     }
 
                     if (isset($_POST['send_to_users']) && is_array($_POST['send_to_users']) && isset($_POST['send_to_users'][0])) {
