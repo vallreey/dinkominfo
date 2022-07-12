@@ -90,7 +90,7 @@
               </div>
               <div class="form-group">
                 <label>Username</label>
-                <input type="text" class="form-control" id="inputUsername" name="username" value="<?=$username?>">
+                <input type="text" class="form-control" id="inputUsername" name="username" value="<?=$username?>" <?=!isAdmin($id) ? 'disabled' : ''?>>
               </div>
               <div class="form-group">
                 <label>Phone Number</label>
@@ -98,7 +98,7 @@
               </div>
               <div class="form-group">
                 <label>Bidang</label>
-                <select class="form-control select2" name="department" style="width: 100%;">
+                <select class="form-control select2" name="department" style="width: 100%;" <?=!isAdmin($id) ? 'disabled' : ''?>>
                   <?php
                     foreach ($listBidang as $key => $val) { 
                       $selected = $val->id == $department ? "selected" : "";  
@@ -121,17 +121,24 @@
                 <label>Email Address</label>
                 <input type="email" class="form-control" id="inputEmail" name="email" value="<?=$Email?>">
               </div>
+              <?php
+                  $admChecked = 'checked';
+                  $admDisabled = $addDisabled = $cinDisabled = '';
+                  if (!isAdmin($id)) { $admChecked = ''; $admDisabled = $addDisabled = $cinDisabled = 'disabled' ; }
+                  $addChecked = $can_add == 1 ? 'checked' : '';
+                  $cinChecked = $can_checkin == 1 ? 'checked' : '';
+                ?>
               <div class="form-group">
                 <div class="form-check">
-                  <input class="form-check-input" type="checkbox" name="is_admin" value="1" <?=isAdmin($id) ? 'checked' : ''?>>
+                  <input class="form-check-input" type="checkbox" name="is_admin" value="1" <?=$admChecked . ' ' . $admDisabled?>>
                   <label class="form-check-label">Admin</label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="checkbox" name="can_add" value="1" <?=$can_add == 1 ? 'checked' : ''?>>
+                  <input class="form-check-input" type="checkbox" name="can_add" value="1" <?=$addChecked . ' ' . $addDisabled?>>
                   <label class="form-check-label">Can Add Documents</label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="checkbox" name="can_checkin" value="1" <?=$can_checkin == 1 ? 'checked' : ''?>>
+                  <input class="form-check-input" type="checkbox" name="can_checkin" value="1" <?=$cinChecked . ' ' . $cinDisabled?>>
                   <label class="form-check-label">Can Check-In Documents</label>
                 </div>
               </div>

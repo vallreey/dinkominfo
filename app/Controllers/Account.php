@@ -121,15 +121,18 @@ class Account extends BaseController
         
         // data user
         $users = array(
-            'username'  => $username,
-            'department'=> trim($_POST['department']),
             'first_name'=> ucwords(trim($_POST['first_name'])),
             'last_name' => ucwords(trim($_POST['last_name'])),
             'phone'     => trim($_POST['phone']),
             'Email'     => strtolower(trim($_POST['email'])),
-            'can_add'   => isset($_POST['can_add']) && $_POST['can_add'] !== '' ? trim($_POST['can_add']) : 0,
-            'can_checkin'=> isset($_POST['can_checkin']) && $_POST['can_checkin'] !== '' ? trim($_POST['can_checkin']) : 0,
         );
+
+        if (isAdmin($uid)) {
+            $users['username']   = $username;
+            $users['department'] = trim($_POST['department']);
+            $users['can_add']    = isset($_POST['can_add']) && $_POST['can_add'] !== '' ? trim($_POST['can_add']) : 0;
+            $users['can_checkin']= isset($_POST['can_checkin']) && $_POST['can_checkin'] !== '' ? trim($_POST['can_checkin']) : 0;
+        }
 
         if ($password !== '') $users['password'] = $password;
         
