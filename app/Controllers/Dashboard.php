@@ -402,7 +402,7 @@ class Dashboard extends BaseController
         if (count($files) > 0) {
             $i = 0;
             foreach ($files as $key => $val) {
-                $userAccessLevel = getAuthority($_SESSION['id'], $val->id, $_SESSION['department']);
+                $userAccessLevel = getAuthority($_SESSION['id'], $val->id, $_SESSION['department'])['rights'];
 
                 $lock = true;
                 $VIEW_RIGHT = 1;
