@@ -153,4 +153,21 @@ if (!function_exists('publishableByStatus')) {
     }
 }
 
+if (!function_exists('getAuthority')) {
+    function getAuthority($uid, $fid, $dept_id) {
+        if (isAdmin($uid) || isReviewer($uid))
+        return userRights('admin');
+        
+        if (isOwner($uid, $fid) && isLockedFile($fid))
+        return userRights('write');
+
+        $userPermission = getUserRights($uid, $fid);
+        $deptPermission = getDeptRights($fid, $dept_id);
+        if ($userPermission >= 0 && $userPermission <= 4)
+            return $userPermission;
+        else 
+            return $deptPermission;
+    }
+}
+
 ?>
