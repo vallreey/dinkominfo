@@ -421,6 +421,7 @@ class Dashboard extends BaseController
                 $VIEW_RIGHT = 1;
                 if ($val->status == 0 and $userAccessLevel >= $VIEW_RIGHT) $lock = false;
                 
+                $latestLog = $this->dashboard->getLatestLog($val->id, 1);
                 $data[$i] = array(
                     'id'        => $val->id,
                     'check'     => in_array($status, $arrStatus) ? '<input type="checkbox" name="ids" value="'.$val->id.'" id="check'.$val->id.'">' : '',
@@ -428,7 +429,7 @@ class Dashboard extends BaseController
                     'deskripsi' => $val->description == null ? '-' : $val->description,
                     'hak_akses' => $this->getRights($userAccessLevel),
                     'created'   => $val->created,
-                    'changed'   => $this->dashboard->getLatestLog($val->id, 1)['timestamp'],
+                    'changed'   => $latestLog == null ? $val->created : $latestLog['timestamp'],
                     'pemilik'   => $val->last_name.', '.$val->first_name,
                     'bidang'    => $val->dept_name,
                     'ukuran'    => getFileSizeByFileId($val->id),

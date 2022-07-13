@@ -20,7 +20,7 @@
             
             // Define dataDir base path 
             $dataDir = $this->settings["dataDir"];
-            $this->settings["dataDir"] = WRITEPATH . 'uploads/' . $dataDir;
+            $this->settings["dataDir"] = str_starts_with($dataDir, '/') ? $dataDir : WRITEPATH . 'uploads/' . $dataDir;
 
             // Define revision and archive dir 
             $this->settings["revisionDir"] = $this->settings["dataDir"] . 'revisionDir/';
