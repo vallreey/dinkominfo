@@ -54,14 +54,14 @@ class Email extends BaseConfig
      *
      * @var string
      */
-    public $SMTPUser = 'oneplex.id@gmail.com';
+    public $SMTPUser = 'isiemail@tes.com';
 
     /**
      * SMTP Password
      *
      * @var string
      */
-    public $SMTPPass = 'hwcvhqwmiaucyeua';
+    public $SMTPPass = 'isipasswordemail';
 
     /**
      * SMTP Port

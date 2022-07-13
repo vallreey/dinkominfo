@@ -308,7 +308,7 @@ class Admin extends BaseController
     private function sendEmail($to, $subject, $message) {
         if (config('MyConfig')->settings['demo'] == 'False') {
             $email = \Config\Services::email();
-            $email->setFrom('oneplex.id@gmail.com', $_SESSION["first_name"] . ' ' . $_SESSION["last_name"]);
+            $email->setFrom($email->SMTPUser, $_SESSION["first_name"] . ' ' . $_SESSION["last_name"]);
             $email->setTo($to);
             $email->setSubject($subject);
             $email->setMessage($message);
