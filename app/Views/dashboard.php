@@ -32,7 +32,7 @@
           <!-- small box -->
           <div class="small-box bg-light border" style="border-radius: 50px 50px 0px 0px; border-width: medium">
             <div class="inner text-center" style="padding: 2em 0 2em 0">
-              <img src="<?=base_url('asset/search.png')?>">
+              <a href="<?=site_url('dashboard/search')?>"><img src="<?=base_url('asset/search.png')?>"></a>
             </div>
             <a href="<?=site_url('dashboard/search')?>" class="small-box-footer">Cek Data <i class="fas fa-arrow-circle-right"></i></a>
           </div>
@@ -42,7 +42,7 @@
           <!-- small box -->
           <div class="small-box bg-light border" style="border-radius: 50px 50px 0px 0px; border-width: medium">
             <div class="inner text-center" style="padding: 2em 0 2em 0">
-              <img src="<?=base_url('asset/approved.png')?>">
+              <a href="<?=site_url('dashboard/approval/onreview')?>"><img src="<?=base_url('asset/approved.png')?>"></a>
             </div>
             <a href="<?=site_url('dashboard/approval/onreview')?>" class="small-box-footer">Approval Dokumen <i class="fas fa-arrow-circle-right"></i></a>
           </div>
@@ -52,7 +52,7 @@
           <!-- small box -->
           <div class="small-box bg-light border" style="border-radius: 50px 50px 0px 0px; border-width: medium">
             <div class="inner text-center" style="padding: 2em 0 2em 0">
-              <img src="<?=base_url('asset/add-file.png')?>">
+              <a href="<?=site_url('dashboard/document')?>"><img src="<?=base_url('asset/add-file.png')?>"></a>
             </div>
             <a href="<?=site_url('dashboard/document')?>" class="small-box-footer">Tambah Dokumen <i class="fas fa-arrow-circle-right"></i></a>
           </div>
@@ -63,7 +63,7 @@
           <!-- small box -->
           <div class="small-box bg-light border" style="border-radius: 50px 50px 0px 0px; border-width: medium">
             <div class="inner text-center" style="padding: 2em 0 2em 0">
-              <img src="<?=base_url('asset/admin.png')?>">
+              <a href="<?=site_url('admin/user')?>"><img src="<?=base_url('asset/admin.png')?>"></a>
             </div>
             <a href="<?=site_url('admin/user')?>" class="small-box-footer">Administrasi <i class="fas fa-arrow-circle-right"></i></a>
           </div>

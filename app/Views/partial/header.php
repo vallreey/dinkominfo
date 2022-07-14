@@ -9,6 +9,10 @@
     image-rendering: crisp-edges;
     image-rendering: pixelated;
   }
+  .modal-backdrop {
+    width: 100% !important;
+    height: 100% !important;
+  }
 </style>
 <!DOCTYPE html>
 <html lang="en">
@@ -32,6 +36,6 @@
 
 </head>
 
-<body class="hold-transition sidebar-mini sidebar-collapse layout-footer-fixed">
+<body class="hold-transition sidebar-mini layout-footer-fixed" style="zoom:90%">
   <!-- Site wrapper -->
   <div class="wrapper">

@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="<?=base_url('adminLTE/dist/css/adminlte.min.css')?>">
 </head>
 
-<body class="hold-transition login-page with-background">
+<body class="hold-transition login-page with-background" style="zoom:90%">
   <!-- /.login-logo -->
   <div class="card card-primary shadow-lg rounded" style="background-color:rgba(0,0,0,0)">
     <div class="container" style="max-width:800px">
